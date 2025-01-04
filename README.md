@@ -8,7 +8,7 @@ Before starting, ensure you have Node.js and npm installed. Run the following co
 
 ### Required Libraries
 
-```bash
+bash
 npm install @mui/material @mui/icons-material
 npm install joi
 npm install axios
