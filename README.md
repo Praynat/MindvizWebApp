@@ -2,6 +2,19 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Installation
+
+Before starting, ensure you have Node.js and npm installed. Run the following commands to install the required dependencies:
+
+### Required Libraries
+
+bash
+npm install @mui/material @mui/icons-material
+npm install joi
+npm install axios
+npm install jwt-decode
+npm install react-icons
+
 ## Available Scripts
 
 In the project directory, you can run:
