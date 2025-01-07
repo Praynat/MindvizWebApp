@@ -1,16 +1,19 @@
 import { jwtDecode } from "jwt-decode";
 
-const Token="MindvizToken"
+const TokenName="MindvizToken"
 
 
 export const setTokenInLocalStorage = (encryptedToken)=>{
 
-    localStorage.setItem(Token, encryptedToken)
+  if (typeof encryptedToken === "object") {
+    encryptedToken = JSON.stringify(encryptedToken);
+  }
+    localStorage.setItem(TokenName, encryptedToken)
     }
 
-export const removeToken = ()=> localStorage.removeItem(Token);
+export const removeToken = ()=> localStorage.removeItem(TokenName);
 
-export const getToken = ()=>localStorage.getItem(Token);
+export const getToken = ()=>localStorage.getItem(TokenName);
 
 export const getUser = () => {
     try {

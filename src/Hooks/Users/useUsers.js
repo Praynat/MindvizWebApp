@@ -27,13 +27,14 @@ const useUsers=()=> {
             setTokenInLocalStorage(token);
             setToken(token);
             setUser(getUser());
-            navigate(ROUTES.CARDS);
+            navigate(ROUTES.MINDMAPPING_VIEW);
+            setSnack("success", "Login successfull!");
           } catch (error) {
             setError(error.message);
           }
           setIsLoading(false);
         },
-        [setToken, setUser, navigate]
+        [setToken, setUser, navigate,setSnack]
       );
 
     const handleLogout = useCallback(() => {
@@ -60,7 +61,7 @@ const useUsers=()=> {
       [handleLogin]
     );
     const handleContact =useCallback(() => {
-      setSnack("success", "Message sent successfully");
+      setSnack("success", "Signed up successfully");
       
     }, [setSnack]); 
 

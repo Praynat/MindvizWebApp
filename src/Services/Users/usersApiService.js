@@ -15,9 +15,11 @@ export const login = async(userLogin)=>{
 
 export const signup = async (normalizedUser) => {
   try {
+    console.log("Sending Request to API:", normalizedUser);
     const { data } = await axios.post(apiUrl, normalizedUser);
     return data;
   } catch (err) {
+    console.error("Error Response from API:", err.response?.data || err.message);
     throw new Error(err.message);
   }
 };

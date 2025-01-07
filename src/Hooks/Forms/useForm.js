@@ -79,7 +79,6 @@ export default function useForm(initialForm, schema, handleSubmit) {
     e.preventDefault(); 
     if (validateForm()) {
       handleSubmit(data);
-      setSnack("success", "Submitted successfully");
     } else {
       setSnack("error", "Form validation failed");
     }

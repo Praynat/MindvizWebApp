@@ -19,7 +19,7 @@ const normalizeUser = (user) => ({
     houseNumber: user.houseNumber,
     zip: user.zip,
   },
-  isBusiness: user.isBusiness,
+  role: user.isBusiness ? "Business" : "Normal",
 });
 
   

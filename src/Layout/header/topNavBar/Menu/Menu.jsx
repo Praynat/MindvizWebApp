@@ -16,7 +16,7 @@ export default function Menu({ isOpen, anchorEl, onClose }) {
   const onLogout = () => {
     handleLogout();
     onClose();
-    navigate(ROUTES.CARDS);
+    navigate(ROUTES.HOME);
   };
 
   return (
@@ -50,12 +50,6 @@ export default function Menu({ isOpen, anchorEl, onClose }) {
               onClick={onClose}
               styles={{ display: { xs: "block", md: "none" } }}
             />
-            <MenuLink
-              text="Gallery"
-              navigateTo={ROUTES.CARDS}
-              onClick={onClose}
-              styles={{ display: { xs: "block", md: "none" } }}
-            />
             <Divider />
             <MenuLink
               text="Login"
@@ -81,20 +75,26 @@ export default function Menu({ isOpen, anchorEl, onClose }) {
               styles={{ display: { xs: "block", md: "none" } }}
             />
             <MenuLink
-              text="Gallery"
-              navigateTo={ROUTES.CARDS}
+              text="Mindmapping"
+              navigateTo={ROUTES.MINDMAPPING_VIEW}
               onClick={onClose}
               styles={{ display: { xs: "block", md: "none" } }}
             />
             <MenuLink
-              text="My Cards"
-              navigateTo={ROUTES.MY_CARDS}
+              text="Calendar"
+              navigateTo={ROUTES.CALENDAR_VIEW}
               onClick={onClose}
               styles={{ display: { xs: "block", md: "none" } }}
             />
             <MenuLink
-              text="Favorites"
-              navigateTo={ROUTES.FAV_CARDS}
+              text="List"
+              navigateTo={ROUTES.LIST_VIEW}
+              onClick={onClose}
+              styles={{ display: { xs: "block", md: "none" } }}
+            />
+            <MenuLink
+              text="Dashboard"
+              navigateTo={ROUTES.DASHBOARD_VIEW}
               onClick={onClose}
               styles={{ display: { xs: "block", md: "none" } }}
             />

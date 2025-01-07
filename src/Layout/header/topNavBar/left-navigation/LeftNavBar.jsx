@@ -33,7 +33,7 @@ export default function LeftNavBar() {
             <NavItem
               buttonSx={getButtonStyle(ROUTES.MINDMAPPING_VIEW)}
               sx={{ height: "100px" }}
-              to={ROUTES.MY_CARDS}
+              to={ROUTES.MINDMAPPING_VIEW}
               label={"Mindmapping"}
             />
           )}
@@ -41,7 +41,7 @@ export default function LeftNavBar() {
             <NavItem
               buttonSx={getButtonStyle(ROUTES.CALENDAR_VIEW)}
               sx={{ height: "100px" }}
-              to={ROUTES.FAV_CARDS}
+              to={ROUTES.CALENDAR_VIEW}
               label={"CALENDAR"}
             />
           )}
@@ -49,7 +49,7 @@ export default function LeftNavBar() {
             <NavItem
               buttonSx={getButtonStyle(ROUTES.LIST_VIEW)}
               sx={{ height: "100px" }}
-              to={ROUTES.MY_CARDS}
+              to={ROUTES.LIST_VIEW}
               label={"LIST"}
             />
           )}
@@ -57,7 +57,7 @@ export default function LeftNavBar() {
             <NavItem
               buttonSx={getButtonStyle(ROUTES.DASHBOARD_VIEW)}
               sx={{ height: "100px" }}
-              to={ROUTES.FAV_CARDS}
+              to={ROUTES.DASHBOARD_VIEW}
               label={"DASHBOARD"}
             />
           )}
