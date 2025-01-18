@@ -2,7 +2,7 @@ import React from "react";
 import ROUTES from "../../Routes/routesModel";
 import { Grid2 } from "@mui/material";
 import Form from "../Forms/Form";
-import { Input } from "@mui/icons-material";
+import Input from "../Forms/Input";
 
 export default function EditUserForm({
   onSubmit,

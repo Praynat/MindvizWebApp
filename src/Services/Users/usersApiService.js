@@ -38,6 +38,7 @@ export const updateUserData = async (id,normalizedUser) => {
     const { data } = await axios.put(`${apiUrl}/${id}`,normalizedUser);
     return data;
   } catch (err) {
+    console.error("Error Response from API:", err.response?.data || err.message);
     throw new Error(err.message);
   }
 };

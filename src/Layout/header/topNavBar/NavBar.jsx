@@ -11,7 +11,7 @@ export default function NavBar() {
   
   return (
     <MenuProvider>
-      <AppBar sx={{position:'fixed !important' ,top:"0 !important", backgroundColor:theme.secondaryColor, height:"68px"}} elevation={1}>
+      <AppBar sx={{position:'fixed !important' ,top:"0 !important", backgroundColor:theme.secondaryColor, height:"10vh"}} elevation={1}>
         <Toolbar sx={{justifyContent:"space-between", alignContent:"center"}}>
 
           <Grid2 container width={"100%"} justifyContent="space-between"alignItems="center">

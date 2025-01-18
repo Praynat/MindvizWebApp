@@ -156,7 +156,7 @@ export default function SignupForm({
             error={errors.url}
             onChange={onChange}
             data={data}
-            required={false}
+            required={true}
           />
         </Grid2>
         <Grid2 item xs={12} sm={3}>
@@ -166,7 +166,7 @@ export default function SignupForm({
             error={errors.alt}
             onChange={onChange}
             data={data}
-            required={false}
+            required={true}
           />
         </Grid2>
 
