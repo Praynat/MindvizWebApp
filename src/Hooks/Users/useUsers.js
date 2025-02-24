@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { getUser, removeToken, setTokenInLocalStorage } from "../../Services/Users/localStorageService";
 import { updateUserData, login, signup } from "../../Services/Users/usersApiService";
 import { useCallback } from "react";
-import ROUTES from "../../Routes/routesModel";
 import { useSnack } from "../../Providers/Utils/SnackbarProvider";
 import { useMyUser } from "../../Providers/Users/UserProvider";
 import normalizeUser from "../../Helpers/Users/normalization/normalizeUser";
 import normalizeUpdateUser from "../../Helpers/Users/normalization/normalizeUpdateUser";
+import ROUTES from "../../Routes/routesModel";
 
 const useUsers=()=> {
     const [isLoading, setIsLoading] = useState();
@@ -23,9 +23,9 @@ const useUsers=()=> {
         async (userLogin) => {
           setIsLoading(true);
           try {
-            const token = await login(userLogin);
-            setTokenInLocalStorage(token);
-            setToken(token);
+            const { token: rawToken } = await login(userLogin);
+            setTokenInLocalStorage(rawToken);
+            setToken(rawToken);
             setUser(getUser());
             navigate(ROUTES.MINDMAPPING_VIEW);
             setSnack("success", "Login successfull!");

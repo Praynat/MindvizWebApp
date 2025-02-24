@@ -1,0 +1,10 @@
+/* TaskDetailsPage.css */
+/* Specific styles for TaskDetails when in "page" mode */
+.task-details.page {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 24px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  

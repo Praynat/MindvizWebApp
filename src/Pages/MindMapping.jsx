@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo, useEffect, useRef } from 'react';
+import React, { useCallback, useMemo, useEffect, useRef, useState } from 'react';
 import {
   ReactFlow,
   useNodesState,
@@ -7,94 +7,122 @@ import {
   Controls,
   ReactFlowProvider,
   MarkerType,
-  useReactFlow,           // 1) Import useReactFlow
+  useReactFlow,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
-import initialTestModel from '../Data/MindMapping/initialTestModel.json';
 import FloatingEdge from '../Components/MindMapping/Edges/FloatingEdge';
 import FloatingConnectionLine from '../Components/MindMapping/Edges/FloatingConnectionLine';
 import RoundedNode from '../Components/MindMapping/Nodes/MyRoundedNode';
 import { buildNodesAndEdges } from '../Helpers/Mindmapping/Edges/layoutHelpers';
+import useTasks from '../Hooks/Tasks/useTasks';
+import './Css/MindMapping.css';
+import { v4 as uuidv4 } from 'uuid';
+import TaskDetailsPage from './Tasks/TaskDetailsPage';
+import OutsideClickHandler from '../Helpers/General/OutsideClickHandler';
 
-let nodeId = 1; // Keeps track of node IDs
-const getId = () => `node-${nodeId++}`;
+const getId = () => uuidv4();
 
 function MindMappingInner() {
   const containerRef = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [selectedNodeId, setSelectedNodeId] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
+  console.log('selectedTask:', selectedTask);
+  
 
-  // 2) Destructure `project` from useReactFlow.
-  //    (It might be called `screenToFlowPosition` depending on your version.)
-  const { screenToFlowPosition  } = useReactFlow();
+  const { toObject, screenToFlowPosition } = useReactFlow();
+  const currentZoom = toObject()?.zoom || 1;
+
+  const {
+    tasks,
+    initializeTasks,
+    handleCreateCard,
+    handleUpdateCard,
+    handleDeleteCard,
+    getAllMyTasks,
+  } = useTasks();
+
+  const onNodesDelete = useCallback(
+    async (deletedNodes) => {
+      if (deletedNodes.length === 0) return;
+      
+      const confirmed = window.confirm(
+        `Are you sure you want to delete ${deletedNodes.length} tasks?`
+      );
+      if (!confirmed) return;
+  
+      for (const node of deletedNodes) {
+        await handleDeleteCard(node.id, true); 
+      }
+  
+      await getAllMyTasks();
+    },
+    [handleDeleteCard, getAllMyTasks]
+  );
 
   useEffect(() => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.offsetWidth;
       const containerHeight = containerRef.current.offsetHeight;
-
       const containerCenterX = containerWidth / 2;
       const containerCenterY = containerHeight / 2;
-
+      const currentTasks = tasks;
       const { nodes: layoutNodes, edges: layoutEdges } = buildNodesAndEdges(
-        initialTestModel,
+        currentTasks,
         containerCenterX,
         containerCenterY
       );
       setNodes(layoutNodes);
       setEdges(layoutEdges);
     }
-  }, [setEdges, setNodes]);
+  }, [setEdges, setNodes, initializeTasks, tasks]);
 
-  const onConnect = useCallback((params) => {
-    const parentNode = nodes.find((node) => node.id === params.source);
-    if (!parentNode) return;
-    const edgeThickness = 20;
-    setEdges((eds) =>
-      
-      addEdge(
-        {
-          ...params,
-          type: 'floating',
-          markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: '#000',strokeWidth: edgeThickness },
-        },
-        eds
-      )
-    );
-  }, [setEdges, nodes]);
+  const onConnect = useCallback(
+    (params) => {
+      const parentNode = nodes.find((node) => node.id === params.source);
+      if (!parentNode) return;
+      const edgeThickness = 20;
+      setEdges((eds) =>
+        addEdge(
+          {
+            ...params,
+            type: 'floating',
+            markerEnd: { type: MarkerType.ArrowClosed },
+            style: { stroke: '#000', strokeWidth: edgeThickness },
+          },
+          eds
+        )
+      );
+    },
+    [setEdges, nodes]
+  );
 
-  // 3) Use the `project` function to place the node at the correct position
-  //    in the flow’s coordinate system.
   const onConnectEnd = useCallback(
-    (event, connectionState) => {
+    async (event, connectionState) => {
+      console.log('onConnectEnd triggered:', { event, connectionState });
       if (!connectionState.isValid) {
         const parentNode = nodes.find((node) => node.id === connectionState.fromNode.id);
         if (!parentNode) return;
   
-        // Calculate the size of the new node based on the parent's size
-        const childSize = (parentNode.data?.size || 50) * 0.4; // Match size factor for children
-  
+        const childSize = (parentNode.data?.size || 50) * 0.4;
         const id = getId();
-
-        // get the screen position from the mouse/touch event
+  
         const { clientX, clientY } =
           'changedTouches' in event ? event.changedTouches[0] : event;
-
-        // convert from screen coords to flow coords
-        const flowPosition = screenToFlowPosition ({ x: clientX, y: clientY });
-
+  
+        const flowPosition = screenToFlowPosition({ x: clientX, y: clientY });
+  
         setNodes((nds) => [
           ...nds,
           {
             id,
-            position: flowPosition,        // 4) use the flow position
-            data: { label: `Node ${id}`, size: childSize }, // same size as siblings
+            position: flowPosition,
+            data: { label: 'Title', size: childSize },
             type: 'rounded',
           },
         ]);
+  
         const edgeThickness = (parentNode.data?.size || 10) / 10;
         setEdges((eds) => [
           ...eds,
@@ -103,49 +131,31 @@ function MindMappingInner() {
             source: connectionState.fromNode.id,
             target: id,
             type: 'floating',
-            style: { stroke: '#000',strokeWidth: edgeThickness },
+            style: { stroke: '#000', strokeWidth: edgeThickness },
           },
         ]);
+  
+        const newTaskData = {
+          name: 'Title',
+          parentIds: [parentNode.id],
+        };
+  
+        const createdTask = await handleCreateCard(newTaskData);
+        console.log('Created Task:', createdTask);
+  
+        const updatedParentData = {
+          ...parentNode.data.task,
+          childrenIds: [...(parentNode.data.task?.childrenIds || []), createdTask._id],
+        };
+  
+        await handleUpdateCard(parentNode.id, updatedParentData);
       }
     },
-    [screenToFlowPosition , setEdges, setNodes, nodes]
+    [screenToFlowPosition, setEdges, setNodes, nodes, handleCreateCard, handleUpdateCard]
   );
 
   const edgeTypes = useMemo(() => ({ floating: FloatingEdge }), []);
   const nodeTypes = useMemo(() => ({ rounded: RoundedNode }), []);
-
-  const highlightSelectedNode = useCallback(() => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        const size = node.data?.size || 50;
-        const shadowSpread = size / 100;
-        const shadowBlur = size / 20;
-        return {
-          ...node,
-          style: {
-            ...node.style,
-            boxShadow:
-              node.id === selectedNodeId
-                ? `0 0 ${shadowBlur}px ${shadowSpread}px rgba(0, 0, 255, 0.8)`
-                : `0 4px 6px rgba(0,0,0,0.1)`,
-            borderRadius: '50%',
-          },
-        };
-      })
-    );
-  }, [selectedNodeId, setNodes]);
-
-  const onNodeClick = useCallback((event, node) => {
-    setSelectedNodeId(node.id);
-  }, []);
-
-  const onPaneClick = useCallback(() => {
-    setSelectedNodeId(null);
-  }, []);
-
-  useEffect(() => {
-    highlightSelectedNode();
-  }, [selectedNodeId, highlightSelectedNode]);
 
   const onLabelChange = (id, newLabel) => {
     setNodes((nds) =>
@@ -154,6 +164,34 @@ function MindMappingInner() {
       )
     );
   };
+
+  // When a node is clicked, find its corresponding task and open the sidebar panel.
+  const onNodeClick = useCallback(
+    (event, node) => {
+      // Locate the matching task from the loaded tasks.
+      const foundTask =
+        tasks.find((task) => task._id === node.id) || {
+          _id: node.id,
+          name: node.data.label,
+          description: node.data.description || 'No description available.',
+        };
+      setSelectedTask(foundTask);
+    },
+    [tasks]
+  );
+  const onSelectTaskInFlow = (task) => {
+    // Update the sidebar
+    setSelectedTask(task);
+    // Update nodes state: mark the node with id equal to task._id as selected
+    setNodes((nds) =>
+      nds.map((node) => ({
+        ...node,
+        selected: node.id === task._id,
+      }))
+    );
+  };
+  
+  
 
   return (
     <div
@@ -171,17 +209,41 @@ function MindMappingInner() {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodesDelete={onNodesDelete}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
         onNodeClick={onNodeClick}
-        onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         connectionLineComponent={FloatingConnectionLine}
         minZoom={0.1}
         maxZoom={50}
+        multiSelectionKeyCode="Control"
+        selectionKeyCode="Control"
+        nodesDraggable
+        nodesConnectable
+        elementsSelectable
+        nodeDragThreshold={1}
+        onPaneClick={() => setSelectedTask(null)}
       />
       <Controls />
+      <div className={`sidebar-container ${selectedTask ? 'open' : ''}`}>
+        <OutsideClickHandler onOutsideClick={() => setSelectedTask(null)}>
+          {selectedTask && (
+            <TaskDetailsPage
+              task={selectedTask}
+              allTasks={tasks}
+              onSelectTask={onSelectTaskInFlow} 
+              mode="sidebar"
+              onClose={() => setSelectedTask(null)}
+            />
+          
+          )}
+        </OutsideClickHandler>
+      </div>
+
+
+
     </div>
   );
 }

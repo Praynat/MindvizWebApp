@@ -1,1020 +1,1031 @@
 [
-    {
-      "Id": "ROOT-01",
-      "Name": "Nathan",
-      "Description": "Root category for all tasks",
-      "Type": "Category",
-      "ParentIds": [],
-      "ChildrenIds": [
-        "C-WellBeing",
-        "C-Work",
-        "C-Family",
-        "C-Finances",
-        "C-Hobbies",
-        "C-Learning",
-        "C-Home"
-      ],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-01T08:00:00",
-      "UpdatedAt": "2025-01-01T08:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [],
-      "UserId": null
-    },
-    {
-      "Id": "C-WellBeing",
-      "Name": "Well-being",
-      "Description": "Activities related to physical, mental, and emotional health",
-      "Type": "Category",
-      "ParentIds": [
-        "ROOT-01"
-      ],
-      "ChildrenIds": [
-        "C-PhysicalHealth",
-        "S-GoJogging",
-        "S-Meditate"
-      ],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-02T08:00:00",
-      "UpdatedAt": "2025-01-02T08:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [],
-      "UserId": null
-    },
-    {
-      "Id": "C-PhysicalHealth",
-      "Name": "Physical Health",
-      "Description": "Activities to maintain good physical fitness",
-      "Type": "Category",
-      "ParentIds": [
-        "C-WellBeing"
-      ],
-      "ChildrenIds": [
-        "S-LegDay",
-        "S-YogaSession"
-      ],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-02T08:00:00",
-      "UpdatedAt": "2025-01-02T08:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [],
-      "UserId": null
-    },
-    {
-      "Id": "S-GoJogging",
-      "Name": "Go Jogging",
-      "Description": "Run for 30 minutes in the park",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-WellBeing"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": true,
-      "Deadline": "2025-01-08T09:00:00",
-      "CreatedAt": "2025-01-02T10:00:00",
-      "UpdatedAt": "2025-01-02T10:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "exercise"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-Meditate",
-      "Name": "Meditate for 15 Minutes",
-      "Description": "Daily meditation to reduce stress",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-WellBeing"
-      ],
-      "ChildrenIds": [],
-      "Progress": 10,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-02T11:00:00",
-      "UpdatedAt": "2025-01-02T11:00:00",
-      "IsFrequency": true,
-      "Frequency": "Daily",
-      "StartDate": "2025-01-02T00:00:00",
-      "EndDate": null,
-      "NextOccurrences": ["2025-01-03", "2025-01-04"],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": 1,
-      "Links": [],
-      "Tags": [
-        "mindfulness"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-LegDay",
-      "Name": "Leg Day Workout",
-      "Description": "Focus on squats, lunges, and deadlifts",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-PhysicalHealth"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-03T09:00:00",
-      "UpdatedAt": "2025-01-03T09:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "workout"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-YogaSession",
-      "Name": "Yoga Session",
-      "Description": "30 minutes of Vinyasa flow",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-PhysicalHealth"
-      ],
-      "ChildrenIds": [],
-      "Progress": 5,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-03T10:00:00",
-      "UpdatedAt": "2025-01-03T10:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "yoga"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "C-Work",
-      "Name": "Work",
-      "Description": "Professional responsibilities and career projects",
-      "Type": "Category",
-      "ParentIds": [
-        "ROOT-01"
-      ],
-      "ChildrenIds": [
-        "C-Projects",
-        "S-FinishReport"
-      ],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-02T08:00:00",
-      "UpdatedAt": "2025-01-02T08:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [],
-      "UserId": null
-    },
-    {
-      "Id": "C-Projects",
-      "Name": "Projects",
-      "Description": "Managing professional projects",
-      "Type": "Category",
-      "ParentIds": [
-        "C-Work"
-      ],
-      "ChildrenIds": [
-        "S-Brainstorm",
-        "S-MarketingPlan"
-      ],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-03T08:00:00",
-      "UpdatedAt": "2025-01-03T08:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [],
-      "UserId": null
-    },
-    {
-      "Id": "S-FinishReport",
-      "Name": "Finish Quarterly Report",
-      "Description": "Collect data and finalize the report",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Work"
-      ],
-      "ChildrenIds": [],
-      "Progress": 30,
-      "Weight": 1,
-      "IsDeadline": true,
-      "Deadline": "2025-01-05T17:00:00",
-      "CreatedAt": "2025-01-02T09:00:00",
-      "UpdatedAt": "2025-01-02T09:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "Work",
-        "Urgent"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-Brainstorm",
-      "Name": "Brainstorm New Product Ideas",
-      "Description": "Team meeting to generate fresh concepts",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Projects"
-      ],
-      "ChildrenIds": [],
-      "Progress": 10,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-03T10:00:00",
-      "UpdatedAt": "2025-01-03T10:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "Work"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-MarketingPlan",
-      "Name": "Draft Marketing Plan",
-      "Description": "Outline strategies for product launch",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Projects"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-03T12:00:00",
-      "UpdatedAt": "2025-01-03T12:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "Work"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "C-Family",
-      "Name": "Family and Relationships",
-      "Description": "Tasks concerning loved ones and social relationships",
-      "Type": "Category",
-      "ParentIds": [
-        "ROOT-01"
-      ],
-      "ChildrenIds": [
-        "S-CallParents",
-        "S-FamilyOuting",
-        "S-GrandparentsVisit"
-      ],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-04T08:00:00",
-      "UpdatedAt": "2025-01-04T08:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [],
-      "UserId": null
-    },
-    {
-      "Id": "S-CallParents",
-      "Name": "Call Parents",
-      "Description": "Weekly call to check in with parents",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Family"
-      ],
-      "ChildrenIds": [],
-      "Progress": 50,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-04T09:00:00",
-      "UpdatedAt": "2025-01-04T09:00:00",
-      "IsFrequency": true,
-      "Frequency": "Weekly",
-      "StartDate": "2025-01-01T00:00:00",
-      "EndDate": null,
-      "NextOccurrences": ["2025-01-11", "2025-01-18"],
-      "WeekDays": 1,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": 1,
-      "Links": [],
-      "Tags": [
-        "family"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-FamilyOuting",
-      "Name": "Plan Family Outing",
-      "Description": "Organize a picnic with family this weekend",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Family"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": true,
-      "Deadline": "2025-01-05T12:00:00",
-      "CreatedAt": "2025-01-04T09:00:00",
-      "UpdatedAt": "2025-01-04T09:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "family"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-GrandparentsVisit",
-      "Name": "Visit Grandparents",
-      "Description": "Drive out to see grandparents and bring groceries",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Family"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-04T09:00:00",
-      "UpdatedAt": "2025-01-04T09:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "family"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "C-Finances",
-      "Name": "Finances",
-      "Description": "Managing expenses, savings, and administrative tasks related to money",
-      "Type": "Category",
-      "ParentIds": [
-        "ROOT-01"
-      ],
-      "ChildrenIds": [
-        "S-PayElectricity",
-        "S-BudgetPlanning",
-        "S-InvestingStrategy"
-      ],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-04T08:30:00",
-      "UpdatedAt": "2025-01-04T08:30:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [],
-      "UserId": null
-    },
-    {
-      "Id": "S-PayElectricity",
-      "Name": "Pay Electricity Bill",
-      "Description": "Monthly payment for electricity",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Finances"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": true,
-      "Deadline": "2025-01-14T17:00:00",
-      "CreatedAt": "2025-01-04T09:00:00",
-      "UpdatedAt": "2025-01-04T09:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "bills"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-BudgetPlanning",
-      "Name": "Budget Planning",
-      "Description": "Prepare a budget plan for next month",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Finances"
-      ],
-      "ChildrenIds": [],
-      "Progress": 20,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-04T10:00:00",
-      "UpdatedAt": "2025-01-04T10:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "finance"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-InvestingStrategy",
-      "Name": "Review Investing Strategy",
-      "Description": "Look into stock indexes and crypto portfolio",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Finances"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-04T11:00:00",
-      "UpdatedAt": "2025-01-04T11:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "finance",
-        "investment"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "C-Hobbies",
-      "Name": "Hobbies and Passions",
-      "Description": "Personal activities for enjoyment and personal development",
-      "Type": "Category",
-      "ParentIds": [
-        "ROOT-01"
-      ],
-      "ChildrenIds": [
-        "S-LearnGuitar",
-        "S-Painting",
-        "S-MusicProduction"
-      ],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-05T08:00:00",
-      "UpdatedAt": "2025-01-05T08:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [],
-      "UserId": null
-    },
-    {
-      "Id": "S-LearnGuitar",
-      "Name": "Learn Guitar",
-      "Description": "Practice guitar for 30 minutes daily",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Hobbies"
-      ],
-      "ChildrenIds": [],
-      "Progress": 15,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-05T09:00:00",
-      "UpdatedAt": "2025-01-05T09:00:00",
-      "IsFrequency": true,
-      "Frequency": "Daily",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": ["2025-01-06", "2025-01-07"],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": 1,
-      "Links": [],
-      "Tags": [
-        "music"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-Painting",
-      "Name": "Start a Painting",
-      "Description": "Begin working on a landscape painting",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Hobbies"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-05T10:00:00",
-      "UpdatedAt": "2025-01-05T10:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "painting"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-MusicProduction",
-      "Name": "Music Production Session",
-      "Description": "Experiment with new software instruments and mixing",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Hobbies"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-05T11:00:00",
-      "UpdatedAt": "2025-01-05T11:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "music"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "C-Learning",
-      "Name": "Learning and Development",
-      "Description": "Goals related to education, skills, and learning",
-      "Type": "Category",
-      "ParentIds": [
-        "ROOT-01"
-      ],
-      "ChildrenIds": [
-        "S-SQLCourse",
-        "S-ReadBook",
-        "S-SQLQuiz1",
-        "S-SQLQuiz2"
-      ],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-05T08:30:00",
-      "UpdatedAt": "2025-01-05T08:30:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [],
-      "UserId": null
-    },
-    {
-      "Id": "S-SQLCourse",
-      "Name": "Complete SQL Course",
-      "Description": "Finish the online SQL course on Udemy",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Learning"
-      ],
-      "ChildrenIds": [],
-      "Progress": 80,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-05T09:00:00",
-      "UpdatedAt": "2025-01-05T09:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [
-        "https://online-learning-platform/sql-course"
-      ],
-      "Tags": [
-        "education",
-        "sql"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-ReadBook",
-      "Name": "Read a Book",
-      "Description": "Read 'Atomic Habits' by James Clear",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Learning"
-      ],
-      "ChildrenIds": [],
-      "Progress": 50,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-05T10:00:00",
-      "UpdatedAt": "2025-01-05T10:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "reading"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-SQLQuiz1",
-      "Name": "SQL Quiz 1",
-      "Description": "Complete the quiz on basic SELECT queries",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Learning"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-06T09:00:00",
-      "UpdatedAt": "2025-01-06T09:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "education",
-        "sql"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-SQLQuiz2",
-      "Name": "SQL Quiz 2",
-      "Description": "Complete the quiz on JOIN statements",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Learning"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-06T09:30:00",
-      "UpdatedAt": "2025-01-06T09:30:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "education",
-        "sql"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "C-Home",
-      "Name": "Home and Daily Life",
-      "Description": "Managing household tasks and daily responsibilities",
-      "Type": "Category",
-      "ParentIds": [
-        "ROOT-01"
-      ],
-      "ChildrenIds": [
-        "S-CleanHouse",
-        "S-GroceryShopping",
-        "S-OrganizeGarage"
-      ],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-07T08:00:00",
-      "UpdatedAt": "2025-01-07T08:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [],
-      "UserId": null
-    },
-    {
-      "Id": "S-CleanHouse",
-      "Name": "Clean the House",
-      "Description": "Deep clean the house before the weekend",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Home"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-07T09:00:00",
-      "UpdatedAt": "2025-01-07T09:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "housework"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-GroceryShopping",
-      "Name": "Grocery Shopping",
-      "Description": "Buy groceries for the week",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Home"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-07T10:00:00",
-      "UpdatedAt": "2025-01-07T10:00:00",
-      "IsFrequency": false,
-      "Frequency": "Weekly",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": ["2025-01-14", "2025-01-21"],
-      "WeekDays": 1,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": 1,
-      "Links": [],
-      "Tags": [
-        "shopping"
-      ],
-      "UserId": null
-    },
-    {
-      "Id": "S-OrganizeGarage",
-      "Name": "Organize Garage",
-      "Description": "Tidy up tools and discard unnecessary items",
-      "Type": "Simple",
-      "ParentIds": [
-        "C-Home"
-      ],
-      "ChildrenIds": [],
-      "Progress": 0,
-      "Weight": 1,
-      "IsDeadline": false,
-      "Deadline": null,
-      "CreatedAt": "2025-01-07T11:00:00",
-      "UpdatedAt": "2025-01-07T11:00:00",
-      "IsFrequency": false,
-      "Frequency": "OneTime",
-      "StartDate": null,
-      "EndDate": null,
-      "NextOccurrences": [],
-      "WeekDays": 0,
-      "DayOfMonth": null,
-      "MonthOfYear": 0,
-      "FrequencyInterval": null,
-      "Links": [],
-      "Tags": [
-        "housework"
-      ],
-      "UserId": null
-    }
-  ]
-  
+  {
+    "_id": "ROOT-01",
+    "name": "Nathan",
+    "description": "Root category for all tasks",
+    "type": "Category",
+    "parentIds": [],
+    "childrenIds": [
+      "C-WellBeing",
+      "C-Work",
+      "C-Family",
+      "C-Finances",
+      "C-Hobbies",
+      "C-Learning",
+      "C-Home"
+    ],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-01T08:00:00",
+    "updatedAt": "2025-01-01T08:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [],
+    "userId": null
+  },
+  {
+    "_id": "C-WellBeing",
+    "name": "Well-being",
+    "description": "Activities related to physical, mental, and emotional health",
+    "type": "Category",
+    "parentIds": [
+      "ROOT-01"
+    ],
+    "childrenIds": [
+      "C-PhysicalHealth",
+      "S-GoJogging",
+      "S-Meditate"
+    ],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-02T08:00:00",
+    "updatedAt": "2025-01-02T08:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [],
+    "userId": null
+  },
+  {
+    "_id": "C-PhysicalHealth",
+    "name": "Physical Health",
+    "description": "Activities to maintain good physical fitness",
+    "type": "Category",
+    "parentIds": [
+      "C-WellBeing"
+    ],
+    "childrenIds": [
+      "S-LegDay",
+      "S-YogaSession"
+    ],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-02T08:00:00",
+    "updatedAt": "2025-01-02T08:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [],
+    "userId": null
+  },
+  {
+    "_id": "S-GoJogging",
+    "name": "Go Jogging",
+    "description": "Run for 30 minutes in the park",
+    "type": "Simple",
+    "parentIds": [
+      "C-WellBeing"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": true,
+    "deadline": "2025-01-08T09:00:00",
+    "createdAt": "2025-01-02T10:00:00",
+    "updatedAt": "2025-01-02T10:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "exercise"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-Meditate",
+    "name": "Meditate for 15 Minutes",
+    "description": "Daily meditation to reduce stress",
+    "type": "Simple",
+    "parentIds": [
+      "C-WellBeing"
+    ],
+    "childrenIds": [],
+    "progress": 10,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-02T11:00:00",
+    "updatedAt": "2025-01-02T11:00:00",
+    "isFrequency": true,
+    "frequency": "Daily",
+    "startDate": "2025-01-02T00:00:00",
+    "endDate": null,
+    "nextOccurrences": [
+      "2025-01-03",
+      "2025-01-04"
+    ],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": 1,
+    "links": [],
+    "tags": [
+      "mindfulness"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-LegDay",
+    "name": "Leg Day Workout",
+    "description": "Focus on squats, lunges, and deadlifts",
+    "type": "Simple",
+    "parentIds": [
+      "C-PhysicalHealth"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-03T09:00:00",
+    "updatedAt": "2025-01-03T09:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "workout"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-YogaSession",
+    "name": "Yoga Session",
+    "description": "30 minutes of Vinyasa flow",
+    "type": "Simple",
+    "parentIds": [
+      "C-PhysicalHealth"
+    ],
+    "childrenIds": [],
+    "progress": 5,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-03T10:00:00",
+    "updatedAt": "2025-01-03T10:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "yoga"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "C-Work",
+    "name": "Work",
+    "description": "Professional responsibilities and career projects",
+    "type": "Category",
+    "parentIds": [
+      "ROOT-01"
+    ],
+    "childrenIds": [
+      "C-Projects",
+      "S-FinishReport"
+    ],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-02T08:00:00",
+    "updatedAt": "2025-01-02T08:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [],
+    "userId": null
+  },
+  {
+    "_id": "C-Projects",
+    "name": "Projects",
+    "description": "Managing professional projects",
+    "type": "Category",
+    "parentIds": [
+      "C-Work"
+    ],
+    "childrenIds": [
+      "S-Brainstorm",
+      "S-MarketingPlan"
+    ],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-03T08:00:00",
+    "updatedAt": "2025-01-03T08:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [],
+    "userId": null
+  },
+  {
+    "_id": "S-FinishReport",
+    "name": "Finish Quarterly Report",
+    "description": "Collect data and finalize the report",
+    "type": "Simple",
+    "parentIds": [
+      "C-Work"
+    ],
+    "childrenIds": [],
+    "progress": 30,
+    "weight": 1,
+    "isDeadline": true,
+    "deadline": "2025-01-05T17:00:00",
+    "createdAt": "2025-01-02T09:00:00",
+    "updatedAt": "2025-01-02T09:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "Work",
+      "Urgent"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-Brainstorm",
+    "name": "Brainstorm New Product Ideas",
+    "description": "Team meeting to generate fresh concepts",
+    "type": "Simple",
+    "parentIds": [
+      "C-Projects"
+    ],
+    "childrenIds": [],
+    "progress": 10,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-03T10:00:00",
+    "updatedAt": "2025-01-03T10:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "Work"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-MarketingPlan",
+    "name": "Draft Marketing Plan",
+    "description": "Outline strategies for product launch",
+    "type": "Simple",
+    "parentIds": [
+      "C-Projects"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-03T12:00:00",
+    "updatedAt": "2025-01-03T12:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "Work"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "C-Family",
+    "name": "Family and Relationships",
+    "description": "Tasks concerning loved ones and social relationships",
+    "type": "Category",
+    "parentIds": [
+      "ROOT-01"
+    ],
+    "childrenIds": [
+      "S-CallParents",
+      "S-FamilyOuting",
+      "S-GrandparentsVisit"
+    ],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-04T08:00:00",
+    "updatedAt": "2025-01-04T08:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [],
+    "userId": null
+  },
+  {
+    "_id": "S-CallParents",
+    "name": "Call Parents",
+    "description": "Weekly call to check in with parents",
+    "type": "Simple",
+    "parentIds": [
+      "C-Family"
+    ],
+    "childrenIds": [],
+    "progress": 50,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-04T09:00:00",
+    "updatedAt": "2025-01-04T09:00:00",
+    "isFrequency": true,
+    "frequency": "Weekly",
+    "startDate": "2025-01-01T00:00:00",
+    "endDate": null,
+    "nextOccurrences": [
+      "2025-01-11",
+      "2025-01-18"
+    ],
+    "weekDays": 1,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": 1,
+    "links": [],
+    "tags": [
+      "family"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-FamilyOuting",
+    "name": "Plan Family Outing",
+    "description": "Organize a picnic with family this weekend",
+    "type": "Simple",
+    "parentIds": [
+      "C-Family"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": true,
+    "deadline": "2025-01-05T12:00:00",
+    "createdAt": "2025-01-04T09:00:00",
+    "updatedAt": "2025-01-04T09:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "family"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-GrandparentsVisit",
+    "name": "Visit Grandparents",
+    "description": "Drive out to see grandparents and bring groceries",
+    "type": "Simple",
+    "parentIds": [
+      "C-Family"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-04T09:00:00",
+    "updatedAt": "2025-01-04T09:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "family"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "C-Finances",
+    "name": "Finances",
+    "description": "Managing expenses, savings, and administrative tasks related to money",
+    "type": "Category",
+    "parentIds": [
+      "ROOT-01"
+    ],
+    "childrenIds": [
+      "S-PayElectricity",
+      "S-BudgetPlanning",
+      "S-InvestingStrategy"
+    ],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-04T08:30:00",
+    "updatedAt": "2025-01-04T08:30:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [],
+    "userId": null
+  },
+  {
+    "_id": "S-PayElectricity",
+    "name": "Pay Electricity Bill",
+    "description": "Monthly payment for electricity",
+    "type": "Simple",
+    "parentIds": [
+      "C-Finances"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": true,
+    "deadline": "2025-01-14T17:00:00",
+    "createdAt": "2025-01-04T09:00:00",
+    "updatedAt": "2025-01-04T09:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "bills"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-BudgetPlanning",
+    "name": "Budget Planning",
+    "description": "Prepare a budget plan for next month",
+    "type": "Simple",
+    "parentIds": [
+      "C-Finances"
+    ],
+    "childrenIds": [],
+    "progress": 20,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-04T10:00:00",
+    "updatedAt": "2025-01-04T10:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "finance"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-InvestingStrategy",
+    "name": "Review Investing Strategy",
+    "description": "Look into stock indexes and crypto portfolio",
+    "type": "Simple",
+    "parentIds": [
+      "C-Finances"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-04T11:00:00",
+    "updatedAt": "2025-01-04T11:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "finance",
+      "investment"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "C-Hobbies",
+    "name": "Hobbies and Passions",
+    "description": "Personal activities for enjoyment and personal development",
+    "type": "Category",
+    "parentIds": [
+      "ROOT-01"
+    ],
+    "childrenIds": [
+      "S-LearnGuitar",
+      "S-Painting",
+      "S-MusicProduction"
+    ],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-05T08:00:00",
+    "updatedAt": "2025-01-05T08:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [],
+    "userId": null
+  },
+  {
+    "_id": "S-LearnGuitar",
+    "name": "Learn Guitar",
+    "description": "Practice guitar for 30 minutes daily",
+    "type": "Simple",
+    "parentIds": [
+      "C-Hobbies"
+    ],
+    "childrenIds": [],
+    "progress": 15,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-05T09:00:00",
+    "updatedAt": "2025-01-05T09:00:00",
+    "isFrequency": true,
+    "frequency": "Daily",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [
+      "2025-01-06",
+      "2025-01-07"
+    ],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": 1,
+    "links": [],
+    "tags": [
+      "music"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-Painting",
+    "name": "Start a Painting",
+    "description": "Begin working on a landscape painting",
+    "type": "Simple",
+    "parentIds": [
+      "C-Hobbies"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-05T10:00:00",
+    "updatedAt": "2025-01-05T10:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "painting"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-MusicProduction",
+    "name": "Music Production Session",
+    "description": "Experiment with new software instruments and mixing",
+    "type": "Simple",
+    "parentIds": [
+      "C-Hobbies"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-05T11:00:00",
+    "updatedAt": "2025-01-05T11:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "music"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "C-Learning",
+    "name": "Learning and Development",
+    "description": "Goals related to education, skills, and learning",
+    "type": "Category",
+    "parentIds": [
+      "ROOT-01"
+    ],
+    "childrenIds": [
+      "S-SQLCourse",
+      "S-ReadBook",
+      "S-SQLQuiz1",
+      "S-SQLQuiz2"
+    ],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-05T08:30:00",
+    "updatedAt": "2025-01-05T08:30:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [],
+    "userId": null
+  },
+  {
+    "_id": "S-SQLCourse",
+    "name": "Complete SQL Course",
+    "description": "Finish the online SQL course on Udemy",
+    "type": "Simple",
+    "parentIds": [
+      "C-Learning"
+    ],
+    "childrenIds": [],
+    "progress": 80,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-05T09:00:00",
+    "updatedAt": "2025-01-05T09:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [
+      "https://online-learning-platform/sql-course"
+    ],
+    "tags": [
+      "education",
+      "sql"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-ReadBook",
+    "name": "Read a Book",
+    "description": "Read 'Atomic Habits' by James Clear",
+    "type": "Simple",
+    "parentIds": [
+      "C-Learning"
+    ],
+    "childrenIds": [],
+    "progress": 50,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-05T10:00:00",
+    "updatedAt": "2025-01-05T10:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "reading"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-SQLQuiz1",
+    "name": "SQL Quiz 1",
+    "description": "Complete the quiz on basic SELECT queries",
+    "type": "Simple",
+    "parentIds": [
+      "C-Learning"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-06T09:00:00",
+    "updatedAt": "2025-01-06T09:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "education",
+      "sql"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-SQLQuiz2",
+    "name": "SQL Quiz 2",
+    "description": "Complete the quiz on JOIN statements",
+    "type": "Simple",
+    "parentIds": [
+      "C-Learning"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-06T09:30:00",
+    "updatedAt": "2025-01-06T09:30:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "education",
+      "sql"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "C-Home",
+    "name": "Home and Daily Life",
+    "description": "Managing household tasks and daily responsibilities",
+    "type": "Category",
+    "parentIds": [
+      "ROOT-01"
+    ],
+    "childrenIds": [
+      "S-CleanHouse",
+      "S-GroceryShopping",
+      "S-OrganizeGarage"
+    ],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-07T08:00:00",
+    "updatedAt": "2025-01-07T08:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [],
+    "userId": null
+  },
+  {
+    "_id": "S-CleanHouse",
+    "name": "Clean the House",
+    "description": "Deep clean the house before the weekend",
+    "type": "Simple",
+    "parentIds": [
+      "C-Home"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-07T09:00:00",
+    "updatedAt": "2025-01-07T09:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "housework"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-GroceryShopping",
+    "name": "Grocery Shopping",
+    "description": "Buy groceries for the week",
+    "type": "Simple",
+    "parentIds": [
+      "C-Home"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-07T10:00:00",
+    "updatedAt": "2025-01-07T10:00:00",
+    "isFrequency": false,
+    "frequency": "Weekly",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [
+      "2025-01-14",
+      "2025-01-21"
+    ],
+    "weekDays": 1,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": 1,
+    "links": [],
+    "tags": [
+      "shopping"
+    ],
+    "userId": null
+  },
+  {
+    "_id": "S-OrganizeGarage",
+    "name": "Organize Garage",
+    "description": "Tidy up tools and discard unnecessary items",
+    "type": "Simple",
+    "parentIds": [
+      "C-Home"
+    ],
+    "childrenIds": [],
+    "progress": 0,
+    "weight": 1,
+    "isDeadline": false,
+    "deadline": null,
+    "createdAt": "2025-01-07T11:00:00",
+    "updatedAt": "2025-01-07T11:00:00",
+    "isFrequency": false,
+    "frequency": "OneTime",
+    "startDate": null,
+    "endDate": null,
+    "nextOccurrences": [],
+    "weekDays": 0,
+    "dayOfMonth": null,
+    "monthOfYear": 0,
+    "frequencyInterval": null,
+    "links": [],
+    "tags": [
+      "housework"
+    ],
+    "userId": null
+  }
+]

@@ -69,7 +69,6 @@ export default function useForm(initialForm, schema, handleSubmit) {
   
     const { error } = schemaForValidate.validate(filteredData, { abortEarly: false });
     if (error) {
-      // console.log('Validation errors:', error.details);
       return false;
     }
     return true;
