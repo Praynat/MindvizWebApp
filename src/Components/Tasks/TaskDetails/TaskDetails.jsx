@@ -3,11 +3,37 @@ import './../Css/TaskDetailsGeneral.css';
 import './../Css/TaskDetailsSidebar.css';
 import './../Css/TaskDetailsPage.css';
 import './../Css/TaskDetailsModal.css';
-export default function TaskDetails({ task, allTasks, onSelectTask, mode, onClose }) {
-  // Helper to find a task’s name by its id from allTasks
+
+export default function TaskDetails({ task, allTasks, onSelectTask, mode, onClose, onUpdateTask }) {
+  // Helper to find a task's name by its id from allTasks
   const getTaskName = (id) => {
     const found = allTasks.find((t) => t._id === id);
     return found ? found.name : id;
+  };
+
+  // Helper to check if a task is completed (progress = 100%)
+  const isTaskCompleted = (taskId) => {
+    const taskToCheck = allTasks.find((t) => t._id === taskId);
+    return taskToCheck && taskToCheck.progress === 100;
+  };
+
+  // Helper to check if a task's parent is completed
+  const isParentCompleted = (taskId) => {
+    const taskToCheck = allTasks.find((t) => t._id === taskId);
+    if (!taskToCheck || !taskToCheck.parentIds || taskToCheck.parentIds.length === 0) return false;
+    return taskToCheck.parentIds.some(parentId => isTaskCompleted(parentId));
+  };
+
+  // Handle task completion toggle
+  const handleCompletionToggle = (childId, isComplete) => {
+    const taskToUpdate = allTasks.find((t) => t._id === childId);
+    if (taskToUpdate) {
+      const updatedTask = {
+        ...taskToUpdate,
+        progress: isComplete ? 100 : 0
+      };
+      onUpdateTask(childId, updatedTask);
+    }
   };
 
   return (
@@ -66,17 +92,32 @@ export default function TaskDetails({ task, allTasks, onSelectTask, mode, onClos
           <div className="children">
             <h3>SubTasks:</h3>
             <div className="card-container task-details-subtasks">
-              {task.childrenIds.map((childId) => (
-                <div
-                  key={childId}
-                  className="card"
-                  onClick={() =>
-                    onSelectTask(allTasks.find((t) => t._id === childId))
-                  }
-                >
-                  {getTaskName(childId)}
-                </div>
-              ))}
+              {task.childrenIds.map((childId) => {
+                const isCompleted = isTaskCompleted(childId);
+                const isDisabled = isParentCompleted(childId);
+                
+                return (
+                  <div
+                    key={childId}
+                    className={`card subtask-card ${isCompleted ? 'completed' : ''} ${isDisabled ? 'disabled' : ''}`}
+                  >
+                    <div className="subtask-content">
+                      <input
+                        type="checkbox"
+                        checked={isCompleted}
+                        onChange={(e) => handleCompletionToggle(childId, e.target.checked)}
+                        className="subtask-checkbox"
+                      />
+                      <span 
+                        className="subtask-name"
+                        onClick={() => !isDisabled && onSelectTask(allTasks.find((t) => t._id === childId))}
+                      >
+                        {getTaskName(childId)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

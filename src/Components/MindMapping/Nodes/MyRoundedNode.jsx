@@ -1,18 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import { Handle, Position, useReactFlow } from '@xyflow/react';
+import { Handle, Position } from '@xyflow/react';
 
 const RoundedNode = ({ id, data, selected }) => {
-  const { size , label, onLabelChange } = data;
+  const { size, label, onLabelChange, task, hasCompletedParent, zoom = 1 } = data;
 
-  // Access the flow instance to get the current zoom
-  const reactFlowInstance = useReactFlow();
-  const currentZoom = reactFlowInstance?.toObject()?.zoom || 1;
+  // ========== CONFIGURABLE STYLING PARAMETERS ==========
+  // Reference values
+  const referenceSize = 40;  // Base size for calculations
+  
+  // Shadow base settings
+  const shadowConfig = {
+    // Normal node shadow
+    normal: {
+      borderSize: size / 150,         // Border thickness
+      borderColor: '#555',            // Border color
+      spreadFactor: 1.1,              // Multiplier for border thickness
+    },
+    // Completed node shadow
+    completed: {
+      borderSize: size / 100,         // Border thickness  
+      borderColor: '#9fa3a7',         // Border color
+      spreadFactor: 1.0,              // Multiplier for border thickness
+    },
+    // Selected/highlighted node shadow
+    highlight: {
+      spreadFactor: 3,                // How much the highlight extends (higher = larger glow)
+      blurFactor: 2,                  // How blurry the highlight is (higher = more blur)
+      color: 'rgba(0, 0, 255, 0.8)',  // Highlight color
+      minSpread: 5,                   // Minimum size of highlight regardless of zoom
+      minBlur: 3,                     // Minimum blur regardless of zoom
+    },
+    // Progress indicator shadow (inside the node)
+    progress: {
+      spreadFactor: 0.4,              // How much the progress shadow extends inward
+      blurFactor: 4,                  // How blurry the progress shadow is
+      minSpread: 3,                   // Minimum spread size regardless of zoom
+      minBlur: 2,                     // Minimum blur regardless of zoom
+    },
+    // General shadow settings
+    general: {
+      baseSpread: 8,                  // Base spread value at reference size
+      baseBlur: 2,                    // Base blur value at reference size
+      scaleFactor: 0.00001,           // Controls subtle vs pronounced scaling with size
+      zoomDivisor: 4,                 // Higher = less effect from zoom
+    }
+  };
 
+  // ========== NODE SIZE & ZOOM CALCULATIONS ==========
   // Local states
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(label);
   const [isHovered, setIsHovered] = useState(false);
   const [isShiftPressed, setIsShiftPressed] = useState(false);
+
+  // Check if task is completed (progress = 100%) or has completed parent
+  const isCompleted = (task && task.progress === 100) || hasCompletedParent;
 
   // 1) Detect Shift key press/release
   useEffect(() => {
@@ -49,54 +91,75 @@ const RoundedNode = ({ id, data, selected }) => {
     }
   };
 
-// 1) A "referenceSize" - acts as the baseline size
-const referenceSize = 50;  
+  // ========== SHADOW CALCULATIONS ==========
+  // Size ratio calculations
+  const rawRatio = referenceSize / size;
+  const softenedRatio = 1 + (rawRatio - 2) * shadowConfig.general.scaleFactor;
+  const ratio = Math.max(0.4, Math.min(softenedRatio, 0.001));
 
-// 2) Base spread/blur values for the shadow at reference size
-const baseSpread = 8;  // Reduce if too aggressive
-const baseBlur = 2;    // Reduce if too aggressive
+  // Apply ratio with zoom adjustment
+  const zoomAdjustment = 1 / (zoom || 1);
+  const shadowSpread = shadowConfig.general.baseSpread * ratio * 1.8 * zoomAdjustment / shadowConfig.general.zoomDivisor;
+  const shadowBlur = shadowConfig.general.baseBlur * ratio * 1.8 * zoomAdjustment / shadowConfig.general.zoomDivisor;
 
-// 3) Softening factor to control subtle vs pronounced scaling
-const scaleFactor = 0.0001;  // Lower = more subtle, Higher = more pronounced
+  // Style constants
+  const borderSize = shadowConfig.normal.borderSize;
+  const handleSize = size / 15;
 
-// 4) Compute ratio with a softening factor
-const rawRatio = referenceSize / size;
-const softenedRatio = 1 + (rawRatio - 5) * scaleFactor; // Keeps subtle changes
+  // ========== PROGRESS COLOR FUNCTION ==========
+  const getProgressColor = (progress) => {
+    const normalizedProgress = Math.max(0, Math.min(100, progress || 0));
+    
+    if (normalizedProgress < 50) {
+      return 'rgb(255, 0, 0)';
+    } else if (normalizedProgress < 100) {
+      return 'rgb(255, 166, 0)';
+    } else {
+      return 'rgb(0, 185, 0)';
+    }
+  };
 
-// 5) Clamp ratio to avoid extreme changes
-const ratio = Math.max(0.4, Math.min(softenedRatio, 0.001)); // Limits scaling effect
+  // ========== SHADOW GENERATION ==========
+  const progressValue = task?.progress || 0;
+  const progressColor = getProgressColor(progressValue);
 
-// 6) Apply ratio to spread and blur
-const shadowSpread = baseSpread * ratio;
-const shadowBlur = baseBlur * ratio;
+  // Progress shadow
+  const progressShadowSpread = Math.max(shadowSpread * borderSize * shadowConfig.progress.spreadFactor, shadowConfig.progress.minSpread);
+  const progressShadowBlur = Math.max(shadowBlur * shadowConfig.progress.blurFactor, shadowConfig.progress.minBlur);
+  const progressShadow = `inset 0 0 ${progressShadowBlur}px ${progressShadowSpread}px ${progressColor}`;
 
-// 7) Styles
-const borderSize = size / 100;
-const handleSize = size / 25;
+  // Highlight shadow
+  const highlightSpread = Math.max(shadowSpread * shadowConfig.highlight.spreadFactor, shadowConfig.highlight.minSpread);
+  const highlightBlur = Math.max(shadowBlur * shadowConfig.highlight.blurFactor, shadowConfig.highlight.minBlur);
 
-// 8) Choose shadow
-const normalShadow = `0 0 0 ${borderSize}px #555`;  
-const highlightShadow = `0 0 ${shadowBlur}px ${shadowSpread}px rgba(0, 0, 255, 0.8)`;
+  // Combined shadows
+  const normalShadow = `0 0 0 ${borderSize * shadowConfig.normal.spreadFactor}px ${shadowConfig.normal.borderColor}, ${progressShadow}`;
+  const completedShadow = `0 0 0 ${borderSize * shadowConfig.completed.spreadFactor}px ${shadowConfig.completed.borderColor}, ${progressShadow}`;
+  const highlightShadow = `0 0 ${highlightBlur}px ${highlightSpread}px ${shadowConfig.highlight.color}, ${progressShadow}`;
 
-
+  // ========== NODE STYLES ==========
   const nodeStyle = {
     width: `${size}px`,
     height: `${size}px`,
-    boxShadow: selected ? highlightShadow : normalShadow,
+    boxShadow: selected 
+      ? highlightShadow 
+      : isCompleted 
+        ? completedShadow 
+        : normalShadow,
     border: 'none',
     borderRadius: '50%',
-    background: '#fff',
-    color: '#333',
+    background: isCompleted ? '#ffffff' : '#fff',
+    color: isCompleted ? '#9fa3a7' : '#333',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: `${Math.max(size / 8, 1)}px`,
     textAlign: 'center',
     position: 'relative',
-    // Hover scaling
     transform: isHovered ? 'scale(1.03)' : 'scale(1)',
-    transition: 'transform 0.1s ease-in-out',
+    transition: 'transform 0.1s ease-in-out, background 0.2s ease, color 0.2s ease',
     cursor: 'move',
+    opacity: isCompleted ? 0.8 : 1,
   };
 
   return (
@@ -125,7 +188,18 @@ const highlightShadow = `0 0 ${shadowBlur}px ${shadowSpread}px rgba(0, 0, 255, 0
           }}
         />
       ) : (
-        <div>{label}</div>
+        <div
+          style={
+            isCompleted
+              ? {
+                  textDecoration: 'line-through',
+                  textDecorationThickness: `${size / 50}px`,
+                }
+              : {}
+          }
+        >
+          {label}
+        </div>
       )}
 
       {/* 6) Connection Handles */}
@@ -153,31 +227,28 @@ const highlightShadow = `0 0 ${shadowBlur}px ${shadowSpread}px rgba(0, 0, 255, 0
             height: `${size}px`,
             borderRadius: '50%',
             backgroundColor: 'transparent',
-            cursor: 'crosshair', // A crosshair to indicate easy-connect
+            cursor: 'crosshair',
           }}
         />
       ) : (
         <Handle
-        type="source"
-        position={Position.Bottom}
-        style={{
-          width: `${handleSize}px`,
-          height: `${handleSize}px`,
-          background: '#555',
-          borderRadius: '50%',
-          opacity: 0.8,
-          // Position at bottom edge
-          left: '50%',
-          bottom: -handleSize ,
-          // Combine scale and translation
-          transform: `
-            translateX(-50%) 
-            scale(${Math.max(size / 80, 0.1)})
-          `,
-          // Anchor scaling at bottom center
-          transformOrigin: 'bottom center'
-        }}
-      />
+          type="source"
+          position={Position.Bottom}
+          style={{
+            width: `${handleSize}px`,
+            height: `${handleSize}px`,
+            background: '#555',
+            borderRadius: '50%',
+            opacity: 0.8,
+            left: '50%',
+            bottom: -handleSize/2,
+            transform: `
+              translateX(-50%) 
+              scale(${Math.min(Math.max(size / 80, 0.1), 1)})
+            `,
+            transformOrigin: 'bottom center'
+          }}
+        />
       )}
     </div>
   );

@@ -3,8 +3,10 @@
 .task-details {
   font-family: Arial, sans-serif;
   color: #333;
-  padding: 20px;
-  
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .task-details .header {
@@ -27,21 +29,32 @@
   cursor: pointer;
 }
 
-.task-details .description {
+.task-details .description,
+.task-details .metrics,
+.task-details .dates,
+.task-details .relationships {
   margin-bottom: 15px;
+}
+
+.task-details h3 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  color: #555;
+  font-size: 1rem;
+}
+
+.task-details .description {
   font-size: 16px;
   line-height: 1.5;
 }
 
 .metrics {
   font-weight: bold;
-  margin-bottom: 15px;
 }
 
 .dates {
   font-size: 0.9em;
   color: #777;
-  margin-bottom: 20px;
 }
 
 .relationships h3 {
@@ -49,25 +62,26 @@
 }
 
 /* Card styling for clickable parent/child items */
-.card-container {
+.task-details .card-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   margin-top: 10px;
 }
 
-.card {
-  background: #fff;
+.task-details .card {
+  background: #f5f5f5;
   border: 1px solid #ddd;
   border-radius: 4px;
-  padding: 10px 15px;
+  padding: 6px 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: background-color 0.2s ease;
+  font-size: 0.9rem;
 }
 
-.card:hover {
-  background-color: #f0f8ff;
+.task-details .card:hover {
+  background-color: #e0e0e0;
 }
 
 .link-button {
@@ -82,4 +96,47 @@
 
 .link-button:hover {
   color: #0056b3;
+}
+
+/* SubTask specific styling */
+.subtask-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.subtask-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.subtask-checkbox {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.subtask-name {
+  flex-grow: 1;
+  cursor: pointer;
+}
+
+/* Completed task styling */
+.subtask-card.completed .subtask-name {
+  text-decoration: line-through;
+  color: #888;
+}
+
+/* Disabled task styling */
+.subtask-card.disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.subtask-card.disabled .subtask-name {
+  cursor: default;
+}
+
+.subtask-card.disabled:hover {
+  background-color: #f5f5f5; /* Prevent hover effect */
 }

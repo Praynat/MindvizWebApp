@@ -1,3 +1,6 @@
+// ===================================================================
+// IMPORTS
+// ===================================================================
 import React, { useCallback, useMemo, useEffect, useRef, useState } from 'react';
 import {
   ReactFlow,
@@ -21,19 +24,26 @@ import { v4 as uuidv4 } from 'uuid';
 import TaskDetailsPage from './Tasks/TaskDetailsPage';
 import OutsideClickHandler from '../Helpers/General/OutsideClickHandler';
 
+// ===================================================================
+// UTILITY FUNCTION
+// ===================================================================
 const getId = () => uuidv4();
 
+// ===================================================================
+// MAIN COMPONENT: MindMappingInner
+// ===================================================================
 function MindMappingInner() {
+  // ----------------------- References and State -----------------------
   const containerRef = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [currentZoom, setCurrentZoom] = useState(1);
   console.log('selectedTask:', selectedTask);
-  
 
-  const { toObject, screenToFlowPosition } = useReactFlow();
-  const currentZoom = toObject()?.zoom || 1;
+  const { screenToFlowPosition, getViewport } = useReactFlow();
 
+  // ----------------------- Custom hook for tasks -----------------------
   const {
     tasks,
     initializeTasks,
@@ -43,6 +53,7 @@ function MindMappingInner() {
     getAllMyTasks,
   } = useTasks();
 
+  // ----------------------- Node Deletion Handling -----------------------
   const onNodesDelete = useCallback(
     async (deletedNodes) => {
       if (deletedNodes.length === 0) return;
@@ -61,6 +72,7 @@ function MindMappingInner() {
     [handleDeleteCard, getAllMyTasks]
   );
 
+  // ----------------------- Layout Initialization Effect -----------------------
   useEffect(() => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.offsetWidth;
@@ -78,18 +90,20 @@ function MindMappingInner() {
     }
   }, [setEdges, setNodes, initializeTasks, tasks]);
 
+  // ----------------------- Handling Node Connection -----------------------
   const onConnect = useCallback(
     (params) => {
       const parentNode = nodes.find((node) => node.id === params.source);
       if (!parentNode) return;
-      const edgeThickness = 20;
+      
+
+      
       setEdges((eds) =>
         addEdge(
           {
             ...params,
             type: 'floating',
             markerEnd: { type: MarkerType.ArrowClosed },
-            style: { stroke: '#000', strokeWidth: edgeThickness },
           },
           eds
         )
@@ -98,6 +112,7 @@ function MindMappingInner() {
     [setEdges, nodes]
   );
 
+  // ----------------------- Handling End of Connection -----------------------
   const onConnectEnd = useCallback(
     async (event, connectionState) => {
       console.log('onConnectEnd triggered:', { event, connectionState });
@@ -131,7 +146,11 @@ function MindMappingInner() {
             source: connectionState.fromNode.id,
             target: id,
             type: 'floating',
-            style: { stroke: '#000', strokeWidth: edgeThickness },
+            style: { 
+              stroke: parentNode.data?.task?.progress === 100 ? '#9fa3a7' : '#000', 
+              strokeWidth: edgeThickness 
+            },
+            data: { isSourceCompleted: parentNode.data?.task?.progress === 100 }
           },
         ]);
   
@@ -154,9 +173,11 @@ function MindMappingInner() {
     [screenToFlowPosition, setEdges, setNodes, nodes, handleCreateCard, handleUpdateCard]
   );
 
+  // ----------------------- Define Node and Edge Types -----------------------
   const edgeTypes = useMemo(() => ({ floating: FloatingEdge }), []);
   const nodeTypes = useMemo(() => ({ rounded: RoundedNode }), []);
 
+  // ----------------------- Node Label Change -----------------------
   const onLabelChange = (id, newLabel) => {
     setNodes((nds) =>
       nds.map((node) =>
@@ -165,10 +186,10 @@ function MindMappingInner() {
     );
   };
 
-  // When a node is clicked, find its corresponding task and open the sidebar panel.
+  // ----------------------- Handling Node Click -----------------------
   const onNodeClick = useCallback(
     (event, node) => {
-      // Locate the matching task from the loaded tasks.
+      // Locate the corresponding task from the loaded tasks.
       const foundTask =
         tasks.find((task) => task._id === node.id) || {
           _id: node.id,
@@ -179,6 +200,8 @@ function MindMappingInner() {
     },
     [tasks]
   );
+
+  // ----------------------- Selecting a Task from the Flow -----------------------
   const onSelectTaskInFlow = (task) => {
     // Update the sidebar
     setSelectedTask(task);
@@ -190,22 +213,24 @@ function MindMappingInner() {
       }))
     );
   };
-  
-  
 
+  // ----------------------- Component Render -----------------------
   return (
     <div
       ref={containerRef}
       style={{ width: '100vw', height: '80vh', marginTop: '-2.5vh' }}
     >
       <ReactFlow
-        nodes={nodes.map((node) => ({
-          ...node,
-          data: {
-            ...node.data,
-            onLabelChange: (newLabel) => onLabelChange(node.id, newLabel),
-          },
-        }))}
+        nodes={nodes.map((node) => {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              zoom: currentZoom,
+              onLabelChange: (newLabel) => onLabelChange(node.id, newLabel),
+            },
+          };
+        })}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
@@ -216,6 +241,11 @@ function MindMappingInner() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         connectionLineComponent={FloatingConnectionLine}
+        onWheelCapture={() => {
+          // Update zoom on any wheel event
+          const viewport = getViewport();
+          setCurrentZoom(viewport.zoom);
+        }}
         minZoom={0.1}
         maxZoom={50}
         multiSelectionKeyCode="Control"
@@ -234,20 +264,20 @@ function MindMappingInner() {
               task={selectedTask}
               allTasks={tasks}
               onSelectTask={onSelectTaskInFlow} 
+              onUpdateTask={handleUpdateCard}
               mode="sidebar"
               onClose={() => setSelectedTask(null)}
             />
-          
           )}
         </OutsideClickHandler>
       </div>
-
-
-
     </div>
   );
 }
 
+// ===================================================================
+// EXPORT MAIN COMPONENT: MindMapping
+// ===================================================================
 export default function MindMapping() {
   return (
     <ReactFlowProvider>

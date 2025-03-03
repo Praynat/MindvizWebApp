@@ -14,6 +14,12 @@ function FloatingConnectionLine({ toX, toY, fromPosition, toPosition, fromNode }
   };
 
   const { sx, sy } = getEdgeParams(fromNode, targetNode);
+  
+  // Calculate appropriate stroke width based on source node size
+  const sourceNodeSize = fromNode.data?.size || 50;
+  // Cap the stroke width between 0.5 and 2.5
+  const strokeWidth = Math.min(Math.max(sourceNodeSize / 500, 0.5), 2.5);
+  
   const [edgePath] = getBezierPath({
     sourceX: sx,
     sourceY: sy,
@@ -25,8 +31,22 @@ function FloatingConnectionLine({ toX, toY, fromPosition, toPosition, fromNode }
 
   return (
     <g>
-      <path fill="none" stroke="#222" strokeWidth={1.5} className="animated" d={edgePath} />
-      <circle cx={toX} cy={toY} fill="#fff" r={3} stroke="#222" strokeWidth={1.5} />
+      <path 
+        fill="none" 
+        stroke="#222" 
+        strokeWidth={strokeWidth} 
+        className="animated" 
+        d={edgePath} 
+      />
+      <circle 
+        cx={toX} 
+        cy={toY} 
+        fill="#fff" 
+        // Cap the radius between 3 and 6
+        r={Math.min(Math.max(sourceNodeSize / 25, 3), 6)} 
+        stroke="#222" 
+        strokeWidth={strokeWidth / 2} 
+      />
     </g>
   );
 }
