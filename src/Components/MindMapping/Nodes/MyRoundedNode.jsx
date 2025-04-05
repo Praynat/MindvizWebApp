@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Handle, Position } from '@xyflow/react';
 
 const RoundedNode = ({ id, data, selected }) => {
-  const { size, label, onLabelChange, task, hasCompletedParent, zoom = 1 } = data;
+  const { size, label, onLabelChange, task, hasCompletedParent, zoom, onUpdateTask } = data;
 
   // ========== CONFIGURABLE STYLING PARAMETERS ==========
   // Reference values
   const referenceSize = 40;  // Base size for calculations
-  
+
   // Shadow base settings
   const shadowConfig = {
     // Normal node shadow
@@ -18,7 +18,7 @@ const RoundedNode = ({ id, data, selected }) => {
     },
     // Completed node shadow
     completed: {
-      borderSize: size / 100,         // Border thickness  
+      borderSize: size / 1,         // Border thickness  
       borderColor: '#9fa3a7',         // Border color
       spreadFactor: 1.0,              // Multiplier for border thickness
     },
@@ -32,17 +32,20 @@ const RoundedNode = ({ id, data, selected }) => {
     },
     // Progress indicator shadow (inside the node)
     progress: {
-      spreadFactor: 0.4,              // How much the progress shadow extends inward
-      blurFactor: 4,                  // How blurry the progress shadow is
-      minSpread: 3,                   // Minimum spread size regardless of zoom
-      minBlur: 2,                     // Minimum blur regardless of zoom
+      spreadFactor: 0.4,                // How much the progress shadow extends inward
+      blurFactor: 4,                    // How blurry the progress shadow is
+      minSpread: 3,                     // Lower minimum to avoid threshold effects
+      minBlur: 2,                       // Minimum blur regardless of zoom
+      zoomDivisor: 200,                 // More balanced zoom sensitivity
+      sizeScale: 0.045,                 // Adjusted for better size proportion
+      zoomCompensation: 0.1,            // NEW: Factor to compensate for zoom changes
     },
     // General shadow settings
     general: {
       baseSpread: 8,                  // Base spread value at reference size
       baseBlur: 2,                    // Base blur value at reference size
       scaleFactor: 0.00001,           // Controls subtle vs pronounced scaling with size
-      zoomDivisor: 4,                 // Higher = less effect from zoom
+      zoomDivisor: 300,                 // Higher = less effect from zoom
     }
   };
 
@@ -55,6 +58,18 @@ const RoundedNode = ({ id, data, selected }) => {
 
   // Check if task is completed (progress = 100%) or has completed parent
   const isCompleted = (task && task.progress === 100) || hasCompletedParent;
+  // Handle checkbox click
+
+  const handleCheckboxClick = (e) => {
+    e.stopPropagation(); // Prevent node selection when clicking checkbox
+    if (task) {
+      const updatedTask = {
+        ...task,
+        progress: isCompleted ? 0 : 100
+      };
+      onUpdateTask(id, updatedTask);
+    }
+  };
 
   // 1) Detect Shift key press/release
   useEffect(() => {
@@ -109,7 +124,7 @@ const RoundedNode = ({ id, data, selected }) => {
   // ========== PROGRESS COLOR FUNCTION ==========
   const getProgressColor = (progress) => {
     const normalizedProgress = Math.max(0, Math.min(100, progress || 0));
-    
+
     if (normalizedProgress < 50) {
       return 'rgb(255, 0, 0)';
     } else if (normalizedProgress < 100) {
@@ -121,30 +136,60 @@ const RoundedNode = ({ id, data, selected }) => {
 
   // ========== SHADOW GENERATION ==========
   const progressValue = task?.progress || 0;
-  const progressColor = getProgressColor(progressValue);
+  let progressColor;
+  let useProgressShadow = true;
 
-  // Progress shadow
-  const progressShadowSpread = Math.max(shadowSpread * borderSize * shadowConfig.progress.spreadFactor, shadowConfig.progress.minSpread);
-  const progressShadowBlur = Math.max(shadowBlur * shadowConfig.progress.blurFactor, shadowConfig.progress.minBlur);
-  const progressShadow = `inset 0 0 ${progressShadowBlur}px ${progressShadowSpread}px ${progressColor}`;
+  // Determine progress color based on completion status
+  if (isCompleted) {
+    // If this task is completed (directly or through parent), use green
+    if (task && task.progress === 100) {
+      progressColor = 'rgb(0, 185, 0)';  // Green for completed tasks
+    } else {
+      // This is a child of completed parent, but not completed itself - no progress shadow
+      useProgressShadow = false;
+      progressColor = 'transparent';
+    }
+  } else {
+    // Normal progress color for incomplete tasks with incomplete parents
+    progressColor = getProgressColor(progressValue);
+  }
+
+  // Add a size factor to maintain shadow proportion at different sizes
+  const zoomCompensationFactor = Math.pow(zoom || 1, shadowConfig.progress.zoomCompensation);
+  const sizeFactor = size * shadowConfig.progress.sizeScale * zoomCompensationFactor;
+
+  // Progress shadow calculation with smoother transitions
+  const progressShadowSpread = Math.max(
+    shadowSpread * borderSize * shadowConfig.progress.spreadFactor + sizeFactor,
+    shadowConfig.progress.minSpread * zoomCompensationFactor
+  );
+
+  const progressShadowBlur = Math.max(
+    shadowBlur * shadowConfig.progress.blurFactor,
+    shadowConfig.progress.minBlur * zoomCompensationFactor
+  );
+
+  const progressShadow = useProgressShadow
+    ? `inset 0 0 ${progressShadowBlur}px ${progressShadowSpread}px ${progressColor}`
+    : '';  // Empty string means no inner shadow
 
   // Highlight shadow
   const highlightSpread = Math.max(shadowSpread * shadowConfig.highlight.spreadFactor, shadowConfig.highlight.minSpread);
   const highlightBlur = Math.max(shadowBlur * shadowConfig.highlight.blurFactor, shadowConfig.highlight.minBlur);
 
-  // Combined shadows
-  const normalShadow = `0 0 0 ${borderSize * shadowConfig.normal.spreadFactor}px ${shadowConfig.normal.borderColor}, ${progressShadow}`;
-  const completedShadow = `0 0 0 ${borderSize * shadowConfig.completed.spreadFactor}px ${shadowConfig.completed.borderColor}, ${progressShadow}`;
-  const highlightShadow = `0 0 ${highlightBlur}px ${highlightSpread}px ${shadowConfig.highlight.color}, ${progressShadow}`;
+  // Combined shadows - add progress shadow only if it should be used
+  const normalShadow = `0 0 0 ${borderSize * shadowConfig.normal.spreadFactor}px ${shadowConfig.normal.borderColor}${useProgressShadow ? ', ' + progressShadow : ''}`;
+  const completedShadow = `0 0 0 ${borderSize * shadowConfig.completed.spreadFactor}px ${shadowConfig.completed.borderColor}${useProgressShadow ? ', ' + progressShadow : ''}`;
+  const highlightShadow = `0 0 ${highlightBlur}px ${highlightSpread}px ${shadowConfig.highlight.color}${useProgressShadow ? ', ' + progressShadow : ''}`;
 
   // ========== NODE STYLES ==========
   const nodeStyle = {
     width: `${size}px`,
     height: `${size}px`,
-    boxShadow: selected 
-      ? highlightShadow 
-      : isCompleted 
-        ? completedShadow 
+    boxShadow: selected
+      ? highlightShadow
+      : isCompleted
+        ? completedShadow
         : normalShadow,
     border: 'none',
     borderRadius: '50%',
@@ -153,7 +198,6 @@ const RoundedNode = ({ id, data, selected }) => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: `${Math.max(size / 8, 1)}px`,
     textAlign: 'center',
     position: 'relative',
     transform: isHovered ? 'scale(1.03)' : 'scale(1)',
@@ -161,6 +205,9 @@ const RoundedNode = ({ id, data, selected }) => {
     cursor: 'move',
     opacity: isCompleted ? 0.8 : 1,
   };
+
+
+
 
   return (
     <div
@@ -183,22 +230,68 @@ const RoundedNode = ({ id, data, selected }) => {
             border: 'none',
             textAlign: 'center',
             background: 'transparent',
-            fontSize: `${size / 8}px`,
+            fontSize: `1000px`,
             outline: 'none',
           }}
         />
       ) : (
+        // Just the label, without the checkbox
         <div
-          style={
-            isCompleted
-              ? {
-                  textDecoration: 'line-through',
-                  textDecorationThickness: `${size / 50}px`,
-                }
-              : {}
-          }
-        >
+        style={{
+          ...(isCompleted ? {
+            textDecoration: 'line-through',
+            textDecorationThickness: `${size / 5000}px`,
+          } : {}),
+          // Add these properties
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transform: `scale(${size / (100 + label.length * 0.8)})`,          transformOrigin: 'center center',
+          
+          hyphens: 'auto',
+          textAlign: 'center',
+          maxWidth: `${size / 700}px`, // Constrains text width for wrapping
+         maxHeight: `${size / 700}px`, // Constrains text height for wrapping
+          overflow: 'hidden', // Prevents overflow beyond constraints
+        }}
+      >
           {label}
+        </div>
+      )}
+
+      {/* Absolutely positioned checkbox at bottom of node */}
+      {!isEditing && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: `${size / 10}px`,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={isCompleted}
+            onChange={handleCheckboxClick}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              cursor: 'pointer',
+              width: `${size / 10}px`,
+              height: `${size / 10}px`,
+              aspectRatio: '1 / 1',
+              accentColor: isCompleted ? 'rgb(0, 185, 0)' : undefined,
+              appearance: 'none',
+              border: 'none', // Remove the default border
+              boxShadow: `inset 0 0 0 ${size / 250}px black`, // Use box-shadow to simulate a thin border
+              backgroundColor: 'white',
+              borderRadius: `${size / 50}px`,
+            }}
+          />
+
         </div>
       )}
 
@@ -241,7 +334,7 @@ const RoundedNode = ({ id, data, selected }) => {
             borderRadius: '50%',
             opacity: 0.8,
             left: '50%',
-            bottom: -handleSize/2,
+            bottom: -handleSize / 2,
             transform: `
               translateX(-50%) 
               scale(${Math.min(Math.max(size / 80, 0.1), 1)})

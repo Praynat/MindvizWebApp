@@ -38,10 +38,10 @@ function MindMappingInner() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [currentZoom, setCurrentZoom] = useState(1);
+  const [currentZoom, setCurrentZoom] = useState(0.75);
   console.log('selectedTask:', selectedTask);
 
-  const { screenToFlowPosition, getViewport } = useReactFlow();
+  const { screenToFlowPosition, getViewport, instance: reactFlowInstance } = useReactFlow();
 
   // ----------------------- Custom hook for tasks -----------------------
   const {
@@ -53,51 +53,54 @@ function MindMappingInner() {
     getAllMyTasks,
   } = useTasks();
 
-  // ----------------------- Node Deletion Handling -----------------------
-  const onNodesDelete = useCallback(
-    async (deletedNodes) => {
-      if (deletedNodes.length === 0) return;
-      
-      const confirmed = window.confirm(
-        `Are you sure you want to delete ${deletedNodes.length} tasks?`
-      );
-      if (!confirmed) return;
   
-      for (const node of deletedNodes) {
-        await handleDeleteCard(node.id, true); 
-      }
-  
-      await getAllMyTasks();
-    },
-    [handleDeleteCard, getAllMyTasks]
-  );
-
   // ----------------------- Layout Initialization Effect -----------------------
-  useEffect(() => {
-    if (containerRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      const containerHeight = containerRef.current.offsetHeight;
-      const containerCenterX = containerWidth / 2;
-      const containerCenterY = containerHeight / 2;
-      const currentTasks = tasks;
-      const { nodes: layoutNodes, edges: layoutEdges } = buildNodesAndEdges(
-        currentTasks,
-        containerCenterX,
-        containerCenterY
-      );
-      setNodes(layoutNodes);
-      setEdges(layoutEdges);
+useEffect(() => {
+  if (containerRef.current) {
+    const containerWidth = containerRef.current.offsetWidth;
+    const containerHeight = containerRef.current.offsetHeight;
+    const containerCenterX = containerWidth / 2;
+    const containerCenterY = containerHeight / 2;
+    const currentTasks = tasks;
+    const { nodes: layoutNodes, edges: layoutEdges } = buildNodesAndEdges(
+      currentTasks,
+      containerCenterX,
+      containerCenterY
+    );
+    setNodes(layoutNodes);
+    setEdges(layoutEdges);    
+  }
+}, [setEdges, setNodes, initializeTasks, tasks, reactFlowInstance]);
+
+// ----------------------- Node Deletion Handling -----------------------
+const onNodesDelete = useCallback(
+  async (deletedNodes) => {
+    if (deletedNodes.length === 0) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${deletedNodes.length} tasks?`
+    );
+    if (!confirmed) return;
+
+    for (const node of deletedNodes) {
+      await handleDeleteCard(node.id, true);
     }
-  }, [setEdges, setNodes, initializeTasks, tasks]);
+
+    await getAllMyTasks();
+  },
+  [handleDeleteCard, getAllMyTasks]
+);
+
+
 
   // ----------------------- Handling Node Connection -----------------------
   const onConnect = useCallback(
     (params) => {
       const parentNode = nodes.find((node) => node.id === params.source);
       if (!parentNode) return;
-      
 
-      
+
+
       setEdges((eds) =>
         addEdge(
           {
@@ -119,15 +122,15 @@ function MindMappingInner() {
       if (!connectionState.isValid) {
         const parentNode = nodes.find((node) => node.id === connectionState.fromNode.id);
         if (!parentNode) return;
-  
+
         const childSize = (parentNode.data?.size || 50) * 0.4;
         const id = getId();
-  
+
         const { clientX, clientY } =
           'changedTouches' in event ? event.changedTouches[0] : event;
-  
+
         const flowPosition = screenToFlowPosition({ x: clientX, y: clientY });
-  
+
         setNodes((nds) => [
           ...nds,
           {
@@ -137,7 +140,7 @@ function MindMappingInner() {
             type: 'rounded',
           },
         ]);
-  
+
         const edgeThickness = (parentNode.data?.size || 10) / 10;
         setEdges((eds) => [
           ...eds,
@@ -146,27 +149,27 @@ function MindMappingInner() {
             source: connectionState.fromNode.id,
             target: id,
             type: 'floating',
-            style: { 
-              stroke: parentNode.data?.task?.progress === 100 ? '#9fa3a7' : '#000', 
-              strokeWidth: edgeThickness 
+            style: {
+              stroke: parentNode.data?.task?.progress === 100 ? '#9fa3a7' : '#000',
+              strokeWidth: edgeThickness
             },
             data: { isSourceCompleted: parentNode.data?.task?.progress === 100 }
           },
         ]);
-  
+
         const newTaskData = {
           name: 'Title',
           parentIds: [parentNode.id],
         };
-  
+
         const createdTask = await handleCreateCard(newTaskData);
         console.log('Created Task:', createdTask);
-  
+
         const updatedParentData = {
           ...parentNode.data.task,
           childrenIds: [...(parentNode.data.task?.childrenIds || []), createdTask._id],
         };
-  
+
         await handleUpdateCard(parentNode.id, updatedParentData);
       }
     },
@@ -228,9 +231,15 @@ function MindMappingInner() {
               ...node.data,
               zoom: currentZoom,
               onLabelChange: (newLabel) => onLabelChange(node.id, newLabel),
+              onUpdateTask: handleUpdateCard,
             },
           };
         })}
+        onMove={(event) => {
+          const viewport = getViewport();
+          setCurrentZoom(viewport.zoom);  
+        }}
+        onlyRenderVisibleElements={true}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
@@ -241,15 +250,20 @@ function MindMappingInner() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         connectionLineComponent={FloatingConnectionLine}
+        onInit={(instance) => {
+          setCurrentZoom(instance.getViewport().zoom);
+        }}
         onWheelCapture={() => {
           // Update zoom on any wheel event
           const viewport = getViewport();
           setCurrentZoom(viewport.zoom);
         }}
-        minZoom={0.1}
-        maxZoom={50}
+        minZoom={0.0005}
+        maxZoom={60}
+        defaultViewport={{ x: 0, y: 0, zoom: 0.75 }}
         multiSelectionKeyCode="Control"
-        selectionKeyCode="Control"
+        fitView={{ padding: 0.2, includeHiddenNodes: true }}
+        fitViewOptions={{ duration: 800 }}
         nodesDraggable
         nodesConnectable
         elementsSelectable
@@ -263,7 +277,7 @@ function MindMappingInner() {
             <TaskDetailsPage
               task={selectedTask}
               allTasks={tasks}
-              onSelectTask={onSelectTaskInFlow} 
+              onSelectTask={onSelectTaskInFlow}
               onUpdateTask={handleUpdateCard}
               mode="sidebar"
               onClose={() => setSelectedTask(null)}

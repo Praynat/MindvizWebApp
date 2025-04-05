@@ -1,4 +1,4 @@
-const BASE_SIZE = 2700;
+const BASE_SIZE = 400000;
 const BASE_RADIUS = 75;
 const CHILD_SIZE_FACTOR = 0.4;
 
