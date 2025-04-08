@@ -144,24 +144,26 @@ export default function useTasks() {
   );
 
   const handleUpdateCard = useCallback(
-    async (taskId, taskFromClient) => {
+    async (taskId, taskFromClient, options = {}) => {
       setIsLoading(true);
       try {
         const updated = await editTask(taskId, normalizeTask(taskFromClient));
+        
+        // Single update that handles both the specific task and the full list
+        const updatedTasks = tasks.map(t => t._id === taskId ? updated : t);
+        setTasks(updatedTasks);
         setTask(updated);
-        setSnack("success", "The task has been successfully updated");
-
-        setTimeout(() => {
-          getAllMyTasks();
-        }, 1000);
-
+        
+        if (!options.silent) {
+          setSnack("success", "The task has been successfully updated");
+        }
       } catch (error) {
         setError(error.message);
       } finally {
         setIsLoading(false);
       }
     },
-    [setSnack,getAllMyTasks]
+    [setSnack, tasks]
   );
 
   async function handleDeleteCard(taskId, skipConfirm = false) {

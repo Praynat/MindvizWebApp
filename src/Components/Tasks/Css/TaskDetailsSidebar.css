@@ -1,21 +1,33 @@
 /* TaskDetailsSidebar.css */
 /* Specific styles for TaskDetails when in "sidebar" mode */
 .task-details.sidebar {
-    width: 300px;
-    height: 100vh;
-    background-color: #f9f9f9;
-    border-left: 1px solid #ddd;
-    position: fixed;
-    right: 0;
-    top: 0;
-    overflow-y: auto;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-    margin-top: 10vh;
-  }
-  .task-details-subtasks {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    }
-      
-  
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  overflow-y: auto;
+  /* Remove any fixed positioning, right:0, top:0 properties */
+}
+
+.task-details.sidebar .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-details.sidebar .close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #555;
+}
+
+.task-details-subtasks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+

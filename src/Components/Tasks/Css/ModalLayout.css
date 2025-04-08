@@ -1,0 +1,117 @@
+/* Modal container styling */
+.task-details.modal {
+  position: relative;
+  width: 550px;
+  max-width: 90vw;
+  max-height: 85vh;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 24px;
+  overflow-y: auto;
+  animation: modal-fade-in 0.3s ease;
+}
+
+/* Header styling */
+.task-details.modal .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.task-details.modal .header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+  flex: 1;
+  word-break: break-word;
+}
+
+/* Close button styling */
+.task-details.modal .close-button {
+  background: none;
+  border: none;
+  color: #777;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 15px;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.task-details.modal .close-button:hover {
+  color: #333;
+}
+
+/* Content sections styling */
+.task-details.modal .description {
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.task-details.modal .metrics,
+.task-details.modal .dates {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+/* Task relationships styling */
+.task-details.modal .relationships {
+  margin-top: 25px;
+}
+
+.task-details.modal .relationships h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+/* Card container for related tasks */
+.task-details.modal .card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Parent and subtask card wrappers */
+.task-details.modal .parent-card-wrapper,
+.task-details.modal .subtask-card-wrapper {
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+/* Disabled task styling */
+.task-details.modal .subtask-card-wrapper.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Animation for modal appearance */
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .task-details.modal {
+    padding: 16px;
+  }
+  
+  .task-details.modal .header h2 {
+    font-size: 20px;
+  }
+}

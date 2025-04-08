@@ -92,7 +92,7 @@
 .tasks.list .list-view {
   list-style-type: none;
   padding: 0;
-  width: 50%; 
+  width: 100%; 
   margin: 0 auto;
   max-width: 600px; 
 }
@@ -246,4 +246,61 @@
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Split-view layout for list view */
+.list-view-container {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.task-list-panel {
+  flex: 0 0 40%;
+  overflow-y: auto;
+  border-right: 1px solid #ddd;
+  padding-right: 10px;
+  height: 100%;
+}
+
+/* Update the task-details-panel styling (around line 251) */
+.task-details-panel {
+  flex: 1;
+  overflow-y: auto;
+  height: 100%;
+  background-color: #f9f9f9;
+  border-left: 1px solid #e0e0e0;
+  display: none; /* Hide by default */
+}
+
+.task-details-panel.open {
+  display: block; /* Show when open */
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Style for selected task in the list */
+.list-item.selected {
+  background-color: #e3f2fd;
+  border-left: 3px solid #2196f3;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .list-view-container {
+    flex-direction: column;
+  }
+  
+  .task-list-panel {
+    flex: 0 0 auto;
+    max-height: 50%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    padding-right: 0;
+    width: 100%;
+  }
+  
+  .task-details-panel {
+    padding-left: 0;
+    padding-top: 10px;
+  }
 }

@@ -12,7 +12,7 @@ const PageLayout = ({
   onViewChange,
   onSelectTask,
   onUpdateTask,
-  task // Current selected task
+  task 
 }) => {
   // Retrieve saved filters from localStorage on initial load
   const getSavedFilters = () => {
@@ -54,8 +54,10 @@ const PageLayout = ({
   });
 
   // Add new state for expanded task and modal
-  const [expandedTaskId, setExpandedTaskId] = useState(null);
   const [modalTask, setModalTask] = useState(null);
+  
+  // State for selected task in list view
+  const [selectedListTask, setSelectedListTask] = useState(null);
   
   // Get the current filter based on view mode
   const getCurrentFilter = () => {
@@ -115,35 +117,30 @@ const PageLayout = ({
   // Handle task selection based on view mode
   const handleTaskSelect = (selectedTask) => {
     if (viewMode === 'list') {
-      // Toggle expansion in list view
-      setExpandedTaskId(expandedTaskId === selectedTask._id ? null : selectedTask._id);
-      
-      // Add auto-scrolling - wait for state update to complete
-      setTimeout(() => {
-        const taskElement = document.getElementById(`task-${selectedTask._id}`);
-        if (taskElement && expandedTaskId !== selectedTask._id) {
-          taskElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      }, 50);
+      // In list view, we select the task to show in the sidebar
+      setSelectedListTask(selectedTask);
     } else {
-      // Show modal in card/kanban view
+      // For card/kanban views, show modal (existing behavior)
       setModalTask(selectedTask);
     }
     
-    // Still call the external handler if provided
+    // Call external handler if provided
     if (onSelectTask) {
       onSelectTask(selectedTask);
     }
   };
   
-  // Close modal
-  const handleCloseModal = () => {
-    setModalTask(null);
+  // Close sidebar in list view
+  const handleCloseSidebar = () => {
+    setSelectedListTask(null);
   };
 
   // Get the current active filters
   const currentFilter = getCurrentFilter();
   const { sortBy, sortDirection, filterName } = currentFilter;
+  const handleCloseModal = () => {
+    setModalTask(null);
+  };
 
   // Apply sorting and filtering to tasks
   const filteredAndSortedTasks = useMemo(() => {
@@ -328,34 +325,46 @@ const PageLayout = ({
 
         <div className={`tasks ${viewMode}`}>
           {viewMode === 'list' && (
-            <ul className="list-view">
-              {filteredAndSortedTasks.map(task => (
-                <li 
-                  key={task._id}
-                  id={`task-${task._id}`} // Add this line
-                  className={`list-item ${expandedTaskId === task._id ? 'expanded' : ''}`}
-                  onClick={() => handleTaskSelect(task)}
-                >
-                  <TaskCard
-                    task={task}
+            <div className="list-view-container">
+              {/* Left side - Task list */}
+              <div className="task-list-panel">
+                <ul className="list-view">
+                  {filteredAndSortedTasks.map(task => (
+                    <li 
+                      key={task._id}
+                      id={`task-${task._id}`}
+                      className={`list-item ${selectedListTask && selectedListTask._id === task._id ? 'selected' : ''}`}
+                      onClick={() => handleTaskSelect(task)}
+                    >
+                      <TaskCard
+                        task={task}
+                        allTasks={tasks}
+                        mode="medium"
+                        onSelectTask={() => handleTaskSelect(task)}
+                        onUpdateTask={onUpdateTask}
+                        isRootTask={!task.parentIds || task.parentIds.length === 0}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              {/* Right side - Task details */}
+              <div className={`task-details-panel ${selectedListTask ? 'open' : ''}`}>
+                {selectedListTask && (
+                  <TaskDetails
+                    task={selectedListTask}
                     allTasks={tasks}
-                    mode={expandedTaskId === task._id ? "full" : "medium"}
-                    onSelectTask={(clickedTask) => {
-                      // If this is a subtask, navigate to it
-                      if (clickedTask._id !== task._id) {
-                        handleTaskSelect(clickedTask);
-                      }
-                      // Otherwise, the main li click handler will toggle expansion
-                    }}
+                    onSelectTask={handleTaskSelect}
                     onUpdateTask={onUpdateTask}
-                    isRootTask={!task.parentIds || task.parentIds.length === 0}
+                    mode="sidebar"
+                    onClose={handleCloseSidebar}
                   />
-                </li>
-              ))}
-            </ul>
+                )}
+              </div>
+            </div>
           )}
           
-          {/* Update other views to use filteredAndSortedTasks too */}
           {viewMode === 'card' && (
             <div className="card-view">
               {filteredAndSortedTasks.map(task => (
