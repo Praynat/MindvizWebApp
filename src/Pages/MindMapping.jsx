@@ -21,8 +21,8 @@ import { buildNodesAndEdges } from '../Helpers/Mindmapping/Edges/layoutHelpers';
 import useTasks from '../Hooks/Tasks/useTasks';
 import './Css/MindMapping.css';
 import { v4 as uuidv4 } from 'uuid';
-import TaskDetailsPage from './Tasks/TaskDetailsPage';
 import OutsideClickHandler from '../Helpers/General/OutsideClickHandler';
+import TaskDetails from '../Components/Tasks/TaskDetails/TaskDetails';
 
 // ===================================================================
 // UTILITY FUNCTION
@@ -274,7 +274,7 @@ const onNodesDelete = useCallback(
       <div className={`sidebar-container ${selectedTask ? 'open' : ''}`}>
         <OutsideClickHandler onOutsideClick={() => setSelectedTask(null)}>
           {selectedTask && (
-            <TaskDetailsPage
+            <TaskDetails
               task={selectedTask}
               allTasks={tasks}
               onSelectTask={onSelectTaskInFlow}

@@ -1,0 +1,395 @@
+/* Base styles for all task cards - Add border */
+.task-card {
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #474747; /* Standard border for all cards */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  position: relative; /* Ensure position context for absolute elements */
+}
+
+.task-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  border-color: #c0c0c0; /* Darker border on hover */
+}
+
+/* Special task styles */
+.task-card.completed {
+  background-color: white;
+  opacity: 0.5;
+  border-color: #4caf50; /* Light green border for completed tasks */
+  border-left: 3px solid #4caf50; /* Green accent on left */
+}
+
+.task-card.overdue {
+  border-color: #e53935; /* Light red border for overdue tasks */
+  border-left: 3px solid #e53935; /* Red accent on left */
+}
+
+.task-checkbox {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.task-title {
+  font-weight: 500;
+  color: #333;
+}
+
+.task-title.completed {
+  text-decoration: line-through;
+  color: #888;
+}
+
+/* Minimal card styles */
+.task-card-minimal {
+  padding: 12px 16px;
+}
+
+.task-card-minimal .task-card-content {
+  display: flex;
+  align-items: center;
+}
+
+/* Medium card styles */
+.task-card-medium {
+  padding: 12px 16px;
+}
+
+.task-card-medium .task-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.task-card-medium .task-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.task-card-medium .task-card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.task-card-medium .task-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.task-card-medium .progress-container {
+  height: 6px;
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.task-card-medium .progress-bar {
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 0.3s ease;
+}
+
+/* Full card styles */
+.task-card-full {
+  padding: 16px;
+}
+
+.task-card-full .task-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.task-card-full .task-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.task-card-full .task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.task-card-full .progress-container {
+  margin-bottom: 15px;
+}
+
+.task-card-full .progress-label {
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.task-card-full .progress-track {
+  height: 8px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.task-card-full .progress-bar {
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 0.3s ease;
+}
+
+.task-card-full .task-card-expanded {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.task-card-full .task-description h4,
+.task-card-full .task-parents h4,
+.task-card-full .task-children h4 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.task-card-full .task-description p {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.task-card-full .related-tasks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.task-card-full .related-task-pill {
+  padding: 3px 10px;
+  background-color: #e3f2fd;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  color: #1976d2;
+  cursor: pointer;
+}
+
+.task-card-full .related-task-pill:hover {
+  background-color: #bbdefb;
+}
+
+.task-card-full .subtasks-list {
+  margin-bottom: 15px;
+}
+
+.task-card-full .subtask-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.task-card-full .subtask-name {
+  cursor: pointer;
+}
+
+.task-card-full .subtask-item.completed .subtask-name {
+  text-decoration: line-through;
+  color: #888;
+}
+
+/* Buttons */
+.edit-button, .expand-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.edit-button:hover, .expand-button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Root task styling */
+.task-card.root-task {
+  background-color: #ffffff;
+  border-color: #c5cae9; /* Light blue-purple border */
+  border: 2px solid #5670c3; /* Main accent color */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.task-card.root-task:hover {
+  background-color: #f0f0f8;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  border-color: #9fa8da; /* Darker blue-purple on hover */
+}
+
+/* Updated root title styling to be centered and larger */
+.root-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #3a3a3a;
+  text-align: center;
+  width: 100%;
+  padding: 5px 0;
+  position: relative;
+}
+
+.root-indicator {
+  position: relative;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  background-color: #5670c3;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  opacity: 0.8;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+/* Specific adjustments for each card type */
+.task-card-minimal.root-task .task-card-content {
+  padding-left: 8px;
+  justify-content: center;
+}
+
+.task-card-medium.root-task .task-card-header {
+  padding-left: 8px;
+  justify-content: center;
+}
+
+.task-card-medium.root-task .task-actions {
+  position: absolute;
+  right: 10px;
+}
+
+.task-card-full.root-task .task-card-header {
+  padding-left: 8px;
+  justify-content: center;
+}
+
+.task-card-full.root-task .task-actions {
+  position: absolute;
+  right: 10px;
+}
+
+/* Hide due date for root tasks */
+.task-card-medium.root-task .due-date,
+.task-card-full.root-task .due-date {
+  display: none;
+}
+
+/* Add special styling for root task progress bars */
+.task-card.root-task .progress-bar {
+  background-color: #5670c3; /* Match the border color */
+}
+
+/* Hide edit button for root tasks */
+.task-card.root-task .edit-button {
+  display: none;
+}
+
+/* Adjust expand button position for full card when there's no edit button */
+.task-card-full.root-task .expand-button {
+  margin-right: 10px;
+}
+
+/* Add subtask special color */
+.task-card.subtask {
+  border-color: #bbdefb; /* Light blue border for subtasks */
+  border-left: 3px solid #2196f3; /* Blue accent on left */
+}
+
+.task-card.subtask:hover {
+  border-color: #90caf9; /* Darker blue on hover */
+}
+
+/* Important task color */
+.task-card.important {
+  border-color: #ffcc80; /* Light orange border for important tasks */
+  border-left: 3px solid #ff9800; /* Orange accent on left */
+}
+
+.task-card.important:hover {
+  border-color: #ffb74d; /* Darker orange on hover */
+}
+
+/* Add these styles for the subtasks grid */
+.subtasks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.subtask-card-wrapper {
+  min-width: 0; /* Prevents overflow in grid layouts */
+}
+
+/* Smaller task cards when used as subtasks */
+.subtask-card-wrapper .task-card-minimal {
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border: 1px solid #2a2a2a;
+  transition: all 0.2s ease;
+}
+
+.subtask-card-wrapper .task-card-minimal:hover {
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Adjust completed styling for subtasks */
+.subtask-card-wrapper .task-card-minimal.completed {
+  background-color: #f0f7f0;
+  border-color: #d0e8d0;
+  opacity: 0.8;
+}
+
+/* Add styles for the parents grid */
+.parents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.parent-card-wrapper {
+  min-width: 0; /* Prevents overflow in grid layouts */
+}
+
+/* Special styling for parent task cards */
+.parent-card-wrapper .task-card-minimal {
+  background-color: #ffffff; /* Subtle warm background to distinguish from subtasks */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border: 2px solid #5670c3;
+  transition: all 0.2s ease;
+}
+
+.parent-card-wrapper .task-card-minimal:hover {
+  background-color: #fff5e6;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Adjust completed styling for parent tasks */
+.parent-card-wrapper .task-card-minimal.completed {
+  background-color: #f0f7f0;
+  border-color: #d0e8d0;
+  border-left: 2px solid #4caf50;
+  opacity: 0.8;
+}
