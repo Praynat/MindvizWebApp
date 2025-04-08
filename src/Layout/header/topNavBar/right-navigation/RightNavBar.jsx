@@ -1,4 +1,4 @@
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton,CircularProgress } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
 import SearchIcon from '@mui/icons-material/Search';
 import { useMyUser } from "../../../../Providers/Users/UserProvider";
@@ -9,7 +9,7 @@ import MoreButton from "./MoreButton";
 
 
 export default function RightNavBar() {
-  const { user } = useMyUser();
+  const { user,loading } = useMyUser();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { theme } = useDarkLightTheme();
   const searchBarRef = useRef(null);
@@ -55,8 +55,14 @@ export default function RightNavBar() {
         </IconButton> */}
 
 
-        {user && <Logged />}
-        {!user && <NotLogged />}
+{loading ? (
+          <CircularProgress size={24} sx={{ mr: 2 }} />
+        ) : (
+          <>
+            {user && <Logged />}
+            {!user && <NotLogged />}
+          </>
+        )}
       </Box>
       <MoreButton />
     </>
