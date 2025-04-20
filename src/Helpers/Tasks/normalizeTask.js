@@ -10,6 +10,7 @@ function normalizeTask(task) {
       type: task.type || 'Simple',
       parentIds: task.parentIds || [],
       childrenIds: task.childrenIds || [],
+      isChecked: typeof task.isChecked === 'boolean' ? task.isChecked : false,
       progress: task.progress || 0,
       weight: task.weight || 1,
       isDeadline: !!task.isDeadline,

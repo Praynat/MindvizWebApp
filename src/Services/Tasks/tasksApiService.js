@@ -58,6 +58,7 @@ export const MyTasks = async () => {
 
   export const editTask = async (taskId, normalizedTask) => {
     try {
+      console.log(`🛰 PUT ${apiUrl}/${taskId} →`, normalizedTask);
       const { data } = await axios.put(`${apiUrl}/${taskId}`, normalizedTask);
       return data;
     } catch (error) {

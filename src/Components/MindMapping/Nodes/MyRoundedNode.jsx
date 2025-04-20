@@ -60,17 +60,17 @@ const RoundedNode = ({ id, data, selected }) => {
   const isCompleted = (task && task.progress === 100) || hasCompletedParent;
   // Handle checkbox click
 
-  const handleCheckboxClick = (e) => {
-    e.stopPropagation(); // Prevent node selection when clicking checkbox
-    if (task) {
-      const updatedTask = {
-        ...task,
-        progress: isCompleted ? 0 : 100
-      };
-      onUpdateTask(id, updatedTask);
-    }
+  // in TaskCard.jsx / MyRoundedNode.jsx / ModalLayout.jsx…
+const handleCheckboxClick = (e) => {
+  e.stopPropagation();
+  const newChecked = !isCompleted;
+  const full = {
+    ...task,           // name, _id, parentIds, childrenIds…
+    isChecked: newChecked
   };
-
+  console.log('PATCH→', full);
+  onUpdateTask(task._id, full);
+};
   // 1) Detect Shift key press/release
   useEffect(() => {
     const handleKeyDown = (event) => {

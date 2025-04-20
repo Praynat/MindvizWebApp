@@ -1,10 +1,10 @@
 import React from 'react';
 
-const TaskCardMinimal = ({ task, isCompleted, onSelectTask, isRootTask, onToggleCompletion }) => {
+const TaskCardMinimal = ({ task, isCompleted, onSelectTask, onToggleCompletion, isRootTask, isSelected }) => {
   return (
     <div 
-      className={`task-card task-card-minimal ${isCompleted ? 'completed' : ''} ${isRootTask ? 'root-task' : ''}`}
-      onClick={() => onSelectTask && onSelectTask(task)}
+      className={`task-card task-card-minimal ${isCompleted ? 'completed' : ''} ${isRootTask ? 'root-task' : ''} ${isSelected ? 'selected' : ''}`}
+      onClick={onSelectTask}
     >
       <div className="task-card-content">
         {!isRootTask && (

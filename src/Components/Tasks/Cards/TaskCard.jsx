@@ -9,65 +9,50 @@ const TaskCard = ({
   allTasks = [], 
   mode = 'minimal', 
   onSelectTask, 
-  onUpdateTask 
+  onUpdateTask,
+  isRootTask,
+  isSelected  // Accept the new prop
 }) => {
-     // Determine if this is a root task (has no parents)
-  const isRootTask = !task.parentIds || task.parentIds.length === 0;
+  // If no isRootTask prop is passed explicitly, compute it as a fallback.
+  const computedIsRootTask = typeof isRootTask !== 'undefined' 
+    ? isRootTask 
+    : (!task.parentIds || task.parentIds.length === 0);
   
-  // Helper functions that can be used by all card types
-  const handleCompletionToggle = (isComplete) => {
-    const updatedTask = {
-      ...task,
-      progress: isComplete ? 100 : 0
+    const handleCompletionToggle = (isComplete) => {
+      onUpdateTask(task._id, { ...task, isChecked: isComplete });
     };
-    onUpdateTask(task._id, updatedTask);
-  };
 
   const isCompleted = task.progress === 100;
 
-  // Select the appropriate card layout based on mode
+  // Prepare a class name that TaskCard variants can use. For example, you might want to
+  // pass both computedIsRootTask (for root styling) and isSelected (for selection styling).
+  const cardProps = {
+    task,
+    isCompleted,
+    onSelectTask,
+    onToggleCompletion: handleCompletionToggle,
+    // Pass computedIsRootTask so your subcomponent can apply “root-task” styling
+    isRootTask: computedIsRootTask,
+    // And pass isSelected to let the subcomponent add a “selected” class.
+    isSelected
+  };
+
+  // Select the appropriate card layout based on mode.
   switch (mode) {
     case 'minimal':
-      return (
-        <TaskCardMinimal 
-          task={task} 
-          isCompleted={isCompleted}
-          onSelectTask={onSelectTask}
-          isRootTask={isRootTask}
-          onToggleCompletion={handleCompletionToggle}
-        />
-      );
+      return <TaskCardMinimal {...cardProps} />;
     case 'medium':
-      return (
-        <TaskCardMedium 
-          task={task} 
-          isCompleted={isCompleted}
-          onSelectTask={onSelectTask}
-          isRootTask={isRootTask}
-          onToggleCompletion={handleCompletionToggle}
-        />
-      );
+      return <TaskCardMedium {...cardProps} />;
     case 'full':
       return (
         <TaskCardFull 
-          task={task} 
+          {...cardProps} 
           allTasks={allTasks}
-          isRootTask={isRootTask}
-          isCompleted={isCompleted}
-          onSelectTask={onSelectTask}
-          onToggleCompletion={handleCompletionToggle}
           onUpdateTask={onUpdateTask}
         />
       );
     default:
-      return (
-        <TaskCardMinimal 
-          task={task} 
-          isCompleted={isCompleted}
-          onSelectTask={onSelectTask}
-          onToggleCompletion={handleCompletionToggle}
-        />
-      );
+      return <TaskCardMinimal {...cardProps} />;
   }
 };
 

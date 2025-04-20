@@ -8,7 +8,8 @@ const TaskCardFull = ({
   onSelectTask, 
   onToggleCompletion,
   onUpdateTask,
-  isRootTask
+  isRootTask,
+  isSelected
 }) => {
   
   const dueDate = task.endDate ? new Date(task.endDate).toLocaleDateString() : 'No due date';
@@ -28,7 +29,7 @@ const TaskCardFull = ({
     [];
 
   return (
-    <div className={`task-card task-card-full ${isCompleted ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${isRootTask ? 'root-task' : ''}`}>
+    <div className={`task-card task-card-full ${isCompleted ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${isRootTask ? 'root-task' : ''} ${isSelected ? 'selected' : ''}`}>
       <div className="task-card-header">
         {!isRootTask && (
           <input
@@ -89,11 +90,7 @@ const TaskCardFull = ({
                     isCompleted={parent.progress === 100}
                     onSelectTask={() => onSelectTask && onSelectTask(parent)}
                     onToggleCompletion={(checked) => {
-                      const updatedParent = {
-                        ...parent,
-                        progress: checked ? 100 : 0
-                      };
-                      onUpdateTask(parent._id, updatedParent);
+                      onUpdateTask(parent._id, { ...parent, isChecked: checked });
                     }}
                     isRootTask={!parent.parentIds || parent.parentIds.length === 0}
                   />
@@ -114,11 +111,7 @@ const TaskCardFull = ({
                     isCompleted={subtask.progress === 100}
                     onSelectTask={() => onSelectTask && onSelectTask(subtask)}
                     onToggleCompletion={(checked) => {
-                      const updatedSubtask = {
-                        ...subtask,
-                        progress: checked ? 100 : 0
-                      };
-                      onUpdateTask(subtask._id, updatedSubtask);
+                      onUpdateTask(subtask._id, { ...subtask, isChecked: checked });
                     }}
                     isRootTask={false}
                   />

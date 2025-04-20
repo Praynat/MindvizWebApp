@@ -1,9 +1,11 @@
+// Imports
 import React, { useState, useEffect, useMemo } from 'react';
 import Sidebar from '../ListView/Sidebar';
 import TaskCard from '../Cards/TaskCard';
 import TaskDetails from '../TaskDetails/TaskDetails';
 import '../Css/PageLayout.css';
 
+// Component Definition
 const PageLayout = ({
   tasks,
   categories,
@@ -14,7 +16,8 @@ const PageLayout = ({
   onUpdateTask,
   task 
 }) => {
-  // Retrieve saved filters from localStorage on initial load
+
+  // Retrieve Saved Filters
   const getSavedFilters = () => {
     try {
       const savedFilters = localStorage.getItem('mindviz_filters');
@@ -25,7 +28,7 @@ const PageLayout = ({
     }
   };
 
-  // Setup states with persisted values
+  // Initialize States
   const [viewMode, setViewMode] = useState(() => {
     const saved = getSavedFilters();
     return saved?.viewMode || 'list';
@@ -52,14 +55,11 @@ const PageLayout = ({
     const saved = getSavedFilters();
     return saved?.syncFilters || false;
   });
-
-  // Add new state for expanded task and modal
+  
   const [modalTask, setModalTask] = useState(null);
-  
-  // State for selected task in list view
   const [selectedListTask, setSelectedListTask] = useState(null);
-  
-  // Get the current filter based on view mode
+
+  // Filter Functions
   const getCurrentFilter = () => {
     switch (viewMode) {
       case 'list': return listFilters;
@@ -69,17 +69,13 @@ const PageLayout = ({
     }
   };
 
-  // Update the current filter
   const updateCurrentFilter = (updates) => {
     const newFilter = { ...getCurrentFilter(), ...updates };
-    
     if (syncFilters) {
-      // Update all filters when sync is enabled
       setListFilters(newFilter);
       setCardFilters(newFilter);
       setKanbanFilters(newFilter);
     } else {
-      // Update only the current view's filter
       switch (viewMode) {
         case 'list':
           setListFilters(newFilter);
@@ -96,7 +92,7 @@ const PageLayout = ({
     }
   };
 
-  // Save filters to localStorage whenever they change
+  // Persist Filters to localStorage
   useEffect(() => {
     const filtersToSave = {
       viewMode,
@@ -105,109 +101,193 @@ const PageLayout = ({
       kanban: kanbanFilters,
       syncFilters
     };
-    
     localStorage.setItem('mindviz_filters', JSON.stringify(filtersToSave));
   }, [viewMode, listFilters, cardFilters, kanbanFilters, syncFilters]);
 
+  // View and Task Handlers
   const handleViewChange = (mode) => {
     setViewMode(mode);
     if (onViewChange) onViewChange(mode);
   };
 
-  // Handle task selection based on view mode
   const handleTaskSelect = (selectedTask) => {
     if (viewMode === 'list') {
-      // In list view, we select the task to show in the sidebar
       setSelectedListTask(selectedTask);
     } else {
-      // For card/kanban views, show modal (existing behavior)
       setModalTask(selectedTask);
     }
-    
-    // Call external handler if provided
     if (onSelectTask) {
       onSelectTask(selectedTask);
     }
   };
   
-  // Close sidebar in list view
   const handleCloseSidebar = () => {
     setSelectedListTask(null);
   };
 
-  // Get the current active filters
   const currentFilter = getCurrentFilter();
   const { sortBy, sortDirection, filterName } = currentFilter;
   const handleCloseModal = () => {
     setModalTask(null);
   };
 
-  // Apply sorting and filtering to tasks
+  // Filter and Sort Tasks
   const filteredAndSortedTasks = useMemo(() => {
     if (!tasks) return [];
     
-    // First filter by name if filter is set
-    let result = filterName 
-      ? tasks.filter(t => t.name.toLowerCase().includes(filterName.toLowerCase()))
-      : [...tasks];
+    let result = [...tasks];
     
-    // Then sort according to selected option
-    switch (sortBy) {
-      case 'alphabetical':
-        result.sort((a, b) => {
-          const nameA = a.name.toLowerCase();
-          const nameB = b.name.toLowerCase();
-          return sortDirection === 'asc' 
-            ? nameA.localeCompare(nameB) 
-            : nameB.localeCompare(nameA);
-        });
-        break;
-      case 'date':
-        result.sort((a, b) => {
-          const dateA = new Date(a.createdAt || 0);
-          const dateB = new Date(b.createdAt || 0);
-          return sortDirection === 'asc' 
-            ? dateA - dateB 
-            : dateB - dateA;
-        });
-        break;
-      case 'hierarchy':
-        // Get top-level tasks first, then children
-        const rootTasks = result.filter(t => !t.parentIds || t.parentIds.length === 0);
-        const childTasks = result.filter(t => t.parentIds && t.parentIds.length > 0);
-        
-        rootTasks.sort((a, b) => a.name.localeCompare(b.name));
-        childTasks.sort((a, b) => a.name.localeCompare(b.name));
-        
-        // Always put root tasks first for hierarchy sorting, regardless of direction
-        if (sortDirection === 'desc') {
-          rootTasks.reverse();
-          childTasks.reverse();
+    // Apply name filter if set.
+    if (filterName) {
+      result = result.filter(t => t.name.toLowerCase().includes(filterName.toLowerCase()));
+    }
+    
+    // If a sidebar selection exists (i.e. a parent task is selected)…
+    if (currentFilter.filterTaskId) {
+      // Collect the parent and all its descendants.
+      const taskIds = new Set();
+      const collectTaskIds = (taskId) => {
+        const task = tasks.find(t => t._id === taskId);
+        if (task) {
+          taskIds.add(task._id);
+          if (task.childrenIds && task.childrenIds.length > 0) {
+            task.childrenIds.forEach(childId => collectTaskIds(childId));
+          }
         }
-        result = [...rootTasks, ...childTasks];
-        break;
-      default:
-        // Handle any unexpected sort values - use hierarchy as default
-        const defaultRootTasks = result.filter(t => !t.parentIds || t.parentIds.length === 0);
-        const defaultChildTasks = result.filter(t => t.parentIds && t.parentIds.length > 0);
-        
-        defaultRootTasks.sort((a, b) => a.name.localeCompare(b.name));
-        defaultChildTasks.sort((a, b) => a.name.localeCompare(b.name));
-        
-        result = [...defaultRootTasks, ...defaultChildTasks];
-        break;
+      };
+      collectTaskIds(currentFilter.filterTaskId);
+      
+      // Only include tasks in this set.
+      result = result.filter(task => taskIds.has(task._id));
+      
+      // Extract the parent's task.
+      const parentTask = result.find(task => task._id === currentFilter.filterTaskId);
+      // Remove the parent temporarily.
+      result = result.filter(task => task._id !== currentFilter.filterTaskId);
+      
+      // Now sort the remaining tasks based on your chosen sort.
+      switch (sortBy) {
+        case 'alphabetical':
+          result.sort((a, b) => {
+            const nameA = a.name.toLowerCase();
+            const nameB = b.name.toLowerCase();
+            return sortDirection === 'asc'
+              ? nameA.localeCompare(nameB)
+              : nameB.localeCompare(nameA);
+          });
+          break;
+        case 'date':
+          result.sort((a, b) => {
+            const dateA = new Date(a.createdAt || 0);
+            const dateB = new Date(b.createdAt || 0);
+            return sortDirection === 'asc'
+              ? dateA - dateB
+              : dateB - dateA;
+          });
+          break;
+        case 'hierarchy':
+          const rootTasks = result.filter(t => !t.parentIds || t.parentIds.length === 0);
+          const childTasks = result.filter(t => t.parentIds && t.parentIds.length > 0);
+          rootTasks.sort((a, b) => a.name.localeCompare(b.name));
+          childTasks.sort((a, b) => a.name.localeCompare(b.name));
+          if (sortDirection === 'desc') {
+            rootTasks.reverse();
+            childTasks.reverse();
+          }
+          result = [...rootTasks, ...childTasks];
+          break;
+        default:
+          const defaultRootTasks = result.filter(t => !t.parentIds || t.parentIds.length === 0);
+          const defaultChildTasks = result.filter(t => t.parentIds && t.parentIds.length > 0);
+          defaultRootTasks.sort((a, b) => a.name.localeCompare(b.name));
+          defaultChildTasks.sort((a, b) => a.name.localeCompare(b.name));
+          result = [...defaultRootTasks, ...defaultChildTasks];
+          break;
+      }
+      
+      // Finally, put the parent's task at the very beginning.
+      if (parentTask) {
+        result.unshift(parentTask);
+      }
+      
+    } else {
+      // If no sidebar selection, apply sorting normally to the entire result.
+      switch (sortBy) {
+        case 'alphabetical':
+          result.sort((a, b) => {
+            const nameA = a.name.toLowerCase();
+            const nameB = b.name.toLowerCase();
+            return sortDirection === 'asc'
+              ? nameA.localeCompare(nameB)
+              : nameB.localeCompare(nameA);
+          });
+          break;
+        case 'date':
+          result.sort((a, b) => {
+            const dateA = new Date(a.createdAt || 0);
+            const dateB = new Date(b.createdAt || 0);
+            return sortDirection === 'asc'
+              ? dateA - dateB
+              : dateB - dateA;
+          });
+          break;
+        case 'hierarchy':
+          const rootTasks = result.filter(t => !t.parentIds || t.parentIds.length === 0);
+          const childTasks = result.filter(t => t.parentIds && t.parentIds.length > 0);
+          rootTasks.sort((a, b) => a.name.localeCompare(b.name));
+          childTasks.sort((a, b) => a.name.localeCompare(b.name));
+          if (sortDirection === 'desc') {
+            rootTasks.reverse();
+            childTasks.reverse();
+          }
+          result = [...rootTasks, ...childTasks];
+          break;
+        default:
+          const defaultRootTasks = result.filter(t => !t.parentIds || t.parentIds.length === 0);
+          const defaultChildTasks = result.filter(t => t.parentIds && t.parentIds.length > 0);
+          defaultRootTasks.sort((a, b) => a.name.localeCompare(b.name));
+          defaultChildTasks.sort((a, b) => a.name.localeCompare(b.name));
+          result = [...defaultRootTasks, ...defaultChildTasks];
+          break;
+      }
     }
     
     return result;
-  }, [tasks, sortBy, sortDirection, filterName]);
+  }, [tasks, currentFilter, filterName, sortBy, sortDirection]);
+  
+  
+  // Build Task Hierarchy
+  const buildTaskHierarchy = (parentTask) => {
+    if (!parentTask) return null;
+    const children = tasks ? tasks.filter(t => t.parentIds && t.parentIds.includes(parentTask._id)) : [];
+    return {
+      ...parentTask,
+      subCategories: children.length > 0 ? children.map(child => buildTaskHierarchy(child)) : []
+    };
+  };
 
+  const rootTasks = tasks ? tasks.filter(task => !task.parentIds || task.parentIds.length === 0) : [];
+  const taskHierarchy = rootTasks.map(buildTaskHierarchy);
+
+  // Render Component
   return (
     <div className="page-layout">
-      <Sidebar categories={categories} />
-
+      <Sidebar 
+        categories={taskHierarchy} 
+        onFilterSelect={(selectedTask) => {
+          if (selectedTask === null) {
+            updateCurrentFilter({ filterTaskId: null });
+            setSelectedListTask(null);
+          } else {
+            updateCurrentFilter({ filterTaskId: selectedTask._id });
+            setSelectedListTask(selectedTask);
+          }
+        }}
+        
+        selectedItemId={currentFilter.filterTaskId}
+      />
       <main className="main-content">
         <div className="toolbar">
-          {/* View toggle buttons on the left */}
           <div className="view-toggle">
             <button 
               className={viewMode === 'list' ? 'active' : ''} 
@@ -225,8 +305,6 @@ const PageLayout = ({
               Kanban
             </button>
           </div>
-          
-          {/* Action buttons on the right */}
           <div className="action-buttons">
             <button onClick={() => setFilterVisible(!filterVisible)}>
               <i className="icon-filter" /> Filters
@@ -236,7 +314,6 @@ const PageLayout = ({
             </button>
           </div>
         </div>
-
         {filterVisible && (
           <div className="filter-options">
             <div className="filter-section">
@@ -250,7 +327,6 @@ const PageLayout = ({
                 />
               </label>
             </div>
-            
             <div className="filter-section">
               <label>
                 Sort By:
@@ -263,7 +339,6 @@ const PageLayout = ({
                   <option value="date">Creation Date</option>
                 </select>
               </label>
-              
               <div className="sort-direction">
                 <label>
                   <input 
@@ -271,9 +346,7 @@ const PageLayout = ({
                     checked={sortDirection === 'asc'} 
                     onChange={() => updateCurrentFilter({ sortDirection: 'asc' })}
                   />
-                  {sortBy === 'alphabetical' ? 'A to Z' : 
-                   sortBy === 'date' ? 'Oldest First' : 
-                   'Ascending'}
+                  {sortBy === 'alphabetical' ? 'A to Z' : sortBy === 'date' ? 'Oldest First' : 'Ascending'}
                 </label>
                 <label>
                   <input 
@@ -281,33 +354,27 @@ const PageLayout = ({
                     checked={sortDirection === 'desc'} 
                     onChange={() => updateCurrentFilter({ sortDirection: 'desc' })}
                   />
-                  {sortBy === 'alphabetical' ? 'Z to A' : 
-                   sortBy === 'date' ? 'Newest First' : 
-                   'Descending'}
+                  {sortBy === 'alphabetical' ? 'Z to A' : sortBy === 'date' ? 'Newest First' : 'Descending'}
                 </label>
               </div>
             </div>
-            
             <div className="filter-section sync-option">
               <label className="checkbox-label">
                 <input 
                   type="checkbox"
                   checked={syncFilters}
                   onChange={() => {
-                    // If turning on sync, immediately apply current filter to all views
                     if (!syncFilters) {
                       const currentFilter = getCurrentFilter();
                       setListFilters(currentFilter);
                       setCardFilters(currentFilter);
                       setKanbanFilters(currentFilter);
                     }
-                    // Toggle the sync setting
                     setSyncFilters(!syncFilters);
                   }}
                 />
                 Apply filters to all views
               </label>
-              
               <button 
                 className="reset-filters-btn"
                 onClick={() => {
@@ -322,11 +389,9 @@ const PageLayout = ({
             </div>
           </div>
         )}
-
         <div className={`tasks ${viewMode}`}>
           {viewMode === 'list' && (
             <div className="list-view-container">
-              {/* Left side - Task list */}
               <div className="task-list-panel">
                 <ul className="list-view">
                   {filteredAndSortedTasks.map(task => (
@@ -343,13 +408,12 @@ const PageLayout = ({
                         onSelectTask={() => handleTaskSelect(task)}
                         onUpdateTask={onUpdateTask}
                         isRootTask={!task.parentIds || task.parentIds.length === 0}
-                      />
+                        isSelected={currentFilter.filterTaskId === task._id}
+                        />
                     </li>
                   ))}
                 </ul>
               </div>
-              
-              {/* Right side - Task details */}
               <div className={`task-details-panel ${selectedListTask ? 'open' : ''}`}>
                 {selectedListTask && (
                   <TaskDetails
@@ -364,11 +428,9 @@ const PageLayout = ({
               </div>
             </div>
           )}
-          
           {viewMode === 'card' && (
             <div className="card-view">
               {filteredAndSortedTasks.map(task => (
-                // Card view implementation
                 <div key={task._id} className="card-item">
                   <TaskCard
                     task={task}
@@ -377,15 +439,14 @@ const PageLayout = ({
                     onSelectTask={handleTaskSelect}
                     onUpdateTask={onUpdateTask}
                     isRootTask={!task.parentIds || task.parentIds.length === 0}
-                  />
+                    isSelected={currentFilter.filterTaskId === task._id}
+                    />
                 </div>
               ))}
             </div>
           )}
-          
           {viewMode === 'kanban' && (
             <div className="kanban-view">
-              {/* Kanban columns remain filtered by progress */}
               <div className="kanban-column">
                 <h5>To Do</h5>
                 <div className="kanban-cards-container">
@@ -400,12 +461,12 @@ const PageLayout = ({
                           onSelectTask={handleTaskSelect}
                           onUpdateTask={onUpdateTask}
                           isRootTask={!task.parentIds || task.parentIds.length === 0}
-                        />
+                          isSelected={currentFilter.filterTaskId === task._id}
+                          />
                       </div>
                     ))}
                 </div>
               </div>
-              
               <div className="kanban-column">
                 <h5>In Progress</h5>
                 <div className="kanban-cards-container">
@@ -420,12 +481,12 @@ const PageLayout = ({
                           onSelectTask={handleTaskSelect}
                           onUpdateTask={onUpdateTask}
                           isRootTask={!task.parentIds || task.parentIds.length === 0}
-                        />
+                          isSelected={currentFilter.filterTaskId === task._id}
+                          />
                       </div>
                     ))}
                 </div>
               </div>
-              
               <div className="kanban-column">
                 <h5>Done</h5>
                 <div className="kanban-cards-container">
@@ -440,7 +501,8 @@ const PageLayout = ({
                           onSelectTask={handleTaskSelect}
                           onUpdateTask={onUpdateTask}
                           isRootTask={!task.parentIds || task.parentIds.length === 0}
-                        />
+                          isSelected={currentFilter.filterTaskId === task._id}
+                          />
                       </div>
                     ))}
                 </div>
@@ -448,8 +510,6 @@ const PageLayout = ({
             </div>
           )}
         </div>
-        
-        {/* Task Details Modal for Card and Kanban views */}
         {modalTask && (
           <div className="modal-overlay" onClick={handleCloseModal}>
             <div className="task-details-modal" onClick={(e) => e.stopPropagation()}>

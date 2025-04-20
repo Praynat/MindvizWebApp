@@ -1,52 +1,128 @@
+/* Sidebar Container */
 .sidebar {
-    width: 250px;
-    background-color: #2c3e50;
-    color: white;
-    padding: 20px;
-    height: 100%;
-    overflow-y: auto;
-  }
-  
-  .folders {
-    margin-top: 20px;
-  }
-  
-  .folder {
-    margin-bottom: 15px;
-  }
-  
-  .folder h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
-    font-weight: 500;
-  }
-  
-  .sidebar-item {
-    margin-bottom: 5px;
-  }
-  
-  .item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .item-header:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  
-  .collapse-btn {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .sub-items {
-    margin-left: 15px;
-    margin-top: 5px;
-  }
+  width: 250px;
+  background-color: #f7f7f7;
+  border-right: 1px solid #e0e0e0;
+  height: 100%;
+  overflow-y: auto;
+}
+.sidebar-items {
+  padding: 8px 0;
+}
+
+/* Sidebar Item Base Style */
+.sidebar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  padding-left: 16px;
+}
+
+/* Header and Title Styles */
+.item-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 16px;
+  box-sizing: border-box;
+}
+.item-header:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.item-title {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.all-tasks {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Collapse Button and List Icon */
+.collapse-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 30px;
+  margin-right: 5px;
+  margin-left: -10px;
+  padding: 0 5px;
+  color: #888;
+}
+.list-icon {
+  font-size: 30px;
+  margin-right: 8px;
+  color: #888;
+  width: 12px;
+  display: inline-block;
+  text-align: center;
+}
+
+/* Sub-items Styles */
+.sub-items {
+  position: relative;
+  margin-left: 0;
+  padding-left: 16px;
+}
+
+/* Folder and Child Count Styles */
+.folders {
+  margin-top: 20px;
+}
+.folder {
+  margin-bottom: 15px;
+}
+.folder h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.child-count-badge {
+  background-color: #e0e0e0;
+  color: #444;
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-size: 0.7rem;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+}
+.sidebar-item.all-tasks .item-title {
+  display: flex;
+  align-items: center;
+}
+
+/* Selected Item Styles */
+.sidebar-item.selected > .item-header {
+  background-color: #e8f0fd;
+  border-left: 3px solid #4285f4;
+  font-weight: 500;
+}
+.sidebar-item.selected > .item-header .item-title {
+  color: #4285f4;
+}
+.sidebar-item.selected .list-icon,
+.sidebar-item.selected .collapse-btn {
+  color: #4285f4;
+}
+.sidebar-item.selected > .sub-items {
+  border-left: 3px solid #4285f4;
+  padding-left: 16px;
+  margin-left: 0;
+}
+.sidebar-item.selected > .sub-items .sidebar-item {
+  padding-left: 13px;
+}
+
+/* Divider Styles */
+.child-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 4px 0;
+}

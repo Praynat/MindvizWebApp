@@ -98,7 +98,8 @@
 }
 
 .list-item {
-  padding: 5px;
+  padding: 0px;
+  margin: 5px 0;
   background-color: transparent;
   border-radius: 5px;
   transition: all 0.3s ease;
@@ -280,8 +281,9 @@
 
 /* Style for selected task in the list */
 .list-item.selected {
-  background-color: #e3f2fd;
-  border-left: 3px solid #2196f3;
+  background-color: #eaf4fc;
+  border: 2px solid #2196f3;
+  border-radius: 10px;
 }
 
 /* Responsive adjustments for mobile */

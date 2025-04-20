@@ -35,14 +35,9 @@ const ModalLayout = ({ task, allTasks, onSelectTask, onUpdateTask, onClose }) =>
 
   // Handle task completion toggle
   const handleCompletionToggle = (childId, isComplete) => {
-    const taskToUpdate = allTasks.find((t) => t._id === childId);
-    if (taskToUpdate) {
-      const updatedTask = {
-        ...taskToUpdate,
-        progress: isComplete ? 100 : 0
-      };
-      onUpdateTask(childId, updatedTask, { silent: true });
-    }
+    const childTask = allTasks.find((t) => t._id === childId);
+    if (!childTask) return;
+    onUpdateTask(childId, { ...childTask, isChecked: isComplete }, { silent: true });
   };
 
   return (

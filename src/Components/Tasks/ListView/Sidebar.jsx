@@ -2,17 +2,18 @@ import React from 'react';
 import SidebarItem from './SidebarItem';
 import '../Css/Sidebar.css';
 
-const Sidebar = ({ categories = [] }) => {
+const Sidebar = ({ categories = [], onFilterSelect, selectedItemId }) => {
   return (
     <aside className="sidebar">
-      <div className="folders">
-        {categories.map(category => (
-          <div key={category._id || category.id} className="folder">
-            <h3>{category.name}</h3>
-            {category.items && category.items.map(item => (
-              <SidebarItem key={item._id || item.id} item={item} />
-            ))}
-          </div>
+      <div className="sidebar-items">
+        {/* Main categories - limit to first 7 if needed */}
+        {categories.slice(0, 7).map(category => (
+          <SidebarItem 
+            key={category._id || category.id} 
+            item={category} 
+            onFilterSelect={onFilterSelect}
+            selectedItemId={selectedItemId}
+          />
         ))}
       </div>
     </aside>

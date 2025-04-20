@@ -12,7 +12,6 @@
 
 .task-card:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
   border-color: #c0c0c0; /* Darker border on hover */
 }
 
@@ -392,4 +391,15 @@
   border-color: #d0e8d0;
   border-left: 2px solid #4caf50;
   opacity: 0.8;
+}
+
+/* Selected task styling */
+.task-card.selected {
+  border: 2px solid #3f51b5;
+  box-shadow: 0 0 8px rgba(63, 81, 181, 0.4);
+  transform: translateY(-2px);
+}
+
+.task-card.selected:hover {
+  border-color: #303f9f;
 }

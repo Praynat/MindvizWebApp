@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TaskCardMedium = ({ task, isCompleted, onSelectTask, onToggleCompletion, isRootTask }) => {
+const TaskCardMedium = ({ task, isCompleted, onSelectTask, onToggleCompletion, isRootTask, isSelected }) => {
   const dueDate = task.endDate ? new Date(task.endDate).toLocaleDateString() : 'No due date';
   
   // Calculate if task is overdue
@@ -8,7 +8,7 @@ const TaskCardMedium = ({ task, isCompleted, onSelectTask, onToggleCompletion, i
 
   return (
     <div 
-      className={`task-card task-card-medium ${isCompleted ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${isRootTask ? 'root-task' : ''}`}
+      className={`task-card task-card-medium ${isCompleted ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${isRootTask ? 'root-task' : ''} ${isSelected ? 'selected' : ''}`}
       onClick={() => onSelectTask && onSelectTask(task)}
     >
       <div className="task-card-header">
