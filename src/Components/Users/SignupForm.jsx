@@ -1,6 +1,6 @@
 import React from "react";
 import ROUTES from "../../Routes/routesModel";
-import { Grid2, FormControlLabel, Checkbox } from "@mui/material";
+import { Grid, FormControlLabel, Checkbox } from "@mui/material";
 import { useDarkLightTheme } from "../../Theme/ThemeProvider";
 import Form from "../Forms/Form";
 import Input from "../Forms/Input";
@@ -26,8 +26,8 @@ export default function SignupForm({
       styles={{ maxWidth: "800px" }}
       to={ROUTES.ROOT}
     >
-      <Grid2 container spacing={2} sx={{mt:"10px"}}>
-        <Grid2 item xs={12} sm={5}>
+      <Grid container spacing={2} sx={{mt:"10px"}}>
+        <Grid item xs={12} sm={5}>
           <Input
             name="first"
             label="First Name"
@@ -35,9 +35,9 @@ export default function SignupForm({
             onChange={onChange}
         data={data}
           />
-        </Grid2>
+        </Grid>
         
-        <Grid2 item xs={12} sm={3}>
+        <Grid item xs={12} sm={3}>
           <Input
             name="middle"
             label="Middle Name"
@@ -46,9 +46,9 @@ export default function SignupForm({
             data={data}
             required={false}
           />
-        </Grid2>
+        </Grid>
 
-        <Grid2 item xs={12} sm={4}>
+        <Grid item xs={12} sm={4}>
           <Input
             name="last"
             label="Last Name"
@@ -56,9 +56,9 @@ export default function SignupForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
+        </Grid>
 
-        <Grid2 item xs={12} sm={3}>
+        <Grid item xs={12} sm={3}>
           <Input
             name="phone"
             label="Phone"
@@ -67,8 +67,8 @@ export default function SignupForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2 item xs={12} sm={6}>
+        </Grid>
+        <Grid item xs={12} sm={6}>
           <Input
             name="email"
             label="Email"
@@ -77,8 +77,8 @@ export default function SignupForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2 item xs={12} sm={3}>
+        </Grid>
+        <Grid item xs={12} sm={3}>
           <Input
             name="password"
             label="password"
@@ -88,9 +88,9 @@ export default function SignupForm({
             data={data}
             sm={6}
          />
-        </Grid2>
+        </Grid>
 
-        <Grid2 item xs={12} sm={5}>
+        <Grid item xs={12} sm={5}>
           <Input
             label="Country"
             name="country"
@@ -98,8 +98,8 @@ export default function SignupForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2 item xs={12} sm={2}>
+        </Grid>
+        <Grid item xs={12} sm={2}>
           <Input
             name="state"
             label="State"
@@ -108,8 +108,8 @@ export default function SignupForm({
             data={data}
             required={false}
           />
-         </Grid2>
-        <Grid2 item xs={12} sm={5}>
+         </Grid>
+        <Grid item xs={12} sm={5}>
           <Input
             name="city"
             label="City"
@@ -117,9 +117,9 @@ export default function SignupForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
+        </Grid>
 
-        <Grid2 item xs={12} sm={6}>
+        <Grid item xs={12} sm={6}>
           <Input
             name="street"
             label="Street"
@@ -127,8 +127,8 @@ export default function SignupForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2 item xs={12} sm={3}>
+        </Grid>
+        <Grid item xs={12} sm={3}>
           <Input
             name="houseNumber"
             label="House Number"
@@ -137,8 +137,8 @@ export default function SignupForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2 item xs={12} sm={3}>
+        </Grid>
+        <Grid item xs={12} sm={3}>
           <Input
             name="zip"
             label="Zip"
@@ -147,9 +147,9 @@ export default function SignupForm({
             data={data}
             required={false}
           />
-        </Grid2>
+        </Grid>
 
-        <Grid2 item xs={12} sm={9}>
+        <Grid item xs={12} sm={9}>
           <Input
             name="url"
             label="Image URL"
@@ -158,8 +158,8 @@ export default function SignupForm({
             data={data}
             required={true}
           />
-        </Grid2>
-        <Grid2 item xs={12} sm={3}>
+        </Grid>
+        <Grid item xs={12} sm={3}>
           <Input
             name="alt"
             label="Image Alt"
@@ -168,9 +168,9 @@ export default function SignupForm({
             data={data}
             required={true}
           />
-        </Grid2>
+        </Grid>
 
-        <Grid2 item xs={12}>
+        <Grid item xs={12}>
           <FormControlLabel
             onChange={handleCheckboxChange}
             name="isBusiness"
@@ -178,8 +178,8 @@ export default function SignupForm({
             label="Signup as business"
             sx={{color:theme.strongTextColor}}
           />
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     </Form>
   );
 }

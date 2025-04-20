@@ -1,5 +1,5 @@
 import React from "react";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import FormButton from "./FormButton";
 import { useNavigate } from "react-router-dom";
@@ -34,20 +34,20 @@ const Form = ({
         {title.charAt(0).toUpperCase() + title.slice(1)}
       </Typography>
 
-      <Grid2 container spacing={spacing} sx={{mb:"0px"}}>
+      <Grid container spacing={spacing} sx={{mb:"0px"}}>
         {children}
-      </Grid2>
+      </Grid>
 
-      <Grid2 container spacing={1} my={2} direction="row" width="100">
-      <Grid2  xs={12}>
+      <Grid container spacing={1} my={2} direction="row" width="100">
+      <Grid  xs={12}>
           <FormButton
             node="Submit"
             onClick={onSubmit}
             disabled={!validateForm}
             size="large"
           />
-        </Grid2>
-        <Grid2  xs={12} sm={6}>
+        </Grid>
+        <Grid  xs={12} sm={6}>
           <FormButton
             node="cancel"
             color="error"
@@ -55,8 +55,8 @@ const Form = ({
             variant="outlined"
             onClick={() => navigate(to)}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={6}>
+        </Grid>
+        <Grid  xs={12} sm={6}>
           <FormButton
             node={<LoopIcon />}
             variant="outlined"
@@ -64,9 +64,9 @@ const Form = ({
             onClick={onReset}
             
           />
-        </Grid2>
+        </Grid>
         
-      </Grid2>
+      </Grid>
     </Box>
   );
 };

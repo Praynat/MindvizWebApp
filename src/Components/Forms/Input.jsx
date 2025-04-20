@@ -2,13 +2,13 @@ import React from "react";
 import TextField from "@mui/material/TextField";
 import { useDarkLightTheme } from "../../Theme/ThemeProvider";
 import UseCapitalize from "../../Hooks/UseCapitalize";
-import { Grid2 } from "@mui/material";
+import { Grid } from "@mui/material";
 
 const { capitalizeFirstLetter } = UseCapitalize();
 const Input = ({ variant = "outlined", type = "text", name, data, label, required = true, error, onChange,rows,multiline=false, ...rest }) => {
   const { theme } = useDarkLightTheme();
   return (
-    <Grid2  xs={12}>
+    <Grid  xs={12}>
       <TextField
         variant={variant}
         label={capitalizeFirstLetter(label)}
@@ -53,7 +53,7 @@ const Input = ({ variant = "outlined", type = "text", name, data, label, require
         }}
         {...rest}
       />
-    </Grid2>
+    </Grid>
   );
 };
 

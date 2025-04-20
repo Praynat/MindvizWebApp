@@ -1,6 +1,6 @@
 import React from "react";
 import ROUTES from "../../Routes/routesModel";
-import { Grid2 } from "@mui/material";
+import { Grid } from "@mui/material";
 import Form from "../Forms/Form";
 import Input from "../Forms/Input";
 
@@ -22,8 +22,8 @@ export default function EditUserForm({
       styles={{ maxWidth: "800px" }}
       to={ROUTES.ROOT}
     >
-      <Grid2 container spacing={2} sx={{ mt: "10px" }}>
-        <Grid2  xs={12} sm={5}>
+      <Grid container spacing={2} sx={{ mt: "10px" }}>
+        <Grid  xs={12} sm={5}>
           <Input
             name="first"
             label="First Name"
@@ -31,8 +31,8 @@ export default function EditUserForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={3}>
+        </Grid>
+        <Grid  xs={12} sm={3}>
           <Input
             name="middle"
             label="Middle Name"
@@ -41,8 +41,8 @@ export default function EditUserForm({
             data={data}
             required={false}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={4}>
+        </Grid>
+        <Grid  xs={12} sm={4}>
           <Input
             name="last"
             label="Last Name"
@@ -50,8 +50,8 @@ export default function EditUserForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={3}>
+        </Grid>
+        <Grid  xs={12} sm={3}>
           <Input
             name="phone"
             label="Phone"
@@ -60,8 +60,8 @@ export default function EditUserForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={9}>
+        </Grid>
+        <Grid  xs={12} sm={9}>
           <Input
             name="url"
             label="Image URL"
@@ -70,8 +70,8 @@ export default function EditUserForm({
             data={data}
             required={false}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={3}>
+        </Grid>
+        <Grid  xs={12} sm={3}>
           <Input
             name="alt"
             label="Image Alt"
@@ -80,8 +80,8 @@ export default function EditUserForm({
             data={data}
             required={false}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={5}>
+        </Grid>
+        <Grid  xs={12} sm={5}>
           <Input
             label="Country"
             name="country"
@@ -89,8 +89,8 @@ export default function EditUserForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={2}>
+        </Grid>
+        <Grid  xs={12} sm={2}>
           <Input
             name="state"
             label="State"
@@ -99,8 +99,8 @@ export default function EditUserForm({
             data={data}
             required={false}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={5}>
+        </Grid>
+        <Grid  xs={12} sm={5}>
           <Input
             name="city"
             label="City"
@@ -108,8 +108,8 @@ export default function EditUserForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={6}>
+        </Grid>
+        <Grid  xs={12} sm={6}>
           <Input
             name="street"
             label="Street"
@@ -117,8 +117,8 @@ export default function EditUserForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={3}>
+        </Grid>
+        <Grid  xs={12} sm={3}>
           <Input
             name="houseNumber"
             label="House Number"
@@ -127,8 +127,8 @@ export default function EditUserForm({
             onChange={onChange}
             data={data}
           />
-        </Grid2>
-        <Grid2  xs={12} sm={3}>
+        </Grid>
+        <Grid  xs={12} sm={3}>
           <Input
             name="zip"
             label="Zip"
@@ -137,8 +137,8 @@ export default function EditUserForm({
             data={data}
             required={false}
           />
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     </Form>
   );
 }

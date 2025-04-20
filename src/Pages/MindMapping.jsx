@@ -23,7 +23,7 @@ import './Css/MindMapping.css';
 import { v4 as uuidv4 } from 'uuid';
 import OutsideClickHandler from '../Helpers/General/OutsideClickHandler';
 import TaskDetails from '../Components/Tasks/TaskDetails/TaskDetails';
-
+import QuickAddBar from '../Components/Tasks/QuickAddBar/QuickAddBar';
 // ===================================================================
 // UTILITY FUNCTION
 // ===================================================================
@@ -53,43 +53,43 @@ function MindMappingInner() {
     getAllMyTasks,
   } = useTasks();
 
-  
+
   // ----------------------- Layout Initialization Effect -----------------------
-useEffect(() => {
-  if (containerRef.current) {
-    const containerWidth = containerRef.current.offsetWidth;
-    const containerHeight = containerRef.current.offsetHeight;
-    const containerCenterX = containerWidth / 2;
-    const containerCenterY = containerHeight / 2;
-    const currentTasks = tasks;
-    const { nodes: layoutNodes, edges: layoutEdges } = buildNodesAndEdges(
-      currentTasks,
-      containerCenterX,
-      containerCenterY
-    );
-    setNodes(layoutNodes);
-    setEdges(layoutEdges);    
-  }
-}, [setEdges, setNodes, initializeTasks, tasks, reactFlowInstance]);
-
-// ----------------------- Node Deletion Handling -----------------------
-const onNodesDelete = useCallback(
-  async (deletedNodes) => {
-    if (deletedNodes.length === 0) return;
-
-    const confirmed = window.confirm(
-      `Are you sure you want to delete ${deletedNodes.length} tasks?`
-    );
-    if (!confirmed) return;
-
-    for (const node of deletedNodes) {
-      await handleDeleteCard(node.id, true);
+  useEffect(() => {
+    if (containerRef.current) {
+      const containerWidth = containerRef.current.offsetWidth;
+      const containerHeight = containerRef.current.offsetHeight;
+      const containerCenterX = containerWidth / 2;
+      const containerCenterY = containerHeight / 2;
+      const currentTasks = tasks;
+      const { nodes: layoutNodes, edges: layoutEdges } = buildNodesAndEdges(
+        currentTasks,
+        containerCenterX,
+        containerCenterY
+      );
+      setNodes(layoutNodes);
+      setEdges(layoutEdges);
     }
+  }, [setEdges, setNodes, initializeTasks, tasks, reactFlowInstance]);
 
-    await getAllMyTasks();
-  },
-  [handleDeleteCard, getAllMyTasks]
-);
+  // ----------------------- Node Deletion Handling -----------------------
+  const onNodesDelete = useCallback(
+    async (deletedNodes) => {
+      if (deletedNodes.length === 0) return;
+
+      const confirmed = window.confirm(
+        `Are you sure you want to delete ${deletedNodes.length} tasks?`
+      );
+      if (!confirmed) return;
+
+      for (const node of deletedNodes) {
+        await handleDeleteCard(node.id, true);
+      }
+
+      await getAllMyTasks();
+    },
+    [handleDeleteCard, getAllMyTasks]
+  );
 
 
 
@@ -219,73 +219,87 @@ const onNodesDelete = useCallback(
 
   // ----------------------- Component Render -----------------------
   return (
-    <div
-      ref={containerRef}
-      style={{ width: '100vw', height: '80vh', marginTop: '-2.5vh' }}
-    >
-      <ReactFlow
-        nodes={nodes.map((node) => {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              zoom: currentZoom,
-              onLabelChange: (newLabel) => onLabelChange(node.id, newLabel),
-              onUpdateTask: handleUpdateCard,
-            },
-          };
-        })}
-        onMove={(event) => {
-          const viewport = getViewport();
-          setCurrentZoom(viewport.zoom);  
-        }}
-        onlyRenderVisibleElements={true}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onNodesDelete={onNodesDelete}
-        onConnect={onConnect}
-        onConnectEnd={onConnectEnd}
-        onNodeClick={onNodeClick}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        connectionLineComponent={FloatingConnectionLine}
-        onInit={(instance) => {
-          setCurrentZoom(instance.getViewport().zoom);
-        }}
-        onWheelCapture={() => {
-          // Update zoom on any wheel event
-          const viewport = getViewport();
-          setCurrentZoom(viewport.zoom);
-        }}
-        minZoom={0.0005}
-        maxZoom={60}
-        defaultViewport={{ x: 0, y: 0, zoom: 0.75 }}
-        multiSelectionKeyCode="Control"
-        fitView={{ padding: 0.2, includeHiddenNodes: true }}
-        fitViewOptions={{ duration: 800 }}
-        nodesDraggable
-        nodesConnectable
-        elementsSelectable
-        nodeDragThreshold={1}
-        onPaneClick={() => setSelectedTask(null)}
-      />
-      <Controls />
-      <div className={`sidebar-container ${selectedTask ? 'open' : ''}`}>
-        <OutsideClickHandler onOutsideClick={() => setSelectedTask(null)}>
-          {selectedTask && (
-            <TaskDetails
-              task={selectedTask}
-              allTasks={tasks}
-              onSelectTask={onSelectTaskInFlow}
-              onUpdateTask={handleUpdateCard}
-              mode="sidebar"
-              onClose={() => setSelectedTask(null)}
-            />
-          )}
-        </OutsideClickHandler>
+    <>
+      <div
+        ref={containerRef}
+        style={{ width: '100vw', height: '80vh', marginTop: '-2.5vh' }}
+      >
+        <ReactFlow
+          nodes={nodes.map((node) => {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                zoom: currentZoom,
+                onLabelChange: (newLabel) => onLabelChange(node.id, newLabel),
+                onUpdateTask: handleUpdateCard,
+              },
+            };
+          })}
+          onMove={(event) => {
+            const viewport = getViewport();
+            setCurrentZoom(viewport.zoom);
+          }}
+          onlyRenderVisibleElements={true}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onNodesDelete={onNodesDelete}
+          onConnect={onConnect}
+          onConnectEnd={onConnectEnd}
+          onNodeClick={onNodeClick}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          connectionLineComponent={FloatingConnectionLine}
+          onInit={(instance) => {
+            setCurrentZoom(instance.getViewport().zoom);
+          }}
+          onWheelCapture={() => {
+            // Update zoom on any wheel event
+            const viewport = getViewport();
+            setCurrentZoom(viewport.zoom);
+          }}
+          minZoom={0.0005}
+          maxZoom={60}
+          defaultViewport={{ x: 0, y: 0, zoom: 0.75 }}
+          multiSelectionKeyCode="Control"
+          fitView={{ padding: 0.2, includeHiddenNodes: true }}
+          fitViewOptions={{ duration: 800 }}
+          nodesDraggable
+          nodesConnectable
+          elementsSelectable
+          nodeDragThreshold={1}
+          onPaneClick={() => setSelectedTask(null)}
+        />
+        <Controls />
+        <div className={`sidebar-container ${selectedTask ? 'open' : ''}`}>
+          <OutsideClickHandler onOutsideClick={() => setSelectedTask(null)}>
+            {selectedTask && (
+              <TaskDetails
+                task={selectedTask}
+                allTasks={tasks}
+                onSelectTask={onSelectTaskInFlow}
+                onUpdateTask={handleUpdateCard}
+                mode="sidebar"
+                onClose={() => setSelectedTask(null)}
+              />
+            )}
+          </OutsideClickHandler>
+        </div>
       </div>
-    </div>
+      <QuickAddBar
+        tasks={tasks}
+        selectedTask={selectedTask}
+        onTaskCreated={async (newTask) => {
+          await handleCreateCard(newTask);
+          await getAllMyTasks();
+        }}
+        onOpenFullModal={(prefill) => {
+          // Handle opening the full modal with prefilled data
+          console.log('Open full modal with prefill:', prefill);
+        }}
+      />
+    </>
   );
 }
 
