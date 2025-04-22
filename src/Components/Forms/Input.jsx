@@ -2,7 +2,7 @@ import React from "react";
 import TextField from "@mui/material/TextField";
 import { useDarkLightTheme } from "../../Theme/ThemeProvider";
 import UseCapitalize from "../../Hooks/UseCapitalize";
-import { Grid, MenuItem } from "@mui/material";
+import {  MenuItem } from "@mui/material";
 
 const { capitalizeFirstLetter } = UseCapitalize();
 const Input = ({ variant = "outlined", type = "text", name, data, label, required = true, error, onChange, rows, multiline = false, select = false, options = [], className, width, ...rest }) => {
