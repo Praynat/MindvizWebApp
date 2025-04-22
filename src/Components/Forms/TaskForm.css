@@ -1,0 +1,81 @@
+/* TaskForm.css */
+
+.task-form {
+  display: flex;
+
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.task-form .section {
+  margin-bottom: 32px;
+}
+
+.task-form .section-title {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.task-form .recurring-section {
+  padding-left: 16px;
+  border-left: 3px solid #eee;
+  margin-top: 16px;
+}
+
+.task-form .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+/* Added styles from sx props */
+.full-height {
+  height: 100%;
+
+}
+
+.parent-select-button {
+  justify-content: space-between !important;
+  /* May need !important to override MUI */
+  text-transform: none !important;
+  border-color: #8e8e8e !important; /* Added default border color */
+  /* Color from light theme text.primary - adjust if needed or keep in sx for theme support */
+  color: #1F2937 !important;
+  height: 100% !important;
+}
+
+.parent-select-button:hover {
+  /* Color from light theme custom.cardHoverBorderColor - adjust if needed or keep in sx for theme support */
+  border-color: #1F2937 !important;
+  /* You might want to define a background-color for hover too */
+  /* background-color: #f5f5f5; */ /* Example */
+}
+
+.parent-popover-box {
+  max-height: 300px;
+  overflow: auto;
+  padding: 8px;
+  /* p: 1 */
+}
+
+.error-message {
+  display: block !important;
+  margin-top: 8px !important;
+  /* mt: 1 */
+}
+
+.repeat-on-title {
+  margin-bottom: 8px !important;
+  /* mb: 1 */
+}
+
+.weekday-label {
+  margin-right: 8px !important;
+  /* mr: 1 */
+}
+
+.section-divider {
+  margin-bottom: 16px !important;
+  /* mb: 2 */
+}

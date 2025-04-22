@@ -164,6 +164,35 @@
   max-height: none;
 }
 
+.quick-date-picker-popover-content {
+  max-height: 350px;
+  overflow-y: auto;
+  overflow-x: visible;
+  padding: 8px;
+  box-sizing: border-box;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.quick-parent-selector-popover-content {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: visible;
+  padding: 8px;
+  box-sizing: border-box;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transform-origin: bottom left;
+}
+
+.quick-parent-selector-popover-content .sub-items {
+  overflow: visible;
+  height: auto;
+  max-height: none;
+}
+
 .sr-only{
   font-size: 16px;
   margin-right: 5px;

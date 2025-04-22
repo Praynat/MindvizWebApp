@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { IconButton, Popover } from "@mui/material";
 import { Send as SendIcon, OpenInNew as OpenInNewIcon } from "@mui/icons-material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import QuickDatePicker from "./QuickDatePicker";
 import SidebarItem from "../ListView/SidebarItem";
+import ROUTES from '../../../Routes/routesModel';
 import "./QuickAddBar.css";
 
 function buildTree(tasks) {
+  if (!tasks || tasks.length === 0) return [];
   const map = {};
   tasks.forEach(t => (map[t._id] = { ...t, subCategories: [] }));
   tasks.forEach(t => {
@@ -17,20 +20,27 @@ function buildTree(tasks) {
   return Object.values(map).filter(t => !t.parentIds?.length);
 }
 
-export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated, onOpenFullModal }) {
+export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated }) {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [deadlineDate, setDeadlineDate] = useState(null);
   const [dateAnchor, setDateAnchor] = useState(null);
   const [parentAnchor, setParentAnchor] = useState(null);
   const [parentId, setParentId] = useState("");
 
+  const wrappedSetDateAnchor = (elOrUpdater) => {
+       setParentAnchor(null);
+       setDateAnchor(prev =>
+         typeof elOrUpdater === "function" ? elOrUpdater(prev) : elOrUpdater
+       );
+     };
   const rootTask = tasks.find(t => !t.parentIds?.length);
   const effectiveParentId = parentId || selectedTask?._id || rootTask?._id || "";
 
   useEffect(() => {
     if (selectedTask?._id) setParentId(selectedTask._id);
-    else if (rootTask?._id) setParentId(rootTask._id);
-  }, [selectedTask, rootTask]);
+    else if (rootTask?._id && !parentId) setParentId(rootTask._id);
+  }, [selectedTask, rootTask, parentId]);
 
   const handleQuickCreate = async () => {
     if (!title.trim()) return;
@@ -40,11 +50,12 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated, o
   };
 
   const handleOpenFullModal = () => {
-    onOpenFullModal?.({
+    const prefill = {
       name: title.trim(),
       deadline: deadlineDate,
       parentIds: [effectiveParentId]
-    });
+    };
+    navigate(ROUTES.CREATE_TASK, { state: { prefill } });
   };
 
   return (
@@ -70,9 +81,14 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated, o
             onClose={() => setParentAnchor(null)}
             anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
             transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            ModalProps={{
+              disableAutoFocus: true,
+              disableEnforceFocus: true,
+              disableRestoreFocus: true,
+            }}
             PaperProps={{ className: "quick-add-bar-popover-paper" }}
           >
-            <div className="quick-add-bar-popover-content">
+            <div className="quick-parent-selector-popover-content">
               {buildTree(tasks).map(item => (
                 <SidebarItem
                   key={item._id}
@@ -92,7 +108,7 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated, o
 
         <input
           type="text"
-          placeholder="Ajouter une tâche rapide..."
+          placeholder="Add a quick task..."
           value={title}
           onChange={e => setTitle(e.target.value)}
           className="quick-add-bar-input"
@@ -102,10 +118,11 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated, o
         <div className="quick-add-bar-divider" />
 
         <QuickDatePicker
-          deadlineDate={deadlineDate}
-          setDeadlineDate={setDeadlineDate}
-          anchorEl={dateAnchor}
-          setAnchorEl={setDateAnchor}
+        enableAccessibleFieldDOMStructure={false}
+        deadlineDate={deadlineDate}
+        setDeadlineDate={setDeadlineDate}
+         anchorEl={dateAnchor}
+         setAnchorEl={wrappedSetDateAnchor}
           applyDeadline={(useTime) => {
             if (!deadlineDate) return;
             const finalDate = useTime

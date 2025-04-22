@@ -25,32 +25,37 @@ export default function QuickDatePicker({
         anchorEl={anchorEl}
         onClose={() => setAnchorEl(null)}
         anchorOrigin={{ vertical: "top", horizontal: "left" }}
-        transformOrigin={{ vertical: "bottom", horizontal: "left" }}
-        disableRestoreFocus
+    transformOrigin={{ vertical: "bottom", horizontal: "left" }}
+        ModalProps={{
+          disableAutoFocus: true,
+          disableEnforceFocus: true,
+          disableRestoreFocus: true,
+        }}
         PaperProps={{ className: "quick-add-bar-popover-paper" }}
       >
-        <Box className="quick-add-bar-popover-content">
+        <Box className="quick-date-picker-popover-content">
           <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DesktopDatePicker
-              label="Choose Date"
-              value={deadlineDate}
-              onChange={setDeadlineDate}
-              inputFormat="dd/MM/yyyy"
-              renderInput={params => (
-                <TextField {...params} size="small" fullWidth />
-              )}
-            />
-            {deadlineDate && (
-              <DesktopTimePicker
-                label="Choose Time"
+            <Box display="flex" flexDirection="column" gap={1}>
+              <DesktopDatePicker
+                enableAccessibleFieldDOMStructure={false}
                 value={deadlineDate}
                 onChange={setDeadlineDate}
-                renderInput={params => (
-                  <TextField {...params} size="small" fullWidth />
-                )}
+                inputFormat="dd/MM/yyyy"
+                slots={{ textField: TextField }}
+                slotProps={{ textField: { size: "small", fullWidth: true } }}
               />
-            )}
+              {deadlineDate && (
+                <DesktopTimePicker
+                  enableAccessibleFieldDOMStructure={false}
+                  value={deadlineDate}
+                  onChange={setDeadlineDate}
+                  slots={{ textField: TextField }}
+                  slotProps={{ textField: { size: "small", fullWidth: true } }}
+                />
+              )}
+            </Box>
           </LocalizationProvider>
+
           <IconButton
             size="small"
             aria-label="Clear date"
