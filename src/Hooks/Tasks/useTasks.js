@@ -121,49 +121,54 @@ export default function useTasks() {
   }, []);
 
   const handleCreateCard = useCallback(
-    async (taskFromClient) => {      
+    async (taskFromClient) => {
       setError(null);
       setIsLoading(true);
-
       try {
-        const newTask = await createTask(normalizeTask(taskFromClient));        
-        setTask(newTask);
+        const normalized = normalizeTask(taskFromClient); // Normalize before API call
+        const newTask = await createTask(normalized);
+        // Update state - add to tasks list
+        setTasks(prevTasks => [...prevTasks, newTask]);
+        setTask(newTask); // Set the newly created task as the current 'task' if needed
         setSnack("success", "A new task has been created");
-        setTimeout(() => {
-          getAllMyTasks();
-        }, 1000);
-        return newTask;
-        
+        return true; // <<< RETURN TRUE ON SUCCESS
       } catch (error) {
         setError(error.message);
+        return false; // <<< RETURN FALSE ON FAILURE
       } finally {
         setIsLoading(false);
       }
     },
-    [setSnack,getAllMyTasks]
+    [setSnack, setTasks, setTask] // Removed getAllMyTasks if timeout is removed
   );
 
   const handleUpdateCard = useCallback(
     async (taskId, taskFromClient, options = {}) => {
       setIsLoading(true);
+      setError(null); // Clear previous errors
       try {
-        const updated = await editTask(taskId, normalizeTask(taskFromClient));
-        
-        // Single update that handles both the specific task and the full list
+        const normalized = normalizeTask(taskFromClient); // Normalize before API call
+        const updated = await editTask(taskId, normalized); // API call
+
+        // Update local state
         const updatedTasks = tasks.map(t => t._id === taskId ? updated : t);
         setTasks(updatedTasks);
-        setTask(updated);
-        
+        if (task?._id === taskId) { // Update the single task state if it matches
+          setTask(updated);
+        }
+
         if (!options.silent) {
           setSnack("success", "The task has been successfully updated");
         }
+        return true; // <<< RETURN TRUE ON SUCCESS
       } catch (error) {
         setError(error.message);
+        return false; // <<< RETURN FALSE ON FAILURE
       } finally {
         setIsLoading(false);
       }
     },
-    [setSnack, tasks]
+    [setSnack, tasks, task, setTask] // Added setTask dependency
   );
 
   async function handleDeleteCard(taskId, skipConfirm = false) {
@@ -171,13 +176,13 @@ export default function useTasks() {
       const confirmed = window.confirm("Are you sure you want to delete this Task?");
       if (!confirmed) return;
     }
-  
+
     setIsLoading(true);
     try {
       // 1) Get the "childTask" being deleted
       const childTask = await getTaskById(taskId);
       if (!childTask) throw new Error("Task not found");
-  
+
       // 2) For each parent, remove this child from `childrenIds`
       const parentIds = childTask.parentIds || [];
       for (const parentId of parentIds) {
@@ -192,7 +197,7 @@ export default function useTasks() {
           });
         }
       }
-  
+
 
       await deleteTask(taskId);
       setSnack("success", "Task deleted");
@@ -204,11 +209,6 @@ export default function useTasks() {
       setIsLoading(false);
     }
   }
-  
-  
-
-
-  
 
   return {
     tasks,

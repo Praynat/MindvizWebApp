@@ -17,7 +17,7 @@ export default function CreateTaskPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useMyUser();
-  const { tasks, isLoading: isLoadingTasks, error: tasksError, createTask } = useTasks();
+  const { tasks, isLoading: isLoadingTasks, error: tasksError, handleCreateCard } = useTasks();
 
   const {
     data,
@@ -25,7 +25,7 @@ export default function CreateTaskPage() {
     setData,
     handleChange,
     handleReset,
-    
+    validateForm,
     onSubmit,
   } = useForm(initialTaskForm, taskSchema, handleCreateTask);
 
@@ -94,10 +94,10 @@ export default function CreateTaskPage() {
       if (!payload.tags?.length) delete payload.tags;
       if (!payload.endDate) delete payload.endDate;
 
-      await createTask(payload);
+      await handleCreateCard(payload);
 
-      navigate(ROUTES.TASKS);
-
+      const fromPath = location.state?.from?.pathname + location.state?.from?.search || ROUTES.MINDMAPPING_VIEW; 
+      navigate(fromPath, { replace: true });
     } catch (error) {
       console.error("Failed to create task:", error);
     }
@@ -120,7 +120,8 @@ export default function CreateTaskPage() {
           setData={setData}
           data={data}
           tasks={tasks}
-          title="Create Task"
+          validateForm={validateForm}
+          submitButtonText="Create Task"
         />
       </Box>
     </Container>

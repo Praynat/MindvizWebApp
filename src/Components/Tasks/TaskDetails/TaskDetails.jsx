@@ -9,14 +9,15 @@ import '../Css/TaskDetailsModal.css';
 import '../Css/TaskDetailsPage.css';
 
 export default function TaskDetails(props) {
-  const { mode, allTasks,categories = [], ...otherProps } = props;
+  const { mode, allTasks, categories = [], onDeleteTask, onAddChild, onNavigate, ...otherProps } = props;
 
   switch (mode) {
     case 'sidebar':
-      return <SidebarLayout {...props} />;
+      return <SidebarLayout {...props} onDeleteTask={onDeleteTask} onAddChild={onAddChild} onNavigate={onNavigate} />;
     case 'modal':
       return <ModalLayout {...props} />;
     case 'page':
     default:
-      return <PageLayout tasks={allTasks} categories={categories} {...otherProps} />;  }
+      return <PageLayout tasks={allTasks} categories={categories} {...otherProps} />;
+  }
 }

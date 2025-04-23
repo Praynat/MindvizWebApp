@@ -61,14 +61,17 @@ export default function useForm(initialForm, schema, handleSubmit) {
  const validateForm = useCallback(() => {
     const schemaForValidate = Joi.object(schema);
     const filteredData = Object.keys(data).reduce((acc, key) => {
-      if (schema.hasOwnProperty(key)) {
+      // Ensure schema is defined before checking hasOwnProperty
+      if (schema && schema.hasOwnProperty(key)) {
         acc[key] = data[key];
       }
       return acc;
     }, {});
-  
+
     const { error } = schemaForValidate.validate(filteredData, { abortEarly: false });
     if (error) {
+      // Log the specific validation errors
+      console.error("Joi Validation Error Details:", error.details);
       return false;
     }
     return true;

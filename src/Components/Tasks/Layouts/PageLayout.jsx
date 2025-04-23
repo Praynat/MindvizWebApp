@@ -8,13 +8,13 @@ import '../Css/PageLayout.css';
 // Component Definition
 const PageLayout = ({
   tasks,
-  categories,
+  categories, // This is actually taskHierarchy built below
   onNewTask,
-  onFilter,
   onViewChange,
-  onSelectTask,
+  onSelectTask, // Received from ListPage
   onUpdateTask,
-  task 
+  task, // This is the selectedTask from ListPage, passed via TaskDetails' otherProps
+  selectedTaskId // <<< Add this prop, received from ListPage via TaskDetails
 }) => {
 
   // Retrieve Saved Filters
@@ -33,31 +33,31 @@ const PageLayout = ({
     const saved = getSavedFilters();
     return saved?.viewMode || 'list';
   });
-  
+
   const [filterVisible, setFilterVisible] = useState(false);
-  
+
   const [listFilters, setListFilters] = useState(() => {
     const saved = getSavedFilters();
     return saved?.list || { sortBy: 'hierarchy', sortDirection: 'asc', filterName: '' };
   });
-  
+
   const [cardFilters, setCardFilters] = useState(() => {
     const saved = getSavedFilters();
     return saved?.card || { sortBy: 'hierarchy', sortDirection: 'asc', filterName: '' };
   });
-  
+
   const [kanbanFilters, setKanbanFilters] = useState(() => {
     const saved = getSavedFilters();
     return saved?.kanban || { sortBy: 'hierarchy', sortDirection: 'asc', filterName: '' };
   });
-  
+
   const [syncFilters, setSyncFilters] = useState(() => {
     const saved = getSavedFilters();
     return saved?.syncFilters || false;
   });
-  
+
   const [modalTask, setModalTask] = useState(null);
-  const [selectedListTask, setSelectedListTask] = useState(null);
+  const [selectedListTask, setSelectedListTask] = useState(null); // Keep for list view's right panel
 
   // Filter Functions
   const getCurrentFilter = () => {
@@ -110,17 +110,39 @@ const PageLayout = ({
     if (onViewChange) onViewChange(mode);
   };
 
-  const handleTaskSelect = (selectedTask) => {
-    if (viewMode === 'list') {
-      setSelectedListTask(selectedTask);
-    } else {
-      setModalTask(selectedTask);
-    }
+  // Modified handler: This is called when an item in the *Sidebar* is clicked
+  const handleSidebarItemSelect = (selectedItem) => {
+    // Update the filter ID used internally by PageLayout for filtering the main view
+    updateCurrentFilter({ filterTaskId: selectedItem?._id || null });
+
+    // Also, call the main selection handler passed down from ListPage
+    // This updates ListPage's selectedTask state, which controls QuickAddBar etc.
     if (onSelectTask) {
-      onSelectTask(selectedTask);
+      onSelectTask(selectedItem); // Pass the full task object up
+    }
+
+    // If in list view, update the right-side details panel
+    if (viewMode === 'list') {
+      setSelectedListTask(selectedItem);
     }
   };
-  
+
+  // Modified handler: This is called when an item in the *main content* (list/card/kanban) is clicked
+  const handleMainContentItemSelect = (selectedItem) => {
+    // Call the main selection handler passed down from ListPage
+    if (onSelectTask) {
+      onSelectTask(selectedItem); // Pass the full task object up
+    }
+
+    // If in list view, update the right-side details panel
+    if (viewMode === 'list') {
+      setSelectedListTask(selectedItem);
+    } else {
+      // If in card/kanban view, open the modal
+      setModalTask(selectedItem);
+    }
+  };
+
   const handleCloseSidebar = () => {
     setSelectedListTask(null);
   };
@@ -134,14 +156,14 @@ const PageLayout = ({
   // Filter and Sort Tasks
   const filteredAndSortedTasks = useMemo(() => {
     if (!tasks) return [];
-    
+
     let result = [...tasks];
-    
+
     // Apply name filter if set.
     if (filterName) {
       result = result.filter(t => t.name.toLowerCase().includes(filterName.toLowerCase()));
     }
-    
+
     // If a sidebar selection exists (i.e. a parent task is selected)…
     if (currentFilter.filterTaskId) {
       // Collect the parent and all its descendants.
@@ -156,15 +178,15 @@ const PageLayout = ({
         }
       };
       collectTaskIds(currentFilter.filterTaskId);
-      
+
       // Only include tasks in this set.
       result = result.filter(task => taskIds.has(task._id));
-      
+
       // Extract the parent's task.
       const parentTask = result.find(task => task._id === currentFilter.filterTaskId);
       // Remove the parent temporarily.
       result = result.filter(task => task._id !== currentFilter.filterTaskId);
-      
+
       // Now sort the remaining tasks based on your chosen sort.
       switch (sortBy) {
         case 'alphabetical':
@@ -204,12 +226,12 @@ const PageLayout = ({
           result = [...defaultRootTasks, ...defaultChildTasks];
           break;
       }
-      
+
       // Finally, put the parent's task at the very beginning.
       if (parentTask) {
         result.unshift(parentTask);
       }
-      
+
     } else {
       // If no sidebar selection, apply sorting normally to the entire result.
       switch (sortBy) {
@@ -251,11 +273,10 @@ const PageLayout = ({
           break;
       }
     }
-    
+
     return result;
   }, [tasks, currentFilter, filterName, sortBy, sortDirection]);
-  
-  
+
   // Build Task Hierarchy
   const buildTaskHierarchy = (parentTask) => {
     if (!parentTask) return null;
@@ -272,35 +293,28 @@ const PageLayout = ({
   // Render Component
   return (
     <div className="page-layout">
-      <Sidebar 
-        categories={taskHierarchy} 
-        onFilterSelect={(selectedTask) => {
-          if (selectedTask === null) {
-            updateCurrentFilter({ filterTaskId: null });
-            setSelectedListTask(null);
-          } else {
-            updateCurrentFilter({ filterTaskId: selectedTask._id });
-            setSelectedListTask(selectedTask);
-          }
-        }}
-        
-        selectedItemId={currentFilter.filterTaskId}
+      <Sidebar
+        categories={taskHierarchy} // Pass the built hierarchy
+        // Use the modified handler for sidebar clicks
+        onFilterSelect={handleSidebarItemSelect}
+        // Pass the selectedTaskId from ListPage for highlighting
+        selectedItemId={selectedTaskId} // <<< Use the prop from ListPage
       />
       <main className="main-content">
         <div className="toolbar">
           <div className="view-toggle">
-            <button 
-              className={viewMode === 'list' ? 'active' : ''} 
+            <button
+              className={viewMode === 'list' ? 'active' : ''}
               onClick={() => handleViewChange('list')}>
               List
             </button>
-            <button 
-              className={viewMode === 'card' ? 'active' : ''} 
+            <button
+              className={viewMode === 'card' ? 'active' : ''}
               onClick={() => handleViewChange('card')}>
               Cards
             </button>
-            <button 
-              className={viewMode === 'kanban' ? 'active' : ''} 
+            <button
+              className={viewMode === 'kanban' ? 'active' : ''}
               onClick={() => handleViewChange('kanban')}>
               Kanban
             </button>
@@ -319,19 +333,19 @@ const PageLayout = ({
             <div className="filter-section">
               <label>
                 Search:
-                <input 
-                  type="text" 
-                  value={filterName} 
+                <input
+                  type="text"
+                  value={filterName}
                   onChange={(e) => updateCurrentFilter({ filterName: e.target.value })}
-                  placeholder="Filter by name..." 
+                  placeholder="Filter by name..."
                 />
               </label>
             </div>
             <div className="filter-section">
               <label>
                 Sort By:
-                <select 
-                  value={sortBy} 
+                <select
+                  value={sortBy}
                   onChange={(e) => updateCurrentFilter({ sortBy: e.target.value })}
                 >
                   <option value="hierarchy">Hierarchy</option>
@@ -341,17 +355,17 @@ const PageLayout = ({
               </label>
               <div className="sort-direction">
                 <label>
-                  <input 
-                    type="radio" 
-                    checked={sortDirection === 'asc'} 
+                  <input
+                    type="radio"
+                    checked={sortDirection === 'asc'}
                     onChange={() => updateCurrentFilter({ sortDirection: 'asc' })}
                   />
                   {sortBy === 'alphabetical' ? 'A to Z' : sortBy === 'date' ? 'Oldest First' : 'Ascending'}
                 </label>
                 <label>
-                  <input 
-                    type="radio" 
-                    checked={sortDirection === 'desc'} 
+                  <input
+                    type="radio"
+                    checked={sortDirection === 'desc'}
                     onChange={() => updateCurrentFilter({ sortDirection: 'desc' })}
                   />
                   {sortBy === 'alphabetical' ? 'Z to A' : sortBy === 'date' ? 'Newest First' : 'Descending'}
@@ -360,7 +374,7 @@ const PageLayout = ({
             </div>
             <div className="filter-section sync-option">
               <label className="checkbox-label">
-                <input 
+                <input
                   type="checkbox"
                   checked={syncFilters}
                   onChange={() => {
@@ -375,7 +389,7 @@ const PageLayout = ({
                 />
                 Apply filters to all views
               </label>
-              <button 
+              <button
                 className="reset-filters-btn"
                 onClick={() => {
                   const defaultFilter = { sortBy: 'hierarchy', sortDirection: 'asc', filterName: '' };
@@ -394,22 +408,22 @@ const PageLayout = ({
             <div className="list-view-container">
               <div className="task-list-panel">
                 <ul className="list-view">
-                  {filteredAndSortedTasks.map(task => (
-                    <li 
-                      key={task._id}
-                      id={`task-${task._id}`}
-                      className={`list-item ${selectedListTask && selectedListTask._id === task._id ? 'selected' : ''}`}
-                      onClick={() => handleTaskSelect(task)}
+                  {filteredAndSortedTasks.map(item => (
+                    <li
+                      key={item._id}
+                      id={`task-${item._id}`}
+                      className={`list-item ${selectedTaskId === item._id ? 'selected' : ''}`}
+                      onClick={() => handleMainContentItemSelect(item)}
                     >
                       <TaskCard
-                        task={task}
+                        task={item}
                         allTasks={tasks}
                         mode="medium"
-                        onSelectTask={() => handleTaskSelect(task)}
+                        onSelectTask={() => handleMainContentItemSelect(item)}
                         onUpdateTask={onUpdateTask}
-                        isRootTask={!task.parentIds || task.parentIds.length === 0}
-                        isSelected={currentFilter.filterTaskId === task._id}
-                        />
+                        isRootTask={!item.parentIds || item.parentIds.length === 0}
+                        isSelected={selectedTaskId === item._id}
+                      />
                     </li>
                   ))}
                 </ul>
@@ -419,7 +433,7 @@ const PageLayout = ({
                   <TaskDetails
                     task={selectedListTask}
                     allTasks={tasks}
-                    onSelectTask={handleTaskSelect}
+                    onSelectTask={handleMainContentItemSelect}
                     onUpdateTask={onUpdateTask}
                     mode="sidebar"
                     onClose={handleCloseSidebar}
@@ -430,17 +444,17 @@ const PageLayout = ({
           )}
           {viewMode === 'card' && (
             <div className="card-view">
-              {filteredAndSortedTasks.map(task => (
-                <div key={task._id} className="card-item">
+              {filteredAndSortedTasks.map(item => (
+                <div key={item._id} className="card-item">
                   <TaskCard
-                    task={task}
+                    task={item}
                     allTasks={tasks}
                     mode="medium"
-                    onSelectTask={handleTaskSelect}
+                    onSelectTask={() => handleMainContentItemSelect(item)}
                     onUpdateTask={onUpdateTask}
-                    isRootTask={!task.parentIds || task.parentIds.length === 0}
-                    isSelected={currentFilter.filterTaskId === task._id}
-                    />
+                    isRootTask={!item.parentIds || item.parentIds.length === 0}
+                    isSelected={selectedTaskId === item._id}
+                  />
                 </div>
               ))}
             </div>
@@ -451,18 +465,18 @@ const PageLayout = ({
                 <h5>To Do</h5>
                 <div className="kanban-cards-container">
                   {filteredAndSortedTasks
-                    .filter(task => task.progress === 0)
-                    .map(task => (
-                      <div key={task._id} className="kanban-card">
+                    .filter(item => item.progress === 0)
+                    .map(item => (
+                      <div key={item._id} className="kanban-card">
                         <TaskCard
-                          task={task}
+                          task={item}
                           allTasks={tasks}
                           mode="medium"
-                          onSelectTask={handleTaskSelect}
+                          onSelectTask={() => handleMainContentItemSelect(item)}
                           onUpdateTask={onUpdateTask}
-                          isRootTask={!task.parentIds || task.parentIds.length === 0}
-                          isSelected={currentFilter.filterTaskId === task._id}
-                          />
+                          isRootTask={!item.parentIds || item.parentIds.length === 0}
+                          isSelected={selectedTaskId === item._id}
+                        />
                       </div>
                     ))}
                 </div>
@@ -471,18 +485,18 @@ const PageLayout = ({
                 <h5>In Progress</h5>
                 <div className="kanban-cards-container">
                   {filteredAndSortedTasks
-                    .filter(task => task.progress > 0 && task.progress < 100)
-                    .map(task => (
-                      <div key={task._id} className="kanban-card">
+                    .filter(item => item.progress > 0 && item.progress < 100)
+                    .map(item => (
+                      <div key={item._id} className="kanban-card">
                         <TaskCard
-                          task={task}
+                          task={item}
                           allTasks={tasks}
                           mode="medium"
-                          onSelectTask={handleTaskSelect}
+                          onSelectTask={() => handleMainContentItemSelect(item)}
                           onUpdateTask={onUpdateTask}
-                          isRootTask={!task.parentIds || task.parentIds.length === 0}
-                          isSelected={currentFilter.filterTaskId === task._id}
-                          />
+                          isRootTask={!item.parentIds || item.parentIds.length === 0}
+                          isSelected={selectedTaskId === item._id}
+                        />
                       </div>
                     ))}
                 </div>
@@ -491,18 +505,18 @@ const PageLayout = ({
                 <h5>Done</h5>
                 <div className="kanban-cards-container">
                   {filteredAndSortedTasks
-                    .filter(task => task.progress === 100)
-                    .map(task => (
-                      <div key={task._id} className="kanban-card">
+                    .filter(item => item.progress === 100)
+                    .map(item => (
+                      <div key={item._id} className="kanban-card">
                         <TaskCard
-                          task={task}
+                          task={item}
                           allTasks={tasks}
                           mode="medium"
-                          onSelectTask={handleTaskSelect}
+                          onSelectTask={() => handleMainContentItemSelect(item)}
                           onUpdateTask={onUpdateTask}
-                          isRootTask={!task.parentIds || task.parentIds.length === 0}
-                          isSelected={currentFilter.filterTaskId === task._id}
-                          />
+                          isRootTask={!item.parentIds || item.parentIds.length === 0}
+                          isSelected={selectedTaskId === item._id}
+                        />
                       </div>
                     ))}
                 </div>
@@ -517,7 +531,7 @@ const PageLayout = ({
                 mode="modal"
                 task={modalTask}
                 allTasks={tasks}
-                onSelectTask={handleTaskSelect}
+                onSelectTask={handleMainContentItemSelect}
                 onUpdateTask={onUpdateTask}
                 onClose={handleCloseModal}
               />

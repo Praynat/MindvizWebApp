@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from "react";
+import { useLocation, useNavigate } from 'react-router-dom';
 import { IconButton, Popover } from "@mui/material";
 import { Send as SendIcon, OpenInNew as OpenInNewIcon } from "@mui/icons-material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -22,29 +22,42 @@ function buildTree(tasks) {
 
 export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [title, setTitle] = useState("");
   const [deadlineDate, setDeadlineDate] = useState(null);
   const [dateAnchor, setDateAnchor] = useState(null);
   const [parentAnchor, setParentAnchor] = useState(null);
-  const [parentId, setParentId] = useState("");
+  const [quickBarParentId, setQuickBarParentId] = useState("");
 
   const wrappedSetDateAnchor = (elOrUpdater) => {
-       setParentAnchor(null);
-       setDateAnchor(prev =>
-         typeof elOrUpdater === "function" ? elOrUpdater(prev) : elOrUpdater
-       );
-     };
-  const rootTask = tasks.find(t => !t.parentIds?.length);
-  const effectiveParentId = parentId || selectedTask?._id || rootTask?._id || "";
+    setParentAnchor(null);
+    setDateAnchor(prev =>
+      typeof elOrUpdater === "function" ? elOrUpdater(prev) : elOrUpdater
+    );
+  };
+
+  const rootTask = useMemo(() => tasks.find(t => !t.parentIds?.length), [tasks]);
 
   useEffect(() => {
-    if (selectedTask?._id) setParentId(selectedTask._id);
-    else if (rootTask?._id && !parentId) setParentId(rootTask._id);
-  }, [selectedTask, rootTask, parentId]);
+    if (selectedTask?._id) {
+      setQuickBarParentId(selectedTask._id);
+    } else if (!quickBarParentId && rootTask?._id) {
+      setQuickBarParentId(rootTask._id);
+    }
+  }, [selectedTask, rootTask, quickBarParentId]);
+
+  useEffect(() => {
+    if (!quickBarParentId && rootTask?._id) {
+      setQuickBarParentId(rootTask._id);
+    }
+  }, [rootTask, quickBarParentId]);
+
+  const effectiveParentId = quickBarParentId;
 
   const handleQuickCreate = async () => {
     if (!title.trim()) return;
-    await onTaskCreated?.({ name: title.trim(), deadline: deadlineDate, parentIds: [effectiveParentId] });
+    const parentToSend = effectiveParentId || rootTask?._id || "";
+    await onTaskCreated?.({ name: title.trim(), deadline: deadlineDate, parentIds: parentToSend ? [parentToSend] : [] });
     setTitle("");
     setDeadlineDate(null);
   };
@@ -53,9 +66,9 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated })
     const prefill = {
       name: title.trim(),
       deadline: deadlineDate,
-      parentIds: [effectiveParentId]
+      parentIds: effectiveParentId ? [effectiveParentId] : (rootTask?._id ? [rootTask._id] : [])
     };
-    navigate(ROUTES.CREATE_TASK, { state: { prefill } });
+    navigate(ROUTES.CREATE_TASK, { state: { prefill, from: location } });
   };
 
   return (
@@ -68,7 +81,7 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated })
             onClick={e => setParentAnchor(a => (a ? null : e.currentTarget))}
           >
             <span>
-              {tasks.find(t => t._id === effectiveParentId)?.name || "Racine"}
+              {tasks.find(t => t._id === effectiveParentId)?.name || rootTask?.name || "Select Parent"}
             </span>
             <ExpandMoreIcon
               fontSize="small"
@@ -89,13 +102,24 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated })
             PaperProps={{ className: "quick-add-bar-popover-paper" }}
           >
             <div className="quick-parent-selector-popover-content">
-              {buildTree(tasks).map(item => (
+              {rootTask && (
+                <SidebarItem
+                  key={rootTask._id}
+                  item={rootTask}
+                  selectedItemId={effectiveParentId}
+                  onFilterSelect={newItem => {
+                    setQuickBarParentId(newItem._id || "");
+                    setParentAnchor(null);
+                  }}
+                />
+              )}
+              {buildTree(tasks.filter(t => t._id !== rootTask?._id)).map(item => (
                 <SidebarItem
                   key={item._id}
                   item={item}
                   selectedItemId={effectiveParentId}
                   onFilterSelect={newItem => {
-                    setParentId(newItem._id || newItem.id);
+                    setQuickBarParentId(newItem._id || newItem.id || rootTask?._id || "");
                     setParentAnchor(null);
                   }}
                 />
@@ -118,11 +142,11 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated })
         <div className="quick-add-bar-divider" />
 
         <QuickDatePicker
-        enableAccessibleFieldDOMStructure={false}
-        deadlineDate={deadlineDate}
-        setDeadlineDate={setDeadlineDate}
-         anchorEl={dateAnchor}
-         setAnchorEl={wrappedSetDateAnchor}
+          enableAccessibleFieldDOMStructure={false}
+          deadlineDate={deadlineDate}
+          setDeadlineDate={setDeadlineDate}
+          anchorEl={dateAnchor}
+          setAnchorEl={wrappedSetDateAnchor}
           applyDeadline={(useTime) => {
             if (!deadlineDate) return;
             const finalDate = useTime

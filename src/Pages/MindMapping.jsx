@@ -12,6 +12,8 @@ import {
   MarkerType,
   useReactFlow,
 } from '@xyflow/react';
+import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate and useLocation
+import ROUTES from '../Routes/routesModel'; // Import ROUTES
 
 import '@xyflow/react/dist/style.css';
 import FloatingEdge from '../Components/MindMapping/Edges/FloatingEdge';
@@ -41,6 +43,8 @@ function MindMappingInner() {
   const [currentZoom, setCurrentZoom] = useState(0.75);
   console.log('selectedTask:', selectedTask);
 
+  const navigate = useNavigate(); // Initialize navigate
+  const location = useLocation(); // Get current location
   const { screenToFlowPosition, getViewport, instance: reactFlowInstance } = useReactFlow();
 
   // ----------------------- Custom hook for tasks -----------------------
@@ -217,6 +221,24 @@ function MindMappingInner() {
     );
   };
 
+  // Function for adding a child task from sidebar
+  const handleAddChildFromSidebar = useCallback((parentTask) => {
+    console.log("Add child triggered for parent:", parentTask);
+
+    // 1. Define the prefill data
+    const prefill = {
+      parentIds: [parentTask._id] // Set the parent ID
+      // You could add other defaults here if needed, e.g., type: 'Simple'
+    };
+
+    // 2. Navigate to Create Task page with prefill and current location state
+    navigate(ROUTES.CREATE_TASK, { state: { prefill, from: location } });
+
+    // Optional: Close the sidebar after initiating navigation
+    // setSelectedTask(null);
+
+  }, [navigate, location]); // Add navigate and location as dependencies
+
   // ----------------------- Component Render -----------------------
   return (
     <>
@@ -280,6 +302,9 @@ function MindMappingInner() {
                 allTasks={tasks}
                 onSelectTask={onSelectTaskInFlow}
                 onUpdateTask={handleUpdateCard}
+                onDeleteTask={handleDeleteCard} // Pass delete handler
+                onAddChild={handleAddChildFromSidebar} // This now navigates
+                onNavigate={navigate} // Pass navigate function
                 mode="sidebar"
                 onClose={() => setSelectedTask(null)}
               />

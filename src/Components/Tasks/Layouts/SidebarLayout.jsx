@@ -2,6 +2,7 @@
 import React from 'react';
 import './../Css/TaskDetailsSidebar.css';
 import TaskCard from '../Cards/TaskCard';
+import ROUTES from '../../../Routes/routesModel';
 
 export default function SidebarLayout({
   task,
@@ -9,11 +10,39 @@ export default function SidebarLayout({
   onSelectTask,
   onClose,
   onUpdateTask,
+  onDeleteTask, // Receive delete handler
+  onAddChild,   // Receive add child handler
+  onNavigate,   // Receive navigate function
 }) {
 
   if (!task) {
     return <div>Task not found</div>;
   }
+
+  const handleEdit = () => {
+    if (onNavigate && task?._id) {
+      onNavigate(`${ROUTES.EDIT_TASK}/${task._id}`);
+    } else {
+      console.error("Navigate function or task ID missing");
+    }
+  };
+
+  const handleAdd = () => {
+    if (onAddChild && task) {
+      onAddChild(task); // Pass the current task as the parent
+    } else {
+       console.error("onAddChild function or task missing");
+    }
+  };
+
+  const handleDelete = () => {
+    if (onDeleteTask && task?._id) {
+      onDeleteTask(task._id); // Call the delete handler from useTasks
+      onClose(); // Close sidebar after deletion attempt
+    } else {
+       console.error("onDeleteTask function or task ID missing");
+    }
+  };
 
   return (
     <div className="task-details sidebar">
@@ -24,16 +53,23 @@ export default function SidebarLayout({
         </button>
       </div>
 
+      {/* Action Buttons */}
+      <div className="sidebar-actions">
+        <button onClick={handleEdit} className="sidebar-button edit">Edit</button>
+        <button onClick={handleAdd} className="sidebar-button add-child">Add Child</button>
+        <button onClick={handleDelete} className="sidebar-button delete">Delete</button>
+      </div>
+
       <div className="description">
         <p>{task.description}</p>
       </div>
-      
+
       {/* Metrics: Progress and Weight */}
       <div className="metrics">
         <span>Progress: {task.progress}%</span>
         <span> | Weight: {task.weight}</span>
       </div>
-      
+
       {/* Dates */}
       <div className="dates">
         <span>Created: {new Date(task.createdAt).toLocaleDateString()}</span>
@@ -45,7 +81,7 @@ export default function SidebarLayout({
           <span> | End: {new Date(task.endDate).toLocaleDateString()}</span>
         )}
       </div>
-      
+
       {/* Parent / Child relationships */}
       <div className="relationships">
         {task.parentIds && task.parentIds.length > 0 && (
@@ -55,7 +91,7 @@ export default function SidebarLayout({
               {task.parentIds.map((parentId) => {
                 const parentTask = allTasks.find((t) => t._id === parentId);
                 if (!parentTask) return null;
-                
+
                 return (
                   <TaskCard
                     key={parentId}
@@ -78,7 +114,7 @@ export default function SidebarLayout({
               {task.childrenIds.map((childId) => {
                 const childTask = allTasks.find((t) => t._id === childId);
                 if (!childTask) return null;
-                
+
                 return (
                   <TaskCard
                     key={childId}

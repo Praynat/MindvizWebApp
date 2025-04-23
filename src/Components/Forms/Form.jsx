@@ -17,6 +17,7 @@ const Form = ({
   spacing = 1,
   styles = {},
   children,
+  submitText = "Submit", // Add prop for submit button text
 }) => {
   const { theme } = useDarkLightTheme();
   const navigate = useNavigate();
@@ -39,32 +40,31 @@ const Form = ({
       </Grid>
 
       <Grid container spacing={1} my={2} direction="row" width="100">
-        <Grid xs={12}>
+        <Grid item xs={12}> {/* Changed from xs={6} to take full width initially */}
           <FormButton
-            node="Submit"
-            onClick={onSubmit}
-            disabled={!validateForm}
+            node={submitText} // Use the prop here
+            onClick={onSubmit} // onSubmit should handle preventDefault
+            disabled={!validateForm} // Use validateForm prop
+            type="submit" // Make this the actual submit button
           />
         </Grid>
-        <Grid xs={12} sm={6}>
+        <Grid item xs={12} sm={6}> {/* Keep reset and cancel */}
           <FormButton
             node={<LoopIcon />}
             variant="outlined"
-            component="div"
+            component="div" // Should not submit the form
             onClick={onReset}
-
           />
         </Grid>
-        <Grid xs={12} sm={6}>
+        <Grid item xs={12} sm={6}>
           <FormButton
             node="cancel"
             color="error"
-            component="div"
+            component="div" // Should not submit the form
             variant="outlined"
             onClick={() => navigate(to)}
           />
         </Grid>
-
       </Grid>
     </Box>
   );
