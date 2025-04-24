@@ -68,7 +68,14 @@ function MindMappingInner() {
     setSelectedId,
     tasks: groupTasks, // <-- Get the tasks specific to the selected group
     detailLoading: groupTasksLoading, // <-- Use loading state for group tasks
+    fetchGroups, // Add this
   } = useGroups();
+
+  // --- Effect to refresh the group list when the component mounts ---
+  useEffect(() => {
+    // Refresh groups when component mounts
+    fetchGroups();
+  }, [fetchGroups]);
 
   // --- Effect to select the first group if none is selected ---
   useEffect(() => {
@@ -201,7 +208,7 @@ function MindMappingInner() {
           parentIds: [parentNode.id],
         };
 
-        const createdTask = await handleCreateCard(newTaskData);
+        const createdTask = await handleCreateCard(newTaskData,selectedGroupId);
         console.log('Created Task:', createdTask);
 
         const updatedParentData = {
@@ -358,7 +365,7 @@ function MindMappingInner() {
             {selectedTask && (
               <TaskDetails
                 task={selectedTask}
-                allTasks={groupTasks} // Pass groupTasks for context within the selected group
+                allTasks={groupTasks} 
                 onSelectTask={onSelectTaskInFlow}
                 onUpdateTask={handleUpdateCard}
                 onDeleteTask={handleDeleteCard} // Pass delete handler
@@ -376,7 +383,7 @@ function MindMappingInner() {
         tasks={groupTasks} // Pass groupTasks for context
         selectedTask={selectedTask}
         onTaskCreated={async (newTask) => {
-          await handleCreateCard(newTask);
+          await handleCreateCard(newTask,selectedGroupId);
           await getAllMyTasks();
         }}
         onOpenFullModal={(prefill) => {

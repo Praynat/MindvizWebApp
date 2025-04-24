@@ -18,7 +18,7 @@ import {
 import {
   fetchMyGroups,
   createGroup,
-  addTaskToGroup            // <- raw service (no React hook)
+  addTaskToGroup           
 } from '../../Services/Groups/groupsApiService';
 
 import normalizeTask   from '../../Helpers/Tasks/normalizeTask';
@@ -185,16 +185,34 @@ export default function useTasks() {
     finally     { setLoading(false); }
   }, []);
 
-  const handleCreateCard = useCallback(async (input) => {
-    setLoading(true); setError(null);
-    try {
-      const made = await createTask(normalizeTask(input));
-      setTasks(prev => [...prev, made]);
-      snack('success', 'Task created');
-      return made;
-    } catch (e) { setError(e); return null; }
-    finally     { setLoading(false); }
-  }, [snack]);
+  const handleCreateCard = useCallback(
+    async (input, groupId = null) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const made = await createTask(normalizeTask(input));
+        setTasks(prev => [...prev, made]);
+  
+        if (groupId) {
+          try {
+            await addTaskToGroup(groupId, made._id);
+          } catch (linkErr) {
+            console.error('🔗 addTaskToGroup failed:', linkErr);
+            snack('error', 'Task created but failed to add to selected group');
+          }
+        }
+  
+        snack('success', 'Task created');
+        return made;
+      } catch (e) {
+        setError(e);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [snack]
+  );
 
   const handleUpdateCard = useCallback(async (id, input) => {
     setLoading(true); setError(null);

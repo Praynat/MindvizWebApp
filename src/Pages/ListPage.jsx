@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import TaskDetails from '../Components/Tasks/TaskDetails/TaskDetails';
 import { useSnack } from '../Providers/Utils/SnackbarProvider';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -6,12 +6,15 @@ import Box from '@mui/material/Box';
 import useTasks from '../Hooks/Tasks/useTasks';
 import QuickAddBar from '../Components/Tasks/QuickAddBar/QuickAddBar'; 
 import './Css/ListPage.css';
+import { useNavigate, useLocation } from 'react-router-dom';import ROUTES from '../Routes/routesModel';
 
 const ListPage = () => {
   // Get handleCreateCard from useTasks
-  const { tasks, isLoading, error, getAllMyTasks, handleUpdateCard, handleCreateCard } = useTasks();
+  const { tasks, isLoading, error, getAllMyTasks, handleUpdateCard, handleCreateCard,handleDeleteCard } = useTasks();
   const [selectedTask, setSelectedTask] = useState(null);
   const { setSnack } = useSnack();
+  const navigate = useNavigate(); // Initialize navigate
+    const location = useLocation(); // Get current location
 
   // Derive categories from tasks data
   const categories = useMemo(() => {
@@ -48,7 +51,15 @@ const ListPage = () => {
       })
       .filter(Boolean);
   }, [tasks]);
+  const handleAddChildFromSidebar = useCallback((parentTask) => {
+    navigate(ROUTES.CREATE_TASK, {
+      state: {
+        prefill: { parentIds: [parentTask._id] },
+        from: location
+      }
+    });
 
+  }, [navigate, location]); // Add navigate and location as dependencies
   useEffect(() => {
     getAllMyTasks();
   }, [getAllMyTasks]);
@@ -99,6 +110,9 @@ const ListPage = () => {
           categories={categories}
           onSelectTask={handleSelectTask}
           onUpdateTask={handleUpdateCard}
+          onDeleteTask={handleDeleteCard} // Pass delete handler
+          onAddChild={handleAddChildFromSidebar} // This now navigates
+          onNavigate={navigate} // Pass navigate function
           onClose={() => setSelectedTask(null)}
         />
       )}

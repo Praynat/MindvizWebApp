@@ -102,24 +102,13 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated })
             PaperProps={{ className: "quick-add-bar-popover-paper" }}
           >
             <div className="quick-parent-selector-popover-content">
-              {rootTask && (
-                <SidebarItem
-                  key={rootTask._id}
-                  item={rootTask}
-                  selectedItemId={effectiveParentId}
-                  onFilterSelect={newItem => {
-                    setQuickBarParentId(newItem._id || "");
-                    setParentAnchor(null);
-                  }}
-                />
-              )}
-              {buildTree(tasks.filter(t => t._id !== rootTask?._id)).map(item => (
+              {buildTree(tasks).map(item => ( // Pass the full 'tasks' array (groupTasks from MindMapping) to buildTree
                 <SidebarItem
                   key={item._id}
                   item={item}
                   selectedItemId={effectiveParentId}
                   onFilterSelect={newItem => {
-                    setQuickBarParentId(newItem._id || newItem.id || rootTask?._id || "");
+                    setQuickBarParentId(newItem._id || ""); // Use the selected item's ID directly
                     setParentAnchor(null);
                   }}
                 />

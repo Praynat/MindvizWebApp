@@ -8,6 +8,7 @@ import initialTaskForm from "../../Components/Forms/initialTaskForm";
 import taskSchema from "../../Models/Tasks/taskSchema";
 import ROUTES from "../../Routes/routesModel";
 import TaskForm from "../../Components/Forms/TaskForm";
+import { useGroups } from "../../Hooks/Groups/useGroups";
 
 // Helper maps for bitmask conversion (move to a utils file later?)
 const weekDayMap = { Sunday: 1, Monday: 2, Tuesday: 4, Wednesday: 8, Thursday: 16, Friday: 32, Saturday: 64 };
@@ -18,7 +19,11 @@ export default function CreateTaskPage() {
   const location = useLocation();
   const { user } = useMyUser();
   const { tasks, isLoading: isLoadingTasks, error: tasksError, handleCreateCard } = useTasks();
-
+  const {
+    selectedId: selectedGroupId,
+    addTask: addTaskToGroup,
+    getGroupIdByTaskId,
+  } = useGroups();
   const {
     data,
     errors,
@@ -94,7 +99,14 @@ export default function CreateTaskPage() {
       if (!payload.tags?.length) delete payload.tags;
       if (!payload.endDate) delete payload.endDate;
 
-      await handleCreateCard(payload);
+// resolve which group this new task belongs to
+      // 1) if the form gave us a parent task, find its group
+      // 2) otherwise fall back to the currently selected group
+      let groupId = selectedGroupId;
+      if (payload.parentIds?.length) {
+        groupId = await getGroupIdByTaskId(payload.parentIds[0]);
+      }
+      await handleCreateCard(payload, groupId);
 
       const fromPath = location.state?.from?.pathname + location.state?.from?.search || ROUTES.MINDMAPPING_VIEW; 
       navigate(fromPath, { replace: true });

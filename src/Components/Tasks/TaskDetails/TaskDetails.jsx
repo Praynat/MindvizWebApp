@@ -15,9 +15,23 @@ export default function TaskDetails(props) {
     case 'sidebar':
       return <SidebarLayout {...props} onDeleteTask={onDeleteTask} onAddChild={onAddChild} onNavigate={onNavigate} />;
     case 'modal':
-      return <ModalLayout {...props} />;
+      return <ModalLayout 
+        {...props} 
+        onDeleteTask={onDeleteTask} 
+        onAddChild={onAddChild} 
+        onNavigate={onNavigate} 
+        
+      />;
     case 'page':
     default:
-      return <PageLayout tasks={allTasks} categories={categories} {...otherProps} />;
+      return <PageLayout 
+        tasks={allTasks} 
+        categories={categories} 
+        onDeleteTask={onDeleteTask}
+        onAddChild={onAddChild}
+        onNavigate={onNavigate}
+        selectedTaskId={props.task?._id}
+        {...otherProps} 
+      />;
   }
 }

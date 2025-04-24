@@ -17,11 +17,16 @@ const EditTaskPage = () => {
 
   const performUpdate = async (formDataFromHook) => {
     const payload = { ...formDataFromHook };
+    
+    // For tasks with no parents, ensure parentIds is an empty array to avoid validation error
+    if (!payload.parentIds || payload.parentIds.length === 0) {
+      payload.parentIds = [];
+    }
 
-    const success = await handleUpdateCard(id, payload); // Use handleUpdateCard
+    const success = await handleUpdateCard(id, payload);
     if (success) {
-      const fromPath = location.state?.from?.pathname + location.state?.from?.search || ROUTES.MINDMAPPING_VIEW; // Default to mindmap view
-      navigate(fromPath, { replace: true }); // Use replace to avoid adding edit page to history
+      const fromPath = location.state?.from?.pathname + location.state?.from?.search || ROUTES.MINDMAPPING_VIEW;
+      navigate(fromPath, { replace: true });
     }
   };
 
@@ -43,31 +48,23 @@ const EditTaskPage = () => {
         const taskData = await getTaskById(id);
 
         if (taskData) {
+          const isRootTask = taskData.isRoot || false;
+          
           const populatedData = {
             ...initialTaskForm, // Start with defaults
             ...taskData,        // Override with fetched data
 
+            // For root tasks, set empty parentIds to avoid validation error
+            parentIds: isRootTask ? [] : (Array.isArray(taskData.parentIds) ? taskData.parentIds : []),
+            
             // Ensure arrays are arrays
-            parentIds: Array.isArray(taskData.parentIds) ? taskData.parentIds : [],
             links: Array.isArray(taskData.links) ? taskData.links : [],
             tags: Array.isArray(taskData.tags) ? taskData.tags : [],
-            weekDays: Array.isArray(taskData.weekDays) ? taskData.weekDays : [], // Ensure weekDays is always an array
+            weekDays: Array.isArray(taskData.weekDays) ? taskData.weekDays : [],
 
-            // Ensure frequency-specific fields are null if not applicable or invalid
-            monthOfYear: taskData.monthOfYear,
-            dayOfMonth: taskData.dayOfMonth,
-            frequencyInterval: taskData.frequencyInterval,
+            // Ensure these fields have valid values
+            isRoot: isRootTask
           };
-
-          if (!populatedData.isFrequency) {
-            populatedData.frequency = null;
-            populatedData.startDate = null;
-            populatedData.endDate = null;
-            populatedData.weekDays = [];
-            populatedData.dayOfMonth = null;
-            populatedData.monthOfYear = null;
-            populatedData.frequencyInterval = null;
-          }
 
           setData(populatedData);
         } else {
@@ -91,6 +88,9 @@ const EditTaskPage = () => {
     return <Typography color="error">Error: {taskError.message || 'Failed to load task'}</Typography>;
   }
 
+  // Determine if this is a root task (either marked as isRoot OR has no parents)
+  const isRootTask = data?.isRoot || (!data?.parentIds || data?.parentIds.length === 0);
+
   return (
     <Container maxWidth="md">
       <Box sx={{ my: 4 }}>
@@ -107,7 +107,7 @@ const EditTaskPage = () => {
           tasks={tasks}
           validateForm={validateForm}
           isEditing={true}
-          isRootTask={data?.isRoot || false} // <-- Pass isRoot status here
+          isRootTask={isRootTask} // Pass either explicit isRoot or tasks with no parents
         />
       </Box>
     </Container>

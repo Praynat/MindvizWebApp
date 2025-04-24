@@ -1,0 +1,30 @@
+
+
+/* Add a subtle glow effect on hover */
+.MuiAppBar-root:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 0 15px rgba(43, 192, 228, 0.2) !important;
+}
+
+/* Make navbar items more visible with a subtle hover effect */
+.navbar-item {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.navbar-item:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background: linear-gradient(90deg, #2BC0E4, #416D94);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.navbar-item:hover:after {
+  width: 100%;
+}
+
+/* Add this class to your navbar items in LeftNavBar and RightNavBar components */

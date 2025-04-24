@@ -4,6 +4,7 @@ import Sidebar from '../ListView/Sidebar';
 import TaskCard from '../Cards/TaskCard';
 import TaskDetails from '../TaskDetails/TaskDetails';
 import '../Css/PageLayout.css';
+import { he } from 'date-fns/locale';
 
 // Component Definition
 const PageLayout = ({
@@ -13,6 +14,9 @@ const PageLayout = ({
   onViewChange,
   onSelectTask, // Received from ListPage
   onUpdateTask,
+  onDeleteTask,
+  onAddChild,
+  onNavigate,
   task, // This is the selectedTask from ListPage, passed via TaskDetails' otherProps
   selectedTaskId // <<< Add this prop, received from ListPage via TaskDetails
 }) => {
@@ -316,11 +320,13 @@ const PageLayout = ({
             </button>
           </div>
           <div className="action-buttons">
-            <button onClick={() => setFilterVisible(!filterVisible)}>
-              <i className="icon-filter" /> Filters
-            </button>
-            <button onClick={onNewTask} className="new-task-btn">
-              <i className="icon-plus" /> New Task
+            <button 
+              className="filter-button" 
+              onClick={() => setFilterVisible(!filterVisible)}
+            >
+              <span className="filter-icon">⚙️</span>
+              <span className="filter-text">Filters</span>
+              {filterVisible ? <span className="toggle-icon">▲</span> : <span className="toggle-icon">▼</span>}
             </button>
           </div>
         </div>
@@ -417,6 +423,9 @@ const PageLayout = ({
                         mode="medium"
                         onSelectTask={() => handleMainContentItemSelect(item)}
                         onUpdateTask={onUpdateTask}
+                        onDeleteTask={onDeleteTask}
+                        onAddChild={onAddChild}
+                        onNavigate={onNavigate}
                         isRootTask={!item.parentIds || item.parentIds.length === 0}
                         isSelected={selectedTaskId === item._id}
                       />
@@ -431,6 +440,9 @@ const PageLayout = ({
                     allTasks={tasks}
                     onSelectTask={handleMainContentItemSelect}
                     onUpdateTask={onUpdateTask}
+                    onDeleteTask={onDeleteTask}
+                    onAddChild={onAddChild}
+                    onNavigate={onNavigate}
                     mode="sidebar"
                     onClose={handleCloseSidebar}
                     isRoot={selectedListTask?.isRoot}
@@ -449,6 +461,9 @@ const PageLayout = ({
                     mode="medium"
                     onSelectTask={() => handleMainContentItemSelect(item)}
                     onUpdateTask={onUpdateTask}
+                    onDeleteTask={onDeleteTask}
+                    onAddChild={onAddChild}
+                    onNavigate={onNavigate}
                     isRootTask={!item.parentIds || item.parentIds.length === 0}
                     isSelected={selectedTaskId === item._id}
                   />
@@ -471,6 +486,9 @@ const PageLayout = ({
                           mode="medium"
                           onSelectTask={() => handleMainContentItemSelect(item)}
                           onUpdateTask={onUpdateTask}
+                          onDeleteTask={onDeleteTask}
+                          onAddChild={onAddChild}
+                          onNavigate={onNavigate}
                           isRootTask={!item.parentIds || item.parentIds.length === 0}
                           isSelected={selectedTaskId === item._id}
                         />
@@ -491,6 +509,9 @@ const PageLayout = ({
                           mode="medium"
                           onSelectTask={() => handleMainContentItemSelect(item)}
                           onUpdateTask={onUpdateTask}
+                          onDeleteTask={onDeleteTask}
+                          onAddChild={onAddChild}
+                          onNavigate={onNavigate}
                           isRootTask={!item.parentIds || item.parentIds.length === 0}
                           isSelected={selectedTaskId === item._id}
                         />
@@ -511,6 +532,9 @@ const PageLayout = ({
                           mode="medium"
                           onSelectTask={() => handleMainContentItemSelect(item)}
                           onUpdateTask={onUpdateTask}
+                          onDeleteTask={onDeleteTask}
+                          onAddChild={onAddChild}
+                          onNavigate={onNavigate}
                           isRootTask={!item.parentIds || item.parentIds.length === 0}
                           isSelected={selectedTaskId === item._id}
                         />
@@ -530,8 +554,11 @@ const PageLayout = ({
                 allTasks={tasks}
                 onSelectTask={handleMainContentItemSelect}
                 onUpdateTask={onUpdateTask}
+                onDeleteTask={onDeleteTask}  // Make sure this is passed
+                onAddChild={onAddChild}      // Make sure this is passed
+                onNavigate={onNavigate}      // Make sure this is passed
                 onClose={handleCloseModal}
-                isRoot={selectedListTask?.isRoot}
+                                isRoot={selectedListTask?.isRoot}
               />
             </div>
           </div>

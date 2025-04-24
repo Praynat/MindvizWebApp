@@ -1,8 +1,19 @@
 import React, { useEffect } from 'react';
 import '../Css/TaskDetailsModal.css';
 import TaskCardMinimal from '../Cards/TaskCardMinimal';
+import ROUTES from '../../../Routes/routesModel';
 
-const ModalLayout = ({ task, allTasks, onSelectTask, onUpdateTask, onClose }) => {
+const ModalLayout = ({ 
+  task, 
+  allTasks, 
+  onSelectTask, 
+  onUpdateTask, 
+  onClose,
+  onDeleteTask, // Add these handler props
+  onAddChild,
+  onNavigate,
+  isRoot
+}) => {
   // Add ESC key handler
   useEffect(() => {
     const handleEsc = (event) => {
@@ -40,11 +51,48 @@ const ModalLayout = ({ task, allTasks, onSelectTask, onUpdateTask, onClose }) =>
     onUpdateTask(childId, { ...childTask, isChecked: isComplete }, { silent: true });
   };
 
+  // Add these handler functions for the action buttons
+  const handleEdit = () => {
+    if (onNavigate && task?._id) {
+      onNavigate(`${ROUTES.EDIT_TASK}/${task._id}`);
+    } else {
+      console.error("Navigate function or task ID missing");
+    }
+  };
+
+  const handleAdd = () => {
+    if (onAddChild && task) {
+      onAddChild(task); // Pass the current task as the parent
+      onClose(); // Close modal after adding
+    } else {
+      console.error("onAddChild function or task missing");
+    }
+  };
+
+  const handleDelete = () => {
+    if (onDeleteTask && task?._id) {
+      onDeleteTask(task._id); // Call the delete handler
+      onClose(); // Close modal after deletion attempt
+    } else {
+      console.error("onDeleteTask function or task ID missing");
+    }
+  };
+
   return (
     <div className="task-details modal">
       <div className="header">
         <h2>{task.name}</h2>
         <button className="close-button" onClick={onClose}>×</button>
+      </div>
+      
+      {/* Add action buttons section, just like in SidebarLayout */}
+      <div className="modal-actions">
+        <button onClick={handleEdit} className="modal-button edit">Edit</button>
+        <button onClick={handleAdd} className="modal-button add-child">Add Child</button>
+        {/* Conditionally render the delete button */}
+        {!isRoot && (
+          <button onClick={handleDelete} className="modal-button delete">Delete</button>
+        )}
       </div>
       
       <div className="description">
@@ -75,7 +123,7 @@ const ModalLayout = ({ task, allTasks, onSelectTask, onUpdateTask, onClose }) =>
               {task.parentIds.map((parentId) => {
                 const parentTask = allTasks.find((t) => t._id === parentId);
                 const isCompleted = isTaskCompleted(parentId);
-                const isRootTask = !parentTask.parentIds || parentTask.parentIds.length === 0;
+                const isRootTask = !parentTask?.parentIds || parentTask?.parentIds.length === 0;
                 
                 return parentTask ? (
                   <div key={parentId} className="parent-card-wrapper">
