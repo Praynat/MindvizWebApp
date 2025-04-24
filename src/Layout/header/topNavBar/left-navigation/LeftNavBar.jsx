@@ -23,12 +23,14 @@ export default function LeftNavBar() {
     <Box sx={{ display: "flex", alignItems: "center", overflow: 'hidden' }}>
       {matchesMd && (
         <>
+        {!user && (
           <NavItem
             buttonSx={getButtonStyle(ROUTES.HOME)}
             sx={{ height: "100px" }}
             to={ROUTES.HOME}
             label={"Home"}
           />
+        )}
           {user && (
             <NavItem
               buttonSx={getButtonStyle(ROUTES.MINDMAPPING_VIEW)}
@@ -37,14 +39,7 @@ export default function LeftNavBar() {
               label={"Mindmapping"}
             />
           )}
-          {user && (
-            <NavItem
-              buttonSx={getButtonStyle(ROUTES.CALENDAR_VIEW)}
-              sx={{ height: "100px" }}
-              to={ROUTES.CALENDAR_VIEW}
-              label={"CALENDAR"}
-            />
-          )}
+          
           {user && (
             <NavItem
               buttonSx={getButtonStyle(ROUTES.LIST_VIEW)}
@@ -55,12 +50,13 @@ export default function LeftNavBar() {
           )}
           {user && (
             <NavItem
-              buttonSx={getButtonStyle(ROUTES.DASHBOARD_VIEW)}
+              buttonSx={getButtonStyle(ROUTES.GROUPS_VIEW)}
               sx={{ height: "100px" }}
-              to={ROUTES.DASHBOARD_VIEW}
-              label={"DASHBOARD"}
+              to={ROUTES.GROUPS_VIEW}
+              label={"GROUPS"}
             />
           )}
+         
         </>
       )}
     </Box>

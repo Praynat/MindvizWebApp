@@ -1,4 +1,105 @@
-.sidebar-container {
+/* ──────────────────────────────────────────────────────────────
+   GLOBAL COLOUR PALETTE
+   ────────────────────────────────────────────────────────────── */
+   :root {
+    --gradient-start: #2BC0E4;
+    --gradient-end:   #2C3E50;
+    --accent:         #FFA65C;
+
+    --bg-neutral:     #F7F9FC;
+    --shadow-color-light:  rgba(0, 0, 0, 0.10);
+    --shadow-color-medium: rgba(0, 0, 0, 0.15);
+    --hover-bg-light:    #f0f0f0;
+    --text-dark: #333; /* Added for clarity */
+    --text-white: #fff; /* Added for clarity */
+  }
+
+  /* ──────────────────────────────────────────────────────────────
+     GROUP SELECTOR (top-left mini-card)
+     ────────────────────────────────────────────────────────────── */
+  .groupSelectorPaper {
+    position: absolute;
+    top: 12vh;
+    left: 12px;
+    width: 220px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 30;
+
+    background: var(--bg-neutral);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--shadow-color-light);
+    border-radius: 12px;
+    box-shadow: 0 6px 18px var(--shadow-color-medium);
+  }
+
+  /* sticky header */
+  .groupSelectorTitle {
+    position: sticky;
+    top: 0;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 1.5rem; /* Kept user's change */
+    letter-spacing: 0.5px;
+
+    color: var(--text-white); /* Use variable */
+    background: linear-gradient(
+      135deg,
+      var(--gradient-start) 0%,
+      var(--gradient-end)   100%
+    );
+    border-radius: 12px 12px 0 0; /* Match paper radius */
+    z-index: 1; /* Ensure title stays above list items during scroll */
+  }
+
+  /* Target MUI list items directly when they are descendants of .groupSelectorPaper */
+  .groupSelectorPaper .MuiListItemButton-root { /* Removed :global() */
+    padding: 8px 16px;                /* a bit roomier */
+    font-size: 0.875rem;              /* smaller than the title */
+    font-weight: 500;                 /* medium weight */
+    text-transform: none;             /* normal capitalization */
+    color: var(--text-dark);
+    transition: background-color 0.15s ease;
+    /* Ensure default padding-left for non-selected */
+    padding-left: 16px;
+  }
+
+
+  .groupSelectorPaper .MuiListItemButton-root:hover { /* Removed :global() */
+    background-color: var(--hover-bg-light);
+  }
+
+  .groupSelectorPaper .MuiListItemButton-root.Mui-selected { /* Removed :global() */
+    background: rgba(157, 203, 243, 0.85); /* Keep the selected background */
+    color: var(--text-black); /* Use variable */
+    border-radius: 6px;
+    
+    padding-left: 10px; /* Overrides the default 16px */
+  }
+
+  .groupSelectorPaper .MuiListItemButton-root.Mui-selected:hover { /* Removed :global() */
+    background: rgba(116, 180, 237, 0.85); /* Keep the selected background */
+    color: var(--text-black); /* Use variable */
+    border-radius: 6px;
+    
+    padding-left: 10px; 
+  }
+
+  .groupSelectorPaper .MuiListItemText-primary { /* Removed :global() */
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* slim custom scrollbar */
+  .groupSelectorPaper::-webkit-scrollbar       { width: 6px; }
+  .groupSelectorPaper::-webkit-scrollbar-thumb { background: var(--shadow-color-light); border-radius: 3px; }
+
+  /* ──────────────────────────────────────────────────────────────
+     SIDEBAR (task details)
+     ────────────────────────────────────────────────────────────── */
+  .sidebar-container {
     width: 300px;
     height: 100vh;
     background-color: #f9f9f9;
@@ -6,13 +107,11 @@
     position: fixed;
     right: 0;
     top: 0;
-    transform: translateX(100%); /* Start off-screen */
+    transform: translateX(100%);
     transition: transform 0.5s ease-in-out;
     z-index: 1000;
   }
-  
-  .sidebar-container.open {
-    transform: translateX(0); /* Slide into view */
-    transition: transform 0.5s ease-in-out;
 
+  .sidebar-container.open {
+    transform: translateX(0);
   }

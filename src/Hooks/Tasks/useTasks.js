@@ -1,226 +1,238 @@
-import { useCallback, useEffect, useState } from "react";
-import { useSnack } from "../../Providers/Utils/SnackbarProvider";
-import useAxios from "../useAxios";
+// ==========================================================================
+//  useTasks  –  centralised task data / actions  (no circular deps)
+// ==========================================================================
+
+import { useCallback, useEffect, useState, useRef } from 'react';
+import { useSnack }      from '../../Providers/Utils/SnackbarProvider';
+import { useMyUser }     from '../../Providers/Users/UserProvider';
+import useAxios          from '../useAxios';
+
 import {
   createTask,
   deleteTask,
   editTask,
   MyTasks,
   TaskById,
-} from "../../Services/Tasks/tasksApiService";
-import normalizeTask from "../../Helpers/Tasks/normalizeTask";
-import initialTestModel from "../../Data/MindMapping/initialTestModel.json";
+} from '../../Services/Tasks/tasksApiService';
 
-export default function useTasks() {
-  const [task, setTask] = useState(null);
-  const [tasks, setTasks] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const setSnack = useSnack();
+import {
+  fetchMyGroups,
+  createGroup,
+  addTaskToGroup            // <- raw service (no React hook)
+} from '../../Services/Groups/groupsApiService';
 
-  useAxios();
+import normalizeTask   from '../../Helpers/Tasks/normalizeTask';
+import initialTestData from '../../Data/MindMapping/initialTestModel.json';
 
-  // Fetch all tasks
-  const getAllMyTasks = useCallback(async () => {
-    try {
-      setError(null);
-      setIsLoading(true);
-      const data = await MyTasks();
-      setTasks(data || []); // Ensure tasks are always an array
-      return data || []; // Return tasks for further use
-    } catch (err) {
-      setError(err.message);
-      return [];
-    } finally {
-      setIsLoading(false);
+/* ────────────────────────────────────────────────────────────────── */
+/*  utilities                                                         */
+/* ────────────────────────────────────────────────────────────────── */
+const SEED_FLAG = 'mindviz:tasksSeeded';
+const STALE_MS  = 30_000;
+
+const readFlag = () => {
+  const raw = localStorage.getItem(SEED_FLAG);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return { state: raw }; }
+};
+
+const safeCreateTask = async (task) => {
+  try {
+    return await createTask(task);
+  } catch (e) {
+    if (e.response?.status === 500 &&
+        /duplicate|primary key|pk_tasks/i.test(JSON.stringify(e.response.data))) {
+      console.warn(`↪ ${task._id} already exists — skipping`);
+      return null;
     }
-  }, []); // No dependencies to avoid re-creation
+    throw e;
+  }
+};
 
-  // Initialize demo tasks if needed
-  const initializeTasks = useCallback(async () => {
+const safeLinkTask = async (groupId, taskId) => {
+  const res = await addTaskToGroup(groupId, taskId);
+  if (res.ok || res.status === 204) return;
+
+  if (res.status === 409) return;                        // already linked
+  if (res.status === 500) {
+    const txt = await res.text();
+    if (/duplicate|primary key|pk_groups_tasks/i.test(txt)) return;
+  }
+  throw new Error(`Link task failed ${res.status}: ${await res.text()}`);
+};
+
+const getOrCreatePersonalGroup = async (displayName) => {
+  /* 1. look through the groups you already own */
+  const groups = await fetchMyGroups();
+
+  const existing = groups.find(g => g.name === displayName);
+  if (existing) {
+    // different back-end responses use different field names – be tolerant
+    return existing.id ?? existing._id ?? existing.groupId;
+  }
+
+  /* 2. nothing found ⇒ create a fresh one */
+  const g = await createGroup({
+    name:        displayName,
+    description: 'Your personal tasks',
+  });
+
+  // again: hand back *whichever* id field the API returned
+  return g.id ?? g._id ?? g.groupId;
+};
+
+/* ────────────────────────────────────────────────────────────────── */
+/*  main hook                                                         */
+/* ────────────────────────────────────────────────────────────────── */
+export default function useTasks() {
+  const snack       = useSnack();       // <— THIS is the toast function
+  const { user }    = useMyUser();
+  useAxios();                            // attach Axios interceptors
+
+  /* ---------- state ---------- */
+  const [tasks, setTasks]         = useState([]);
+  const [task,  setTask]          = useState(null);
+  const [loading,      setLoading]      = useState(true);
+  const [isInitializing, setInitializing] = useState(false);
+  const [error,        setError]        = useState(null);
+
+  const loaderIdRef = useRef(null);
+
+  /* ---------- fetch all ---------- */
+  const getAllMyTasks = useCallback(async () => {
+    setLoading(true); setError(null);
     try {
-      setIsLoading(true);
-      setError(null);
+      const data = await MyTasks();
+      setTasks(data ?? []);
+      return data ?? [];
+    } catch (e) { setError(e); return []; }
+    finally     { setLoading(false); }
+  }, []);
 
-      // Fetch existing tasks
-      const existingTasks = await MyTasks();
-      const existingIds = new Set(existingTasks.map((t) => t._id));
+  /* ---------- demo seeder ---------- */
+  const initialiseTasks = useCallback(async () => {
+    const flag = readFlag();
+    const now  = Date.now();
 
-      // Filter tasks to create
-      const tasksToCreate = initialTestModel.filter(
-        (item) => !existingIds.has(item._id)
-      );
+    if (flag?.state === 'done' && (await MyTasks()).length) return;
 
-      if (tasksToCreate.length === 0) {
-        setSnack("info", "All demo tasks already exist");
+    if (flag?.state === 'in-progress') {
+      if (now - (flag.started ?? 0) < STALE_MS) {
+        while (readFlag()?.state === 'in-progress') {
+          await new Promise(r => setTimeout(r, 400));
+        }
         return;
       }
-
-      // Create the new tasks
-      const creationPromises = tasksToCreate.map(async (task) => {
-        try {
-          return await createTask(normalizeTask(task));
-        } catch (error) {
-          console.error("Error creating task:", error);
-          return null;
-        }
-      });
-
-      await Promise.all(creationPromises); // Wait for all tasks to be created
-      setSnack("success", "Demo tasks initialized successfully!");
-      await getAllMyTasks(); // Refresh the task list
-    } catch (error) {
-      console.error("Failed to initialize tasks:", error);
-      setError(error.message);
-      setSnack("error", "Failed to initialize tasks");
-    } finally {
-      setIsLoading(false);
+      localStorage.removeItem(SEED_FLAG);
     }
-  }, [setSnack, getAllMyTasks]); // Proper dependencies for memoization
 
-  // Effect to initialize tasks on first render
+    localStorage.setItem(SEED_FLAG, JSON.stringify({ state: 'in-progress', started: now }));
+
+    try {
+      setInitializing(true);
+      loaderIdRef.current = snack('info', 'Setting up your workspace…', { persist: true });
+
+      const display = user?.displayName || user?.name || 'My Tasks';
+      const groupId = await getOrCreatePersonalGroup(display);
+
+      const existingIds = new Set((await MyTasks()).map(t => t._id));
+      const toInsert    = initialTestData.filter(t => !existingIds.has(t._id));
+
+      const newIds = [];
+      for (const raw of toInsert) {
+        const made = await safeCreateTask(normalizeTask(raw));
+        if (made) newIds.push(made._id);
+      }
+
+      for (const id of [...existingIds, ...newIds]) {
+        await safeLinkTask(groupId, id);
+      }
+
+      snack(
+        'success',
+        newIds.length ? `${newIds.length} demo task(s) added` : 'Workspace ready',
+        { dismiss: loaderIdRef.current }
+      );
+      localStorage.setItem(SEED_FLAG, JSON.stringify({ state: 'done' }));
+    } catch (e) {
+      setError(e);
+      snack('error', 'Failed to initialise demo data', { dismiss: loaderIdRef.current });
+      localStorage.removeItem(SEED_FLAG);
+    } finally {
+      setInitializing(false);
+      setLoading(false);
+    }
+  }, [user, snack]);
+
+  /* ---------- first load ---------- */
   useEffect(() => {
-    const initialize = async () => {
-      const fetchedTasks = await getAllMyTasks();
-      if (fetchedTasks.length === 0) {
-        await initializeTasks();
+    (async () => {
+      if ((await getAllMyTasks()).length === 0) {
+        await initialiseTasks();
         await getAllMyTasks();
       }
-    };
-    initialize();
-  }, [getAllMyTasks, initializeTasks]); // No `tasks.length` dependency to avoid loops
+    })();
+  }, [getAllMyTasks, initialiseTasks]);
 
+  /* ---------- CRUD wrappers ---------- */
   const getTaskById = useCallback(async (id) => {
+    setLoading(true); setError(null);
     try {
-      setError(null);
-      setIsLoading(true);
       const data = await TaskById(id);
       setTask(data);
       return data;
-    } catch (err) {
-      setError(err.message);
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
+    } catch (e) { setError(e); return null; }
+    finally     { setLoading(false); }
   }, []);
 
-  const getTaskByName = useCallback(async (name) => {
+  const handleCreateCard = useCallback(async (input) => {
+    setLoading(true); setError(null);
     try {
-      setError(null);
-      setIsLoading(true);
-      const data = await TaskById(name);
-      setTask(data);
-      return data;
-    } catch (err) {
-      setError(err.message);
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      const made = await createTask(normalizeTask(input));
+      setTasks(prev => [...prev, made]);
+      snack('success', 'Task created');
+      return made;
+    } catch (e) { setError(e); return null; }
+    finally     { setLoading(false); }
+  }, [snack]);
 
-  const handleCreateCard = useCallback(
-    async (taskFromClient) => {
-      setError(null);
-      setIsLoading(true);
-      try {
-        const normalized = normalizeTask(taskFromClient); // Normalize before API call
-        const newTask = await createTask(normalized);
-        // Update state - add to tasks list
-        setTasks(prevTasks => [...prevTasks, newTask]);
-        setTask(newTask); // Set the newly created task as the current 'task' if needed
-        setSnack("success", "A new task has been created");
-        return true; // <<< RETURN TRUE ON SUCCESS
-      } catch (error) {
-        setError(error.message);
-        return false; // <<< RETURN FALSE ON FAILURE
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [setSnack, setTasks, setTask] // Removed getAllMyTasks if timeout is removed
-  );
-
-  const handleUpdateCard = useCallback(
-    async (taskId, taskFromClient, options = {}) => {
-      setIsLoading(true);
-      setError(null); // Clear previous errors
-      try {
-        const normalized = normalizeTask(taskFromClient); // Normalize before API call
-        const updated = await editTask(taskId, normalized); // API call
-
-        // Update local state
-        const updatedTasks = tasks.map(t => t._id === taskId ? updated : t);
-        setTasks(updatedTasks);
-        if (task?._id === taskId) { // Update the single task state if it matches
-          setTask(updated);
-        }
-
-        if (!options.silent) {
-          setSnack("success", "The task has been successfully updated");
-        }
-        return true; // <<< RETURN TRUE ON SUCCESS
-      } catch (error) {
-        setError(error.message);
-        return false; // <<< RETURN FALSE ON FAILURE
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [setSnack, tasks, task, setTask] // Added setTask dependency
-  );
-
-  async function handleDeleteCard(taskId, skipConfirm = false) {
-    if (!skipConfirm) {
-      const confirmed = window.confirm("Are you sure you want to delete this Task?");
-      if (!confirmed) return;
-    }
-
-    setIsLoading(true);
+  const handleUpdateCard = useCallback(async (id, input) => {
+    setLoading(true); setError(null);
     try {
-      // 1) Get the "childTask" being deleted
-      const childTask = await getTaskById(taskId);
-      if (!childTask) throw new Error("Task not found");
+      const upd = await editTask(id, normalizeTask(input));
+      setTasks(prev => prev.map(t => (t._id === id ? upd : t)));
+      if (task?._id === id) setTask(upd);
+      snack('success', 'Task updated');
+      return upd;
+    } catch (e) { setError(e); return null; }
+    finally     { setLoading(false); }
+  }, [task, snack]);
 
-      // 2) For each parent, remove this child from `childrenIds`
-      const parentIds = childTask.parentIds || [];
-      for (const parentId of parentIds) {
-        const parentTask = await getTaskById(parentId);
-        if (parentTask) {
-          const updatedChildrenIds = (parentTask.childrenIds || []).filter(
-            (cId) => cId !== taskId
-          );
-          await handleUpdateCard(parentId, {
-            ...parentTask,
-            childrenIds: updatedChildrenIds,
-          });
-        }
-      }
-
-
-      await deleteTask(taskId);
-      setSnack("success", "Task deleted");
-
-    } catch (error) {
-      console.error("Error deleting task:", error);
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
+  const handleDeleteCard = useCallback(async (id) => {
+    const taskToDelete = tasks.find(t => t._id === id);
+    if (taskToDelete?.isRoot) {
+      snack('warning', 'The root task cannot be deleted.');
+      console.warn(`[useTasks] Attempted to delete root task (ID: ${id}). Operation blocked.`);
+      return false; // Prevent deletion
     }
-  }
+    if (!window.confirm('Delete this task?')) return false;
+    setLoading(true); setError(null);
+    try {
+      await deleteTask(id);
+      setTasks(prev => prev.filter(t => t._id !== id));
+      snack('success', 'Task deleted');
+      return true;
+    } catch (e) { setError(e); return false; }
+    finally     { setLoading(false); }
+  }, [snack, tasks]);
 
+  /* ---------- public API ---------- */
   return {
-    tasks,
-    task,
-    error,
-    isLoading,
-    getAllMyTasks,
-    getTaskById,
-    getTaskByName,
-    handleCreateCard,
-    handleUpdateCard,
-    handleDeleteCard,
-    initializeTasks,
+    tasks, task, error,
+    loading,
+    isInitializing,          // show spinner/backdrop when true
+    getAllMyTasks, getTaskById,
+    handleCreateCard, handleUpdateCard, handleDeleteCard,
+    initialiseTasks,
   };
 }

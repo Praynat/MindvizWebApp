@@ -21,11 +21,15 @@ import FloatingConnectionLine from '../Components/MindMapping/Edges/FloatingConn
 import RoundedNode from '../Components/MindMapping/Nodes/MyRoundedNode';
 import { buildNodesAndEdges } from '../Helpers/Mindmapping/Edges/layoutHelpers';
 import useTasks from '../Hooks/Tasks/useTasks';
-import './Css/MindMapping.css';
+import { useGroups } from '../Hooks/Groups/useGroups'; // Correct import
+import styles from './Css/MindMapping.css'; // Import CSS Modules
 import { v4 as uuidv4 } from 'uuid';
 import OutsideClickHandler from '../Helpers/General/OutsideClickHandler';
 import TaskDetails from '../Components/Tasks/TaskDetails/TaskDetails';
 import QuickAddBar from '../Components/Tasks/QuickAddBar/QuickAddBar';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import { Paper, List, ListItemButton, ListItemText, Typography } from '@mui/material';
 // ===================================================================
 // UTILITY FUNCTION
 // ===================================================================
@@ -41,15 +45,15 @@ function MindMappingInner() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [currentZoom, setCurrentZoom] = useState(0.75);
-  console.log('selectedTask:', selectedTask);
 
   const navigate = useNavigate(); // Initialize navigate
   const location = useLocation(); // Get current location
   const { screenToFlowPosition, getViewport, instance: reactFlowInstance } = useReactFlow();
 
-  // ----------------------- Custom hook for tasks -----------------------
+  // ----------------------- Custom hook for tasks (for CRUD) -----------------------
   const {
-    tasks,
+    tasks: allTasks, // Keep allTasks if needed elsewhere, e.g., for searching across all tasks
+    isInitializing,
     initializeTasks,
     handleCreateCard,
     handleUpdateCard,
@@ -57,24 +61,59 @@ function MindMappingInner() {
     getAllMyTasks,
   } = useTasks();
 
+  // ---- Use useGroups for group selection and filtered tasks ----
+  const {
+    groups,
+    selectedId: selectedGroupId,
+    setSelectedId,
+    tasks: groupTasks, // <-- Get the tasks specific to the selected group
+    detailLoading: groupTasksLoading, // <-- Use loading state for group tasks
+  } = useGroups();
+
+  // --- Effect to select the first group if none is selected ---
+  useEffect(() => {
+    // If no group is selected AND groups are loaded AND there are groups available
+    if (!selectedGroupId && !groupTasksLoading && groups.length > 0) {
+      setSelectedId(groups[0].id); // Select the first group in the list
+    }
+    // If the currently selected group ID is no longer found in the list (e.g., deleted)
+    // and there are other groups available, select the first one.
+    else if (selectedGroupId && !groupTasksLoading && groups.length > 0 && !groups.find(g => g.id === selectedGroupId)) {
+       setSelectedId(groups[0].id);
+    }
+     // If groups load and the list becomes empty, set selectedId to null
+     else if (!groupTasksLoading && groups.length === 0) {
+        setSelectedId(null);
+     }
+  }, [groups, selectedGroupId, groupTasksLoading, setSelectedId]);
 
   // ----------------------- Layout Initialization Effect -----------------------
   useEffect(() => {
-    if (containerRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      const containerHeight = containerRef.current.offsetHeight;
-      const containerCenterX = containerWidth / 2;
-      const containerCenterY = containerHeight / 2;
-      const currentTasks = tasks;
-      const { nodes: layoutNodes, edges: layoutEdges } = buildNodesAndEdges(
-        currentTasks,
-        containerCenterX,
-        containerCenterY
-      );
-      setNodes(layoutNodes);
-      setEdges(layoutEdges);
+    // Wait for container and group tasks to be loaded
+    if (!containerRef.current || groupTasksLoading) return;
+
+    const { offsetWidth: w, offsetHeight: h } = containerRef.current;
+
+    // Use groupTasks directly
+    const { nodes: n, edges: e } = buildNodesAndEdges(
+      groupTasks, // <-- Use tasks provided by useGroups
+      w / 2,
+      h / 2,
+    );
+    setNodes(n);
+    setEdges(e);
+
+    // Optional: Fit view when group tasks change
+    if (reactFlowInstance) {
+      setTimeout(() => reactFlowInstance.fitView({ padding: 0.2, duration: 300 }), 100);
     }
-  }, [setEdges, setNodes, initializeTasks, tasks, reactFlowInstance]);
+  }, [
+    setNodes,
+    setEdges,
+    groupTasks, // <-- Depend on the filtered tasks from useGroups
+    groupTasksLoading, // <-- Depend on the loading state
+    reactFlowInstance, // <-- Dependency for fitView
+  ]);
 
   // ----------------------- Node Deletion Handling -----------------------
   const onNodesDelete = useCallback(
@@ -95,15 +134,11 @@ function MindMappingInner() {
     [handleDeleteCard, getAllMyTasks]
   );
 
-
-
   // ----------------------- Handling Node Connection -----------------------
   const onConnect = useCallback(
     (params) => {
       const parentNode = nodes.find((node) => node.id === params.source);
       if (!parentNode) return;
-
-
 
       setEdges((eds) =>
         addEdge(
@@ -196,16 +231,19 @@ function MindMappingInner() {
   // ----------------------- Handling Node Click -----------------------
   const onNodeClick = useCallback(
     (event, node) => {
-      // Locate the corresponding task from the loaded tasks.
+      // Try finding in groupTasks first, as that's what's displayed
       const foundTask =
-        tasks.find((task) => task._id === node.id) || {
+        groupTasks.find((task) => task._id === node.id) ||
+        // Fallback to allTasks if needed, or handle missing task case
+        allTasks.find((task) => task._id === node.id) ||
+        {
           _id: node.id,
           name: node.data.label,
-          description: node.data.description || 'No description available.',
+          description: 'Task details not found in current context.',
         };
       setSelectedTask(foundTask);
     },
-    [tasks]
+    [groupTasks, allTasks] // Depend on both if using fallback
   );
 
   // ----------------------- Selecting a Task from the Flow -----------------------
@@ -242,6 +280,27 @@ function MindMappingInner() {
   // ----------------------- Component Render -----------------------
   return (
     <>
+            <Paper
+        elevation={0} // Keep elevation 0 if using custom shadow/border
+        className="groupSelectorPaper" /* Use string class name */
+      >
+        {/* Use string class name */}
+        <Typography variant="subtitle2" className="groupSelectorTitle">
+          Groups
+        </Typography>
+
+        <List dense disablePadding>
+          {groups.map(g => (
+            <ListItemButton
+              key={g.id}
+              selected={selectedGroupId === g.id}
+              onClick={() => setSelectedId(g.id)}
+                          >
+              <ListItemText primary={g.name} />
+            </ListItemButton>
+          ))}
+        </List>
+      </Paper>
       <div
         ref={containerRef}
         style={{ width: '100vw', height: '80vh', marginTop: '-2.5vh' }}
@@ -299,7 +358,7 @@ function MindMappingInner() {
             {selectedTask && (
               <TaskDetails
                 task={selectedTask}
-                allTasks={tasks}
+                allTasks={groupTasks} // Pass groupTasks for context within the selected group
                 onSelectTask={onSelectTaskInFlow}
                 onUpdateTask={handleUpdateCard}
                 onDeleteTask={handleDeleteCard} // Pass delete handler
@@ -307,13 +366,14 @@ function MindMappingInner() {
                 onNavigate={navigate} // Pass navigate function
                 mode="sidebar"
                 onClose={() => setSelectedTask(null)}
+                isRoot={selectedTask?.isRoot}
               />
             )}
           </OutsideClickHandler>
         </div>
       </div>
       <QuickAddBar
-        tasks={tasks}
+        tasks={groupTasks} // Pass groupTasks for context
         selectedTask={selectedTask}
         onTaskCreated={async (newTask) => {
           await handleCreateCard(newTask);
@@ -324,6 +384,12 @@ function MindMappingInner() {
           console.log('Open full modal with prefill:', prefill);
         }}
       />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: 9999 }}
+        open={isInitializing}
+      >
+        <CircularProgress />
+      </Backdrop>
     </>
   );
 }

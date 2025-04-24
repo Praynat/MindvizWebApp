@@ -308,11 +308,7 @@ const PageLayout = ({
               onClick={() => handleViewChange('list')}>
               List
             </button>
-            <button
-              className={viewMode === 'card' ? 'active' : ''}
-              onClick={() => handleViewChange('card')}>
-              Cards
-            </button>
+          
             <button
               className={viewMode === 'kanban' ? 'active' : ''}
               onClick={() => handleViewChange('kanban')}>
@@ -437,6 +433,7 @@ const PageLayout = ({
                     onUpdateTask={onUpdateTask}
                     mode="sidebar"
                     onClose={handleCloseSidebar}
+                    isRoot={selectedListTask?.isRoot}
                   />
                 )}
               </div>
@@ -534,6 +531,7 @@ const PageLayout = ({
                 onSelectTask={handleMainContentItemSelect}
                 onUpdateTask={onUpdateTask}
                 onClose={handleCloseModal}
+                isRoot={selectedListTask?.isRoot}
               />
             </div>
           </div>

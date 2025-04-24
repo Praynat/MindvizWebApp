@@ -13,6 +13,7 @@ export default function SidebarLayout({
   onDeleteTask, // Receive delete handler
   onAddChild,   // Receive add child handler
   onNavigate,   // Receive navigate function
+  isRoot,       // <<< Receive isRoot prop
 }) {
 
   if (!task) {
@@ -57,7 +58,10 @@ export default function SidebarLayout({
       <div className="sidebar-actions">
         <button onClick={handleEdit} className="sidebar-button edit">Edit</button>
         <button onClick={handleAdd} className="sidebar-button add-child">Add Child</button>
-        <button onClick={handleDelete} className="sidebar-button delete">Delete</button>
+        {/* Conditionally render the delete button */}
+        {!isRoot && (
+          <button onClick={handleDelete} className="sidebar-button delete">Delete</button>
+        )}
       </div>
 
       <div className="description">

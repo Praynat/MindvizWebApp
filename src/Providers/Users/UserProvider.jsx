@@ -64,6 +64,7 @@ export default function UserProvider({ children }) {
     userData,
     loading,
     clearAuthData,
+    userId: user?._id
   }), [token, user, userData, loading]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

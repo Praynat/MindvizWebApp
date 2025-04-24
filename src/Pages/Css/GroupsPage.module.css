@@ -1,0 +1,127 @@
+.pageContainer {
+    /* Assuming default spacing unit is 8px, p: 2 -> 16px */
+    padding: 16px;
+    height: calc(100vh - 64px);
+    display: flex;
+    width: '100vw' 
+}
+
+.sidebarPaper {
+    padding: 16px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.addGroupButton {
+    margin-bottom: 16px;
+}
+
+.sidebarListContainer {
+    margin-top: 16px;
+    overflow-y: auto;
+    height: calc(100% - 48px);
+    flex-grow: 1;
+}
+
+.mainPanelPaper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden; /* Prevent any unexpected overflow */
+}
+
+.loadingBox {
+    width: 100%;
+    padding: 32px; /* p: 4 */
+}
+
+.groupDetailsBox {
+    padding: 16px; /* p: 2 */
+    flex-shrink: 0;
+}
+
+.groupDetailsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tabsContainer {
+    /* Using CSS variable for theme color */
+    border-bottom: 1px solid var(--mui-palette-divider, rgba(0, 0, 0, 0.12));
+    flex-shrink: 0;
+}
+
+.contentArea {
+    padding: 16px; /* p: 2 */
+    overflow-y: auto;
+    flex-grow: 1;
+    height: 0; /* Forces the element to respect flex-grow */
+}
+
+.noGroupSelectedBox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.listHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px; /* mb: 2 */
+}
+
+.userCellContent {
+    display: flex;
+    align-items: center;
+}
+
+.userAvatar {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px; /* mr: 1 */
+}
+
+.roleSelectControl {
+    min-width: 100px;
+    margin-right: 8px; /* mr: 1 */
+}
+
+.tasksHeaderActions {
+    display: flex;
+    align-items: center;
+}
+
+.taskFilterControl {
+    min-width: 150px;
+    margin-right: 16px; /* mr: 2 */
+}
+
+.assignTaskControl {
+    min-width: 120px;
+    margin-right: 8px; /* mr: 1 */
+}
+
+.groupItem {
+    padding: 12px 16px;
+    margin: 4px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    font-weight: normal;
+}
+
+.groupItem:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.selectedGroup {
+    background-color: rgba(25, 118, 210, 0.08);
+    border-left: 3px solid #1976d2;
+    font-weight: 500;
+}

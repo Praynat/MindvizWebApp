@@ -68,24 +68,14 @@ export default function Menu({ isOpen, anchorEl, onClose }) {
 
         {user && (
           <>
-            <MenuLink
-              text="Home"
-              navigateTo={ROUTES.HOME}
-              onClick={onClose}
-              styles={{ display: { xs: "block", md: "none" } }}
-            />
+            
             <MenuLink
               text="Mindmapping"
               navigateTo={ROUTES.MINDMAPPING_VIEW}
               onClick={onClose}
               styles={{ display: { xs: "block", md: "none" } }}
             />
-            <MenuLink
-              text="Calendar"
-              navigateTo={ROUTES.CALENDAR_VIEW}
-              onClick={onClose}
-              styles={{ display: { xs: "block", md: "none" } }}
-            />
+           
             <MenuLink
               text="List"
               navigateTo={ROUTES.LIST_VIEW}
@@ -93,11 +83,12 @@ export default function Menu({ isOpen, anchorEl, onClose }) {
               styles={{ display: { xs: "block", md: "none" } }}
             />
             <MenuLink
-              text="Dashboard"
-              navigateTo={ROUTES.DASHBOARD_VIEW}
+              text="Groups"
+              navigateTo={ROUTES.GROUPS_VIEW}
               onClick={onClose}
               styles={{ display: { xs: "block", md: "none" } }}
             />
+            
             <Divider />
             <MenuLink
               text="Profile"

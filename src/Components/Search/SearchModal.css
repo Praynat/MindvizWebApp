@@ -1,0 +1,44 @@
+.search-modal-container {
+  display: flex;
+  flex-direction: column;
+  opacity: 1 !important; /* Ensure opacity is fully opaque */
+}
+
+/* Style for the modal backdrop */
+.MuiBackdrop-root {
+  background-color: rgba(0, 0, 0, 0.8) !important; /* Darker backdrop for better contrast */
+}
+
+/* Ensure the modal paper is fully opaque */
+.MuiModal-root .MuiBox-root {
+  opacity: 1 !important;
+}
+
+.search-modal-container .MuiTextField-root {
+  margin-bottom: 16px;
+}
+
+.search-modal-container .search-results {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Custom scrollbar styling */
+.search-modal-container .search-results::-webkit-scrollbar {
+  width: 8px;
+}
+
+.search-modal-container .search-results::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.search-modal-container .search-results::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.search-modal-container .search-results::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}

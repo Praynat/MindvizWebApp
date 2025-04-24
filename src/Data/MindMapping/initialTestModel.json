@@ -4,6 +4,7 @@
     "name": "Nathan",
     "description": "Root category for all tasks",
     "type": "Category",
+    "IsRoot": true,
     "parentIds": [],
     "childrenIds": [
       "C-WellBeing",

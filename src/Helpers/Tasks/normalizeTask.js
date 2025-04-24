@@ -33,6 +33,7 @@ function normalizeTask(task) {
       name: task.name || 'Title',
       description: task.description || '',
       type: task.type || 'Simple',
+      isRoot: task.isRoot || task.IsRoot || false,
       parentIds: task.parentIds || [],
       childrenIds: task.childrenIds || [],
       isChecked: typeof task.isChecked === 'boolean' ? task.isChecked : false,
