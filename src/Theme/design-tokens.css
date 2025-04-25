@@ -1,0 +1,81 @@
+/* design-tokens.css */
+
+/*────────────────────────────────────────────────────────────────────────*/
+/*   LIGHT MODE TOKENS                                                 */
+/*────────────────────────────────────────────────────────────────────────*/
+:root {
+    /* ─── COLORS ───────────────────────────────────────────────────── */
+    --color-gradient-start:   #2BC0E4;
+    --color-gradient-end:     #2C3E50;
+    --color-accent:           #FFA65C;
+    --color-accent-dark:      #e86c00;
+    --color-accent-soft:      #ffb980;
+    --color-bg-neutral:       #F7F9FC;
+    --color-bg-light-gray:    #EBEEF2;
+    --color-text-dark:        #1E1E1E;
+    --color-text-white:       #FFFFFF;
+    --color-text-white-85:    rgba(255, 255, 255, 0.85);
+    --color-hover-light:      #F0F0F0;
+    --color-hover-white-20:   rgba(255, 255, 255, 0.2);
+    --color-shadow-light:     rgba(0, 0, 0, 0.1);
+    --color-shadow-medium:    rgba(0, 0, 0, 0.15);
+    --color-placeholder:      #e0e0e0;
+  
+    /* ─── SPACING SCALE ───────────────────────────────────────────── */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 16px;
+    --sp-4: 24px;
+    --sp-5: 32px;
+    --sp-6: 48px;
+  
+    /* ─── TYPOGRAPHY ──────────────────────────────────────────────── */
+    --font-primary:          "Poppins", "Montserrat", sans-serif;
+    --fs-sm:                 0.875rem;
+    --fs-base:               1rem;
+    --fs-lg:                 1.125rem;
+    --fs-xl:                 1.5rem;
+    --fs-xxl:                3rem;
+    --lh-sm:                 1.2;
+    --lh-base:               1.5;
+    --lh-lg:                 1.6;
+    --letter-spacing-tight:  -0.03em;
+    --letter-spacing-normal: 0;
+  
+    /* ─── BORDER RADIUS ──────────────────────────────────────────── */
+    --radius-small:   4px;
+    --radius-medium:  8px;
+    --radius-large:   16px;
+    --radius-pill:    50px;
+  
+    /* ─── SHADOWS ───────────────────────────────────────────────── */
+    --shadow-sm:  0 2px 8px var(--color-shadow-light);
+    --shadow-md:  0 4px 15px var(--color-shadow-light);
+    --shadow-lg:  0 6px 20px var(--color-shadow-medium);
+  
+    /* ─── TRANSITIONS ───────────────────────────────────────────── */
+    --transition-fast: 0.2s ease-in-out;
+  }
+  
+  /*────────────────────────────────────────────────────────────────────────*/
+  /*   DARK MODE OVERRIDES                                                */
+  /*────────────────────────────────────────────────────────────────────────*/
+  :root.dark-mode {
+    /* Backgrounds */
+    --color-bg-neutral:    #2C3E50;  /* darkTheme.background.default */
+    --color-bg-light-gray: #1E1E1E;  /* darkTheme.background.paper */
+  
+    /* Text colors */
+    --color-text-dark:     #FFFFFF;
+    --color-text-white:    #FFFFFF;
+    --color-text-white-85: rgba(255, 255, 255, 0.85);
+  
+    /* Hover/background on interactive elements */
+    --color-hover-light:    rgba(255, 255, 255, 0.1);
+    --color-hover-white-20: rgba(255, 255, 255, 0.2);
+  
+    /* (Optional) deeper shadows for contrast */
+    --color-shadow-light:   rgba(0, 0, 0, 0.3);
+    --color-shadow-medium:  rgba(0, 0, 0, 0.5);
+  }
+  

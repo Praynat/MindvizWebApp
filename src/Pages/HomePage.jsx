@@ -45,9 +45,12 @@ const HomePage = () => {
           {/* Feature 1: Interactive Mind Map */}
           <Grid item xs={12} md={6}>
             <Box className="feature-card">
-              <Box className="feature-icon-placeholder"></Box>
+              
               <Box className="feature-image-placeholder">
-                {/* <img src="/path/to/image1.jpg" alt="Interactive Mind Map" /> */}
+              <img
+                  src="/Images/HomePage/Mindmapping-Picture.png"
+                  alt="Mind Mapping Example"
+                />
               </Box>
               <Typography variant="h5" component="h3" className="feature-title">
                 Interactive Mind Map
@@ -61,9 +64,11 @@ const HomePage = () => {
           {/* Feature 2: Auto Progress Tracking */}
           <Grid item xs={12} md={6}>
             <Box className="feature-card">
-              <Box className="feature-icon-placeholder"></Box>
               <Box className="feature-image-placeholder">
-                {/* <img src="/path/to/image2.jpg" alt="Auto Progress Tracking" /> */}
+              <img
+                  src="/Images/HomePage/ListPage-Progress-Picture.png"
+                  alt="List Page Progress Example"
+                />
               </Box>
               <Typography variant="h5" component="h3" className="feature-title">
                 Auto Progress Tracking
@@ -77,12 +82,14 @@ const HomePage = () => {
           {/* Feature 3: Calendar & List Views */}
           <Grid item xs={12} md={6}>
             <Box className="feature-card">
-              <Box className="feature-icon-placeholder"></Box>
               <Box className="feature-image-placeholder">
-                {/* <img src="/path/to/image3.jpg" alt="Calendar & List Views" /> */}
+              <img
+                  src="/Images/HomePage/ListPage-Kanban-Picture.png"
+                  alt="List Page Kanban Example"
+                />
               </Box>
               <Typography variant="h5" component="h3" className="feature-title">
-                Calendar & List Views
+                Kanban & List Views
               </Typography>
               <Typography variant="body1" className="feature-description">
                 Switch between mind map, calendar, and list views to suit your workflow.
@@ -93,9 +100,11 @@ const HomePage = () => {
           {/* Feature 4: Smart Search & Filters */}
           <Grid item xs={12} md={6}>
             <Box className="feature-card">
-              <Box className="feature-icon-placeholder"></Box>
               <Box className="feature-image-placeholder">
-                {/* <img src="/path/to/image4.jpg" alt="Smart Search & Filters" /> */}
+              <img
+                  src="/Images/HomePage/Search-Picture.png"
+                  alt="Search Example"
+                />
               </Box>
               <Typography variant="h5" component="h3" className="feature-title">
                 Smart Search & Filters
@@ -117,21 +126,28 @@ const HomePage = () => {
           {/* Step 1: Create Tasks (Image Left) */}
           <Grid container spacing={5} className="step-row" alignItems="center">
             {/* Image Column */}
-            <Grid item xs={12} order={{ xs: 1, md: 1 }}>
+            <Grid item xs={12} md={6} order={{ xs: 1, md: 1 }}>
               <Box className="step-image-placeholder">
-                {/* <img src="/path/to/step1.jpg" alt="Create Tasks" /> */}
+              <img
+                  src="/Images/HomePage/Create-Task-Picture.png"
+                  alt="Create Task Example"
+                />
               </Box>
             </Grid>
             {/* Text Column */}
-            <Grid item xs={12} order={{ xs: 2, md: 2 }}>
+            <Grid item xs={12} md={6} order={{ xs: 2, md: 2 }}>
               <Box className="step-text-content">
-                <Box className="step-number-circle">1</Box>
-                <Typography variant="h4" component="h3" className="step-heading">
-                  Create Tasks
-                </Typography>
-                <Typography variant="body1" className="step-description">
-                  Add titles, deadlines, tags, and all the details you need for each task.
-                </Typography>
+                <Box className="step-content-box">
+                  <Box className="step-number-circle">1</Box>
+                  <Box className="step-text-wrapper">
+                    <Typography variant="h4" component="h3" className="step-heading">
+                      Create Tasks
+                    </Typography>
+                    <Typography variant="body1" className="step-description">
+                      Add titles, deadlines, tags, and all the details you need for each task.
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
             </Grid>
           </Grid>
@@ -139,21 +155,28 @@ const HomePage = () => {
           {/* Step 2: Visualize Layout (Image Right) */}
           <Grid container spacing={5} className="step-row" alignItems="center">
             {/* Image Column */}
-            <Grid item xs={12} order={{ xs: 1, md: 2 }}>
+            <Grid item xs={12} md={6} order={{ xs: 1, md: 2 }}>
               <Box className="step-image-placeholder">
-                {/* <img src="/path/to/step2.jpg" alt="Visualize Layout" /> */}
+              <img
+                  src="/Images/HomePage/Visualize-Task-Picture.jpg"
+                  alt="Visualize Task Example"
+                />
               </Box>
             </Grid>
             {/* Text Column */}
-            <Grid item xs={12} order={{ xs: 2, md: 1 }}>
+            <Grid item xs={12} md={6} order={{ xs: 2, md: 1 }}>
               <Box className="step-text-content">
-                <Box className="step-number-circle">2</Box>
-                <Typography variant="h4" component="h3" className="step-heading">
-                  Visualize Layout
-                </Typography>
-                <Typography variant="body1" className="step-description">
-                  See your tasks and their interconnections automatically laid out as an interactive mind map.
-                </Typography>
+                <Box className="step-content-box">
+                  <Box className="step-number-circle">2</Box>
+                  <Box className="step-text-wrapper">
+                    <Typography variant="h4" component="h3" className="step-heading">
+                      Visualize Layout
+                    </Typography>
+                    <Typography variant="body1" className="step-description">
+                      See your tasks and their interconnections automatically laid out as an interactive mind map.
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
             </Grid>
           </Grid>
@@ -161,21 +184,28 @@ const HomePage = () => {
           {/* Step 3: Stay on Track (Image Left) */}
           <Grid container spacing={5} className="step-row" alignItems="center">
             {/* Image Column */}
-            <Grid item xs={12} order={{ xs: 1, md: 1 }}>
+            <Grid item xs={12} md={6} order={{ xs: 1, md: 1 }}>
               <Box className="step-image-placeholder">
-                {/* <img src="/path/to/step3.jpg" alt="Stay on Track" /> */}
+              <img
+                  src="/Images/HomePage/Progress-Task-Picture.jpg"
+                  alt="Progress Task Example"
+                />
               </Box>
             </Grid>
             {/* Text Column */}
-            <Grid item xs={12} order={{ xs: 2, md: 2 }}>
+            <Grid item xs={12} md={6} order={{ xs: 2, md: 2 }}>
               <Box className="step-text-content">
-                <Box className="step-number-circle">3</Box>
-                <Typography variant="h4" component="h3" className="step-heading">
-                  Stay on Track
-                </Typography>
-                <Typography variant="body1" className="step-description">
-                  Watch progress update automatically as you complete sub-tasks and meet deadlines.
-                </Typography>
+                <Box className="step-content-box">
+                  <Box className="step-number-circle">3</Box>
+                  <Box className="step-text-wrapper">
+                    <Typography variant="h4" component="h3" className="step-heading">
+                      Stay on Track
+                    </Typography>
+                    <Typography variant="body1" className="step-description">
+                      Watch progress update automatically as you complete sub-tasks and meet deadlines.
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
             </Grid>
           </Grid>
@@ -259,7 +289,7 @@ const HomePage = () => {
             Ready to take your task management to the next level?
           </Typography>
           <Typography variant="body1" className="cta-subhead">
-            Log in to your account or sign up now and start mapping your to‑dos in minutes.
+            Start mapping your to‑dos in minutes.
           </Typography>
           <Stack className="cta-button-stack" direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             {/* Use Link component for navigation */}

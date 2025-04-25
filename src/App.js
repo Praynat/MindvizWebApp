@@ -1,4 +1,5 @@
 import './App.css';
+import "./Theme/design-tokens.css"
 import { BrowserRouter} from 'react-router-dom';
 import Router from './Routes/Router';
 import Layout from './Layout/Layout';
