@@ -466,6 +466,7 @@ function MindMappingInner() {
           // Handle opening the full modal with prefilled data
           console.log('Open full modal with prefill:', prefill);
         }}
+        
       />
       <Backdrop
         sx={{ color: '#fff', zIndex: 9999 }}

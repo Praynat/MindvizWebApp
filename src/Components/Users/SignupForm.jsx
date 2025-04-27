@@ -27,7 +27,7 @@ export default function SignupForm({
       to={ROUTES.ROOT}
     >
       <Grid container spacing={2} sx={{mt:"10px"}}>
-        <Grid item xs={12} sm={5}>
+        <Grid container={false} xs={12} sm={5}>
           <Input
             name="first"
             label="First Name"
@@ -37,7 +37,7 @@ export default function SignupForm({
           />
         </Grid>
         
-        <Grid item xs={12} sm={3}>
+        <Grid container={false} xs={12} sm={3}>
           <Input
             name="middle"
             label="Middle Name"
@@ -48,7 +48,7 @@ export default function SignupForm({
           />
         </Grid>
 
-        <Grid item xs={12} sm={4}>
+        <Grid container={false} xs={12} sm={4}>
           <Input
             name="last"
             label="Last Name"
@@ -58,7 +58,7 @@ export default function SignupForm({
           />
         </Grid>
 
-        <Grid item xs={12} sm={3}>
+        <Grid container={false} xs={12} sm={3}>
           <Input
             name="phone"
             label="Phone"
@@ -68,7 +68,7 @@ export default function SignupForm({
             data={data}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid container={false} xs={12} sm={6}>
           <Input
             name="email"
             label="Email"
@@ -78,7 +78,7 @@ export default function SignupForm({
             data={data}
           />
         </Grid>
-        <Grid item xs={12} sm={3}>
+        <Grid container={false} xs={12} sm={3}>
           <Input
             name="password"
             label="password"
@@ -90,7 +90,7 @@ export default function SignupForm({
          />
         </Grid>
 
-        <Grid item xs={12} sm={5}>
+        <Grid container={false} xs={12} sm={5}>
           <Input
             label="Country"
             name="country"
@@ -99,7 +99,7 @@ export default function SignupForm({
             data={data}
           />
         </Grid>
-        <Grid item xs={12} sm={2}>
+        <Grid container={false} xs={12} sm={2}>
           <Input
             name="state"
             label="State"
@@ -109,7 +109,7 @@ export default function SignupForm({
             required={false}
           />
          </Grid>
-        <Grid item xs={12} sm={5}>
+        <Grid container={false} xs={12} sm={5}>
           <Input
             name="city"
             label="City"
@@ -119,7 +119,7 @@ export default function SignupForm({
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid container={false} xs={12} sm={6}>
           <Input
             name="street"
             label="Street"
@@ -128,7 +128,7 @@ export default function SignupForm({
             data={data}
           />
         </Grid>
-        <Grid item xs={12} sm={3}>
+        <Grid container={false} xs={12} sm={3}>
           <Input
             name="houseNumber"
             label="House Number"
@@ -138,7 +138,7 @@ export default function SignupForm({
             data={data}
           />
         </Grid>
-        <Grid item xs={12} sm={3}>
+        <Grid container={false} xs={12} sm={3}>
           <Input
             name="zip"
             label="Zip"
@@ -149,7 +149,7 @@ export default function SignupForm({
           />
         </Grid>
 
-        <Grid item xs={12} sm={9}>
+        <Grid container={false} xs={12} sm={9}>
           <Input
             name="url"
             label="Image URL"
@@ -159,7 +159,7 @@ export default function SignupForm({
             required={true}
           />
         </Grid>
-        <Grid item xs={12} sm={3}>
+        <Grid container={false} xs={12} sm={3}>
           <Input
             name="alt"
             label="Image Alt"
@@ -170,7 +170,7 @@ export default function SignupForm({
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid container={false} xs={12}>
           <FormControlLabel
             onChange={handleCheckboxChange}
             name="isBusiness"

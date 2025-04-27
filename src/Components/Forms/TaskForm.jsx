@@ -99,14 +99,14 @@ export default function TaskForm({
     return (
         <Form onSubmit={onSubmit} onReset={onReset} validateForm={validateForm} className="task-form" submitText={submitButtonText}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
+                {/* Parent container */}
                 <Grid container spacing={3}>
-                    {/* === Row 1: Name, Deadline, Description === */}
-                    <Grid container item xs={12} spacing={2}>
-                        <Grid item xs={12} sm={4}>
-                            {/* Name is NEVER disabled */}
+                    {/* Row 1 */}
+                    <Grid xs={12} container spacing={2}>
+                        <Grid container={false} xs={12} sm={4}>
                             <Input name="name" label="Task Name" data={data} onChange={onInputChange} error={errors.name} required className="full-height" />
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid container={false} xs={12} sm={4}>
                             <DateTimePicker
                                 label="Deadline"
                                 value={data.deadline || null}
@@ -116,14 +116,14 @@ export default function TaskForm({
                                 disabled={disableFields} // <-- Disable
                             />
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid container={false} xs={12} sm={4}>
                             <Input name="description" label="Description" data={data} onChange={onInputChange} error={errors.description} multiline disabled={disableFields} /> {/* <-- Disable */}
                         </Grid>
                     </Grid>
 
-                    {/* === Row 2: Parent, Type, Links, Tags === */}
-                    <Grid container item xs={12} spacing={2}>
-                        <Grid item xs={12} sm={3}>
+                    {/* Row 2 */}
+                    <Grid xs={12} container spacing={2}>
+                        <Grid container={false} xs={12} sm={3}>
                             <Box sx={{ position: 'relative', display: 'inline-block', width: '100%', height: '100%' }}>
                                 <Typography component="label" htmlFor="parent-select-button" sx={{ position: 'absolute', top: -8, left: "8%", px: 0.5, bgcolor: 'background.paper', fontSize: '0.75rem', color: 'text.secondary', userSelect: 'none', zIndex: 10 }}>
                                     Parent Task
@@ -140,32 +140,32 @@ export default function TaskForm({
                                 {errors.parentIds && <Typography color="error" variant="caption">{errors.parentIds}</Typography>}
                             </Box>
                         </Grid>
-                        <Grid item xs={12} sm={3}>
+                        <Grid container={false} xs={12} sm={3}>
                             <Input name="type" label="Task Type" select options={taskTypes} data={data} onChange={onInputChange} error={errors.type} required className="full-height" disabled={disableFields} /> {/* <-- Disable */}
                         </Grid>
-                        <Grid item xs={12} sm={3}>
+                        <Grid container={false} xs={12} sm={3}>
                             <Autocomplete multiple freeSolo options={[]} value={data.links || []} onChange={handleAuto('links')} renderTags={(val, getTag) => val.map((opt, i) => <Chip key={i} label={opt} {...getTag({ i })} />)} renderInput={params => <TextField {...params} variant="outlined" label="Links" placeholder="http://..." error={!!errors.links} helperText={errors.links} />} disabled={disableFields} /> {/* <-- Disable */}
                         </Grid>
-                        <Grid item xs={12} sm={3}>
+                        <Grid container={false} xs={12} sm={3}>
                             <Autocomplete multiple freeSolo options={[]} value={data.tags || []} onChange={handleAuto('tags')} renderTags={(val, getTag) => val.map((opt, i) => <Chip key={i} label={opt} {...getTag({ i })} />)} renderInput={params => <TextField {...params} variant="outlined" label="Tags" placeholder="Add tag" error={!!errors.tags} helperText={errors.tags} />} disabled={disableFields} /> {/* <-- Disable */}
                         </Grid>
                     </Grid>
 
-                    {/* === Row 3: Recurring Settings === */}
-                    <Grid container item xs={12} spacing={2} alignItems="center">
-                        <Grid item>
+                    {/* Row 3 */}
+                    <Grid xs={12} container spacing={2} alignItems="center">
+                        <Grid container={false} xs={12}>
                             <FormControlLabel control={<Checkbox checked={data.isFrequency || false} onChange={handleIsFreq} name="isFrequency" disabled={disableFields} />} label="Recurring Task" /> {/* <-- Disable */}
                         </Grid>
                         {data.isFrequency && (
                             <>
-                                <Grid item xs={12} sm={2}>
+                                <Grid container={false} xs={12} sm={2}>
                                     <Input name="frequency" label="Frequency" select options={frequencyTypes} data={data} onChange={onInputChange} error={errors.frequency} className="full-height" disabled={disableFields} /> {/* <-- Disable */}
                                 </Grid>
-                                <Grid item xs={12} sm={3}>
+                                <Grid container={false} xs={12} sm={3}>
                                     <DateTimePicker label="Start Date" value={data.startDate || null} onChange={handleDateField('startDate')} enableAccessibleFieldDOMStructure={false}
                                         slots={{ textField: params => <TextField {...params} fullWidth error={!!errors.startDate} helperText={errors.startDate} /> }} disabled={disableFields} /> {/* <-- Disable */}
                                 </Grid>
-                                <Grid item xs={12} sm={3}>
+                                <Grid container={false} xs={12} sm={3}>
                                     <DateTimePicker label="End Date" value={data.endDate || null} onChange={handleDateField('endDate')} enableAccessibleFieldDOMStructure={false}
                                         slots={{ textField: params => <TextField {...params} fullWidth error={!!errors.endDate} helperText={errors.endDate} /> }} disabled={disableFields} /> {/* <-- Disable */}
                                 </Grid>
@@ -173,11 +173,11 @@ export default function TaskForm({
                         )}
                     </Grid>
 
-                    {/* === Row 4: Frequency Specifics === */}
+                    {/* Row 4 (conditional) */}
                     {data.isFrequency && (
-                        <Grid container item xs={12} spacing={2}>
+                        <Grid xs={12} container spacing={2}>
                             {data.frequency === "Weekly" && (
-                                <Grid item xs={12}>
+                                <Grid container={false} xs={12}>
                                     <Box className="recurring-section">
                                         <FormControl component="fieldset" fullWidth error={!!errors.weekDays} disabled={disableFields}> {/* <-- Disable FormControl */}
                                             <Typography variant="body2">Repeat on:</Typography>
@@ -190,17 +190,17 @@ export default function TaskForm({
                                 </Grid>
                             )}
                             {data.frequency === "Monthly" && (
-                                <Grid item xs={12} sm={4}>
+                                <Grid container={false} xs={12} sm={4}>
                                     <Input name="dayOfMonth" label="Day of Month" type="number" data={data} onChange={onInputChange} error={errors.dayOfMonth} InputProps={{ inputProps: { min: 1, max: 31 } }} className="full-height" disabled={disableFields} /> {/* <-- Disable */}
                                 </Grid>
                             )}
                             {data.frequency === "Yearly" && (
-                                <Grid item xs={12} sm={4}>
+                                <Grid container={false} xs={12} sm={4}>
                                     <Input name="monthOfYear" label="Month" select options={monthOfYearValues.map(m => m.value)} getOptionLabel={opt => monthOfYearValues.find(m => m.value === opt)?.label || ''} data={data} onChange={onInputChange} error={errors.monthOfYear} className="full-height" disabled={disableFields} /> {/* <-- Disable */}
                                 </Grid>
                             )}
                             {data.frequency === "Custom" && (
-                                <Grid item xs={12} sm={4}>
+                                <Grid container={false} xs={12} sm={4}>
                                     <Input name="frequencyInterval" label="Interval (Days)" type="number" data={data} onChange={onInputChange} error={errors.frequencyInterval} InputProps={{ inputProps: { min: 1 } }} className="full-height" disabled={disableFields} /> {/* <-- Disable */}
                                 </Grid>
                             )}

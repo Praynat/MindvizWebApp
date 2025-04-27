@@ -40,7 +40,7 @@ const Form = ({
       </Grid>
 
       <Grid container spacing={1} my={2} direction="row" width="100">
-        <Grid item xs={12}> {/* Changed from xs={6} to take full width initially */}
+        <Grid container={false} xs={12}> {/* Changed from xs={6} to take full width initially */}
           <FormButton
             node={submitText} // Use the prop here
             onClick={onSubmit} // onSubmit should handle preventDefault
@@ -48,7 +48,7 @@ const Form = ({
             type="submit" // Make this the actual submit button
           />
         </Grid>
-        <Grid item xs={12} sm={6}> {/* Keep reset and cancel */}
+        <Grid container={false} xs={12} sm={6}> {/* Keep reset and cancel */}
           <FormButton
             node={<LoopIcon />}
             variant="outlined"
@@ -56,7 +56,7 @@ const Form = ({
             onClick={onReset}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid container={false} xs={12} sm={6}>
           <FormButton
             node="cancel"
             color="error"

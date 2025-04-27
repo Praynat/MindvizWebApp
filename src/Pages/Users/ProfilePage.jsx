@@ -20,22 +20,22 @@ const ProfilePage = () => {
   return (
     <Card sx={styles.card}>
       <Grid container spacing={2}>
-        <Grid  xs={12} container justifyContent="center">
+        <Grid container={false} xs={12}  justifyContent="center">
           <Avatar sx={styles.avatar}>
             {capitalizeFirstLetter(userData.name.first[0])}
           </Avatar>
         </Grid>
-        <Grid  xs={12} container justifyContent="center">
+        <Grid container={false} xs={12}  justifyContent="center">
           <Typography variant="h1" sx={styles.nameStyle}>
             {capitalizeFirstLetter(userData.name.first)} {capitalizeFirstLetter(userData.name.last)}
           </Typography>
         </Grid>
-        <Grid  xs={12} container justifyContent="center">
+        <Grid container={false} xs={12}  justifyContent="center">
           <Typography variant="subtitle1" sx={styles.title}>
             ID: <span style={styles.span}>{userData._id}</span>
           </Typography>
         </Grid>
-        <Grid  xs={12}>
+        <Grid container={false} xs={12}>
           <Typography sx={styles.title}>
             Address:{" "}
             <span style={styles.span}>
@@ -43,22 +43,22 @@ const ProfilePage = () => {
             </span>
           </Typography>
         </Grid>
-        <Grid  xs={12}>
+        <Grid container={false} xs={12}>
           <Typography sx={styles.title}>
             Email: <span style={styles.span}>{userData.email}</span>
           </Typography>
         </Grid>
-        <Grid  xs={12}>
+        <Grid container={false} xs={12}>
           <Typography sx={styles.title}>
             Phone: <span style={styles.span}>{userData.phone}</span>
           </Typography>
         </Grid>
-        <Grid  xs={12}>
+        <Grid container={false} xs={12}>
           <Typography sx={styles.title}>
             Business user: <span style={styles.span}>{userData.isBusiness ? 'Yes' : 'No'}</span>
           </Typography>
         </Grid>
-        <Grid  xs={12} container justifyContent="center">
+        <Grid container={false} xs={12}  justifyContent="center">
           {userData.image.url && (
             <Box
               component="img"

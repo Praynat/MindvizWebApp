@@ -4,7 +4,6 @@ import Sidebar from '../ListView/Sidebar';
 import TaskCard from '../Cards/TaskCard';
 import TaskDetails from '../TaskDetails/TaskDetails';
 import '../Css/PageLayout.css';
-import { he } from 'date-fns/locale';
 
 // Component Definition
 const PageLayout = ({

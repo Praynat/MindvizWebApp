@@ -15,13 +15,13 @@ export default function NavBar() {
         <Toolbar sx={{justifyContent:"space-between", alignContent:"center"}}>
 
           <Grid container width={"100%"} justifyContent="space-between"alignItems="center">
-            <Grid  sm={5} sx={{ overflow: "hidden", minWidth: 0 }}>
+            <Grid container={false} sm={5} sx={{ overflow: "hidden", minWidth: 0 }}>
                   <LeftNavBar noWrap/>
                 </Grid>
-                <Grid  xs={4} sm={2}>
+                <Grid container={false} xs={4} sm={2}>
                   <Logo/>
                 </Grid>
-                <Grid   sm={5} sx={{display:"flex", justifyContent:"flex-end"}}>
+                <Grid container={false}  sm={5} sx={{display:"flex", justifyContent:"flex-end"}}>
                   <RightNavBar/>
                 </Grid>
             </Grid>

@@ -1,6 +1,6 @@
 import React from "react";
 import ROUTES from "../../Routes/routesModel";
-import { Grid } from "@mui/material";
+import Grid from '@mui/material/Grid';
 import Form from "../Forms/Form";
 import Input from "../Forms/Input";
 
@@ -23,7 +23,7 @@ export default function EditUserForm({
       to={ROUTES.ROOT}
     >
       <Grid container spacing={2} sx={{ mt: "10px" }}>
-        <Grid  xs={12} sm={5}>
+        <Grid container={false} xs={12} sm={5}>
           <Input
             name="first"
             label="First Name"
@@ -32,7 +32,7 @@ export default function EditUserForm({
             data={data}
           />
         </Grid>
-        <Grid  xs={12} sm={3}>
+        <Grid container={false} xs={12} sm={3}>
           <Input
             name="middle"
             label="Middle Name"
@@ -42,7 +42,7 @@ export default function EditUserForm({
             required={false}
           />
         </Grid>
-        <Grid  xs={12} sm={4}>
+        <Grid container={false} xs={12} sm={4}>
           <Input
             name="last"
             label="Last Name"
@@ -51,7 +51,7 @@ export default function EditUserForm({
             data={data}
           />
         </Grid>
-        <Grid  xs={12} sm={3}>
+        <Grid container={false} xs={12} sm={3}>
           <Input
             name="phone"
             label="Phone"
@@ -61,7 +61,7 @@ export default function EditUserForm({
             data={data}
           />
         </Grid>
-        <Grid  xs={12} sm={9}>
+        <Grid container={false} xs={12} sm={9}>
           <Input
             name="url"
             label="Image URL"
@@ -71,7 +71,7 @@ export default function EditUserForm({
             required={false}
           />
         </Grid>
-        <Grid  xs={12} sm={3}>
+        <Grid container={false} xs={12} sm={3}>
           <Input
             name="alt"
             label="Image Alt"
@@ -81,7 +81,7 @@ export default function EditUserForm({
             required={false}
           />
         </Grid>
-        <Grid  xs={12} sm={5}>
+        <Grid container={false} xs={12} sm={5}>
           <Input
             label="Country"
             name="country"
@@ -90,7 +90,7 @@ export default function EditUserForm({
             data={data}
           />
         </Grid>
-        <Grid  xs={12} sm={2}>
+        <Grid container={false} xs={12} sm={2}>
           <Input
             name="state"
             label="State"
@@ -100,7 +100,7 @@ export default function EditUserForm({
             required={false}
           />
         </Grid>
-        <Grid  xs={12} sm={5}>
+        <Grid container={false} xs={12} sm={5}>
           <Input
             name="city"
             label="City"
@@ -109,7 +109,7 @@ export default function EditUserForm({
             data={data}
           />
         </Grid>
-        <Grid  xs={12} sm={6}>
+        <Grid container={false} xs={12} sm={6}>
           <Input
             name="street"
             label="Street"
@@ -118,7 +118,7 @@ export default function EditUserForm({
             data={data}
           />
         </Grid>
-        <Grid  xs={12} sm={3}>
+        <Grid container={false} xs={12} sm={3}>
           <Input
             name="houseNumber"
             label="House Number"
@@ -128,7 +128,7 @@ export default function EditUserForm({
             data={data}
           />
         </Grid>
-        <Grid  xs={12} sm={3}>
+        <Grid container={false} xs={12} sm={3}>
           <Input
             name="zip"
             label="Zip"

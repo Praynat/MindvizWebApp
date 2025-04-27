@@ -43,7 +43,7 @@ const HomePage = () => {
         </Typography>
         <Grid container spacing={4} className="features-grid-container">
           {/* Feature 1: Interactive Mind Map */}
-          <Grid item xs={12} md={6}>
+          <Grid container={false} xs={12} md={6}>
             <Box className="feature-card">
               
               <Box className="feature-image-placeholder">
@@ -62,7 +62,7 @@ const HomePage = () => {
           </Grid>
 
           {/* Feature 2: Auto Progress Tracking */}
-          <Grid item xs={12} md={6}>
+          <Grid container={false} xs={12} md={6}>
             <Box className="feature-card">
               <Box className="feature-image-placeholder">
               <img
@@ -80,7 +80,7 @@ const HomePage = () => {
           </Grid>
 
           {/* Feature 3: Calendar & List Views */}
-          <Grid item xs={12} md={6}>
+          <Grid container={false} xs={12} md={6}>
             <Box className="feature-card">
               <Box className="feature-image-placeholder">
               <img
@@ -98,7 +98,7 @@ const HomePage = () => {
           </Grid>
 
           {/* Feature 4: Smart Search & Filters */}
-          <Grid item xs={12} md={6}>
+          <Grid container={false} xs={12} md={6}>
             <Box className="feature-card">
               <Box className="feature-image-placeholder">
               <img
@@ -126,7 +126,7 @@ const HomePage = () => {
           {/* Step 1: Create Tasks (Image Left) */}
           <Grid container spacing={5} className="step-row" alignItems="center">
             {/* Image Column */}
-            <Grid item xs={12} md={6} order={{ xs: 1, md: 1 }}>
+            <Grid container={false} xs={12} md={6} order={{ xs: 1, md: 1 }}>
               <Box className="step-image-placeholder">
               <img
                   src="/Images/HomePage/Create-Task-Picture.png"
@@ -135,7 +135,7 @@ const HomePage = () => {
               </Box>
             </Grid>
             {/* Text Column */}
-            <Grid item xs={12} md={6} order={{ xs: 2, md: 2 }}>
+            <Grid container={false} xs={12} md={6} order={{ xs: 2, md: 2 }}>
               <Box className="step-text-content">
                 <Box className="step-content-box">
                   <Box className="step-number-circle">1</Box>
@@ -155,7 +155,7 @@ const HomePage = () => {
           {/* Step 2: Visualize Layout (Image Right) */}
           <Grid container spacing={5} className="step-row" alignItems="center">
             {/* Image Column */}
-            <Grid item xs={12} md={6} order={{ xs: 1, md: 2 }}>
+            <Grid container={false} xs={12} md={6} order={{ xs: 1, md: 2 }}>
               <Box className="step-image-placeholder">
               <img
                   src="/Images/HomePage/Visualize-Task-Picture.jpg"
@@ -164,7 +164,7 @@ const HomePage = () => {
               </Box>
             </Grid>
             {/* Text Column */}
-            <Grid item xs={12} md={6} order={{ xs: 2, md: 1 }}>
+            <Grid container={false} xs={12} md={6} order={{ xs: 2, md: 1 }}>
               <Box className="step-text-content">
                 <Box className="step-content-box">
                   <Box className="step-number-circle">2</Box>
@@ -184,7 +184,7 @@ const HomePage = () => {
           {/* Step 3: Stay on Track (Image Left) */}
           <Grid container spacing={5} className="step-row" alignItems="center">
             {/* Image Column */}
-            <Grid item xs={12} md={6} order={{ xs: 1, md: 1 }}>
+            <Grid container={false} xs={12} md={6} order={{ xs: 1, md: 1 }}>
               <Box className="step-image-placeholder">
               <img
                   src="/Images/HomePage/Progress-Task-Picture.jpg"
@@ -193,7 +193,7 @@ const HomePage = () => {
               </Box>
             </Grid>
             {/* Text Column */}
-            <Grid item xs={12} md={6} order={{ xs: 2, md: 2 }}>
+            <Grid container={false} xs={12} md={6} order={{ xs: 2, md: 2 }}>
               <Box className="step-text-content">
                 <Box className="step-content-box">
                   <Box className="step-number-circle">3</Box>
@@ -220,10 +220,10 @@ const HomePage = () => {
         {/* Row 1: Testimonial Cards */}
         <Grid container spacing={4} className="testimonials-grid-container" justifyContent="center">
           {/* Testimonial 1 */}
-          <Grid item xs={12} sm={8}>
+          <Grid container={false} xs={12} sm={8}>
             <Box className="testimonial-card">
               <Box className="avatar-placeholder">
-                {/* <img src="/path/to/avatar1.jpg" alt="Alice Johnson" /> */}
+               <img src="/Images/HomePage/Alice_Johnson_Avatar.png" alt="Alice Johnson" /> 
               </Box>
               <Typography variant="body1" className="testimonial-quote">
                 "Mindviz transformed how our team handles complex projects. The visual layout is incredibly intuitive!"
@@ -238,10 +238,10 @@ const HomePage = () => {
           </Grid>
 
           {/* Testimonial 2 */}
-          <Grid item xs={12} sm={8}>
+          <Grid container={false} xs={12} sm={8}>
             <Box className="testimonial-card">
               <Box className="avatar-placeholder">
-                {/* <img src="/path/to/avatar2.jpg" alt="Bob Williams" /> */}
+              <img src="/Images/HomePage/Bob_Williams_Avatar.png" alt="Alice Johnson" /> 
               </Box>
               <Typography variant="body1" className="testimonial-quote">
                 "Finally, a tool that thinks like I do. Mapping out tasks visually has boosted my productivity significantly."
@@ -256,10 +256,10 @@ const HomePage = () => {
           </Grid>
 
           {/* Testimonial 3 */}
-          <Grid item xs={12} sm={8}>
+          <Grid container={false} xs={12} sm={8}>
             <Box className="testimonial-card">
               <Box className="avatar-placeholder">
-                {/* <img src="/path/to/avatar3.jpg" alt="Charlie Brown" /> */}
+              <img src="/Images/HomePage/Charlie_Brown_Avatar.png" alt="Alice Johnson" /> 
               </Box>
               <Typography variant="body1" className="testimonial-quote">
                 "Keeping track of dependencies was always a nightmare. Mindviz makes it simple and clear. Highly recommended."

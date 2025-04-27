@@ -21,7 +21,7 @@ export default function CreateTaskPage() {
   const { tasks, isLoading: isLoadingTasks, error: tasksError, handleCreateCard } = useTasks();
   const {
     selectedId: selectedGroupId,
-    addTask: addTaskToGroup,
+    
     getGroupIdByTaskId,
   } = useGroups();
   const {

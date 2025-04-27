@@ -186,7 +186,7 @@ export function useGroups() {
       fetchGroups();
       return false;
     }
-  }, [selectedId, rootTaskId, snack, fetchGroups, groups]);
+  }, [selectedId, rootTaskId, snack, fetchGroups]);
 
   /* ====================================================================== */
   /*  MEMBER OPS (auto-refresh)                                             */

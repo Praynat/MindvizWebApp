@@ -16,10 +16,8 @@ export default function RightNavBar() {
   
   // Use your existing hook
   const { 
-    tasks, 
-    isLoading: tasksLoading, 
+    tasks,  
     handleUpdateCard, 
-    getAllMyTasks 
   } = useTasks();
   
   // Get the selected task ID from wherever it's being stored

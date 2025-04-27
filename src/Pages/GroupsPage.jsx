@@ -23,7 +23,7 @@ const GroupsPage = () => {
     /* data hook ------------------------------------------------------ */
     const {
         groups, listLoading, listError,
-        createGroup, updateGroup, deleteGroup,
+        updateGroup, deleteGroup,
         selectedId, setSelectedId,
         members, tasks, detailLoading, detailError,
         addMember, removeMember, updateRole,
@@ -278,7 +278,7 @@ const GroupsPage = () => {
             sx={{ height: 'calc(100vh - 64px)', width: '100vw' }}>
 
             {/* ─────────── Sidebar – group list ─────────── */}
-            <Grid item xs={12} md={3} sx={{ width: '20vw', height: '100%' }}>
+            <Grid container={false} xs={12} md={3} sx={{ width: '20vw', height: '100%' }}>
                 <Paper className={styles.sidebarPaper}>
                     <Button
                         variant="contained"
@@ -307,7 +307,7 @@ const GroupsPage = () => {
             </Grid>
 
             {/* ─────────── Main panel ─────────── */}
-            <Grid item xs={12} md={9} sx={{ width: '70vw', height: '100%' }}>
+            <Grid container={false} xs={12} md={9} sx={{ width: '70vw', height: '100%' }}>
                 <Paper className={styles.mainPanelPaper} sx={{ p: 2, height: '100%' }}>
                     {!selectedGroup ? (
                         <Box className={styles.noGroupSelectedBox}>
