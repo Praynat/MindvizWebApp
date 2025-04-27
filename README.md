@@ -61,10 +61,17 @@ Make sure your backend server is running if needed!
 
 
 ## 📸 Screenshots
-![Create-Task-Picture](https://github.com/user-attachments/assets/510e1e66-eab5-4c28-a30f-26e7b9e01197)
-![Progress-Task-Picture](https://github.com/user-attachments/assets/d4ff742d-19ea-43b4-bedd-df4f45e05a58)
-![Mindmapping-Picture](https://github.com/user-attachments/assets/e65714a2-1e53-4c1a-8e30-e2025fd5213c)
-![ListPage-Kanban-Picture](https://github.com/user-attachments/assets/8a20aadc-86da-4820-ae9f-2a442b45d8c8)
+
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/510e1e66-eab5-4c28-a30f-26e7b9e01197" width="300"/></td>
+    <td><img src="https://github.com/user-attachments/assets/d4ff742d-19ea-43b4-bedd-df4f45e05a58" width="300"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/e65714a2-1e53-4c1a-8e30-e2025fd5213c" width="300"/></td>
+    <td><img src="https://github.com/user-attachments/assets/8a20aadc-86da-4820-ae9f-2a442b45d8c8" width="300"/></td>
+  </tr>
+</table>
 
 ---
 
