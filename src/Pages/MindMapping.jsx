@@ -22,7 +22,7 @@ import RoundedNode from '../Components/MindMapping/Nodes/MyRoundedNode';
 import { buildNodesAndEdges } from '../Helpers/Mindmapping/Edges/layoutHelpers';
 import useTasks from '../Hooks/Tasks/useTasks';
 import { useGroups } from '../Hooks/Groups/useGroups'; // Correct import
-import styles from './Css/MindMapping.css'; // Import CSS Modules
+import './Css/MindMapping.css'; // Import CSS Modules
 import { v4 as uuidv4 } from 'uuid';
 import OutsideClickHandler from '../Helpers/General/OutsideClickHandler';
 import TaskDetails from '../Components/Tasks/TaskDetails/TaskDetails';
@@ -54,7 +54,6 @@ function MindMappingInner() {
   const {
     tasks: allTasks, // Keep allTasks if needed elsewhere, e.g., for searching across all tasks
     isInitializing,
-    initializeTasks,
     handleCreateCard,
     handleUpdateCard,
     handleDeleteCard,
@@ -86,12 +85,12 @@ function MindMappingInner() {
     // If the currently selected group ID is no longer found in the list (e.g., deleted)
     // and there are other groups available, select the first one.
     else if (selectedGroupId && !groupTasksLoading && groups.length > 0 && !groups.find(g => g.id === selectedGroupId)) {
-       setSelectedId(groups[0].id);
+      setSelectedId(groups[0].id);
     }
-     // If groups load and the list becomes empty, set selectedId to null
-     else if (!groupTasksLoading && groups.length === 0) {
-        setSelectedId(null);
-     }
+    // If groups load and the list becomes empty, set selectedId to null
+    else if (!groupTasksLoading && groups.length === 0) {
+      setSelectedId(null);
+    }
   }, [groups, selectedGroupId, groupTasksLoading, setSelectedId]);
 
   // ----------------------- Layout Initialization Effect -----------------------
@@ -137,6 +136,8 @@ function MindMappingInner() {
       }
 
       await getAllMyTasks();
+      window.location.reload();
+
     },
     [handleDeleteCard, getAllMyTasks]
   );
@@ -208,7 +209,7 @@ function MindMappingInner() {
           parentIds: [parentNode.id],
         };
 
-        const createdTask = await handleCreateCard(newTaskData,selectedGroupId);
+        const createdTask = await handleCreateCard(newTaskData, selectedGroupId);
         console.log('Created Task:', createdTask);
 
         const updatedParentData = {
@@ -216,10 +217,11 @@ function MindMappingInner() {
           childrenIds: [...(parentNode.data.task?.childrenIds || []), createdTask._id],
         };
 
-        await handleUpdateCard(parentNode.id, updatedParentData);
+        await handleUpdateCard(parentNode.id, updatedParentData, { silent: true });
+        window.location.reload();
       }
     },
-    [screenToFlowPosition, setEdges, setNodes, nodes, handleCreateCard, handleUpdateCard]
+    [screenToFlowPosition, setEdges, setNodes, nodes, handleCreateCard, handleUpdateCard, selectedGroupId]
   );
 
   // ----------------------- Define Node and Edge Types -----------------------
@@ -227,13 +229,85 @@ function MindMappingInner() {
   const nodeTypes = useMemo(() => ({ rounded: RoundedNode }), []);
 
   // ----------------------- Node Label Change -----------------------
-  const onLabelChange = (id, newLabel) => {
+  const onLabelChange = useCallback((id, newLabel) => {
+    // First update the visual node appearance
     setNodes((nds) =>
       nds.map((node) =>
         node.id === id ? { ...node, data: { ...node.data, label: newLabel } } : node
       )
     );
-  };
+
+    // Then update the actual task data
+    const taskToUpdate = groupTasks.find(task => task._id === id);
+    if (taskToUpdate) {
+      const updatedTask = {
+        ...taskToUpdate,
+        name: newLabel
+      };
+
+      // Use the silent option to avoid double-confirm
+      handleUpdateCard(id, updatedTask);
+    }
+  }, [setNodes, groupTasks, handleUpdateCard]);
+  // Add this function near your onLabelChange function
+ // Add this function near your onLabelChange function
+ const onCheckboxChange = useCallback(
+  async (id, isChecked) => {
+    // 1) Optimistically flip the checkbox in the UI
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === id
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                task: {
+                  ...node.data.task,
+                  progress: isChecked ? 100 : 0,
+                },
+              },
+            }
+          : node
+      )
+    );
+
+    // 2) Find the _entire_ task object you already have in state
+    const taskToUpdate = groupTasks.find((t) => t._id === id);
+    if (!taskToUpdate) return;
+
+    // 3) Merge in the new progress so normalizeTask() sees everything
+    const fullUpdate = {
+      ...taskToUpdate,
+      isChecked: isChecked, 
+      progress: isChecked ? 100 : 0,
+    };
+
+    try {
+      // 4) Await the API call so it actually goes out
+      await handleUpdateCard(id, fullUpdate, { silent: true });
+    } catch (err) {
+
+      setNodes((nds) =>
+        nds.map((node) =>
+          node.id === id
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  task: {
+                    ...node.data.task,
+                    progress: taskToUpdate.progress,
+                  },
+                },
+              }
+            : node
+        )
+      );
+    }
+  },
+  [setNodes, groupTasks, handleUpdateCard]
+);
+
 
   // ----------------------- Handling Node Click -----------------------
   const onNodeClick = useCallback(
@@ -287,7 +361,7 @@ function MindMappingInner() {
   // ----------------------- Component Render -----------------------
   return (
     <>
-            <Paper
+      <Paper
         elevation={0} // Keep elevation 0 if using custom shadow/border
         className="groupSelectorPaper" /* Use string class name */
       >
@@ -302,7 +376,7 @@ function MindMappingInner() {
               key={g.id}
               selected={selectedGroupId === g.id}
               onClick={() => setSelectedId(g.id)}
-                          >
+            >
               <ListItemText primary={g.name} />
             </ListItemButton>
           ))}
@@ -320,6 +394,7 @@ function MindMappingInner() {
                 ...node.data,
                 zoom: currentZoom,
                 onLabelChange: (newLabel) => onLabelChange(node.id, newLabel),
+                onCheckboxChange: (id, isChecked) => onCheckboxChange(id, isChecked),
                 onUpdateTask: handleUpdateCard,
               },
             };
@@ -365,7 +440,7 @@ function MindMappingInner() {
             {selectedTask && (
               <TaskDetails
                 task={selectedTask}
-                allTasks={groupTasks} 
+                allTasks={groupTasks}
                 onSelectTask={onSelectTaskInFlow}
                 onUpdateTask={handleUpdateCard}
                 onDeleteTask={handleDeleteCard} // Pass delete handler
@@ -383,8 +458,9 @@ function MindMappingInner() {
         tasks={groupTasks} // Pass groupTasks for context
         selectedTask={selectedTask}
         onTaskCreated={async (newTask) => {
-          await handleCreateCard(newTask,selectedGroupId);
+          await handleCreateCard(newTask, selectedGroupId);
           await getAllMyTasks();
+          window.location.reload();
         }}
         onOpenFullModal={(prefill) => {
           // Handle opening the full modal with prefilled data

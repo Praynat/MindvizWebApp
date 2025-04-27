@@ -72,7 +72,9 @@ function layoutTaskRadially(task, taskMap, level = 0, xCenter, yCenter, visited 
     },
   ];
   const edges = [];
-  const children = task.childrenIds || [];
+  const children = (task.childrenIds || []).filter(childId =>
+    Boolean(taskMap[childId])
+  );
   const childCount = children.length;
   const randomOffset = 0;
   if (childCount > 0) {

@@ -214,26 +214,34 @@ export default function useTasks() {
     [snack]
   );
 
-  const handleUpdateCard = useCallback(async (id, input) => {
-    setLoading(true); setError(null);
-    try {
-      const upd = await editTask(id, normalizeTask(input));
-      setTasks(prev => prev.map(t => (t._id === id ? upd : t)));
-      if (task?._id === id) setTask(upd);
-      snack('success', 'Task updated');
-      return upd;
-    } catch (e) { setError(e); return null; }
-    finally     { setLoading(false); }
-  }, [task, snack]);
+  const handleUpdateCard = useCallback(
+    async (id, input, options = {}) => {
+      setLoading(true); setError(null);
+      try {
+        const upd = await editTask(id, normalizeTask(input));
+        setTasks(prev => prev.map(t => (t._id === id ? upd : t)));
+        if (task?._id === id) setTask(upd);
+        if (!options.silent) snack('success', 'Task updated');
+        return upd;
+      } catch (e) {
+        setError(e);
+        throw e;    // <-- re-throw so onCheckboxChange can catch
+      } finally {
+        setLoading(false);
+      }
+    },
+    [task, snack]
+  );
+  
 
-  const handleDeleteCard = useCallback(async (id) => {
+  const handleDeleteCard = useCallback(async (id, skipConfirmation = false) => {
     const taskToDelete = tasks.find(t => t._id === id);
     if (taskToDelete?.isRoot) {
       snack('warning', 'The root task cannot be deleted.');
       console.warn(`[useTasks] Attempted to delete root task (ID: ${id}). Operation blocked.`);
       return false; // Prevent deletion
     }
-    if (!window.confirm('Delete this task?')) return false;
+    if (!skipConfirmation && !window.confirm('Delete this task?')) return false;
     setLoading(true); setError(null);
     try {
       await deleteTask(id);

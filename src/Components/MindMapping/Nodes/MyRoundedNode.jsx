@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Handle, Position } from '@xyflow/react';
 
 const RoundedNode = ({ id, data, selected }) => {
-  const { size, label, onLabelChange, task, hasCompletedParent, zoom, onUpdateTask } = data;
+  const { size, label, onLabelChange, task, hasCompletedParent, zoom } = data;
 
   // ========== CONFIGURABLE STYLING PARAMETERS ==========
   // Reference values
@@ -60,17 +60,11 @@ const RoundedNode = ({ id, data, selected }) => {
   const isCompleted = (task && task.progress === 100) || hasCompletedParent;
   // Handle checkbox click
 
-  // in TaskCard.jsx / MyRoundedNode.jsx / ModalLayout.jsx…
-const handleCheckboxClick = (e) => {
-  e.stopPropagation();
-  const newChecked = !isCompleted;
-  const full = {
-    ...task,           // name, _id, parentIds, childrenIds…
-    isChecked: newChecked
+  const handleCheckboxClick = (e) => {
+    e.stopPropagation();
+    const newChecked = !isCompleted;
+    data.onCheckboxChange(id, newChecked);
   };
-  console.log('PATCH→', full);
-  onUpdateTask(task._id, full);
-};
   // 1) Detect Shift key press/release
   useEffect(() => {
     const handleKeyDown = (event) => {
