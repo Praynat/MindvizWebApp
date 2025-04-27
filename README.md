@@ -1,4 +1,3 @@
-Here’s a clean first version of your **README.md** that matches your project:
 
 ---
 
