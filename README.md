@@ -41,7 +41,7 @@ Create, visualize, and organize your tasks intuitively across multiple views: Mi
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/mindviz.git
+git clone https://github.com/Praynat/MindvizWebApp
 cd mindviz
 ```
 
