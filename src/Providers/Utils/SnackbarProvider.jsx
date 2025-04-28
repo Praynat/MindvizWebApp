@@ -4,17 +4,26 @@ import { Alert, Snackbar } from "@mui/material";
 const SnackbarContext = createContext();
 
 export default function SnackbarProvider({ children }) {
-  const [isSnackOpen, setOpenSnack] = useState(false);
-  const [snackColor, setSnackColor] = useState("success");
-  const [snackVariant, setSnackVariant] = useState("filled");
-  const [snackMessage, setSnackMessage] = useState("in snackbar");
+  const [open, setOpen] = useState(false);
+  const [color, setColor] = useState("success");
+  const [variant, setVariant] = useState("filled");
+  const [message, setMessage] = useState("");
+  // new: store per-snack options
+  const [anchorOrigin, setAnchorOrigin] = useState({ vertical: "bottom", horizontal: "right" });
+  const [autoHideDuration, setAutoHideDuration] = useState(3000);
 
-  const setSnack = useCallback((color, message, variant = "filled") => {
-    setOpenSnack(true);
-    setSnackColor(color);
-    setSnackVariant(variant);
-    setSnackMessage(message);
-  }, []);
+  const setSnack = useCallback(
+    (severity, text, options = {}) => {
+      setColor(severity);
+      setMessage(text);
+      setVariant(options.variant || "filled");
+      // override only if provided
+      if (options.anchorOrigin) setAnchorOrigin(options.anchorOrigin);
+      if (options.autoHideDuration != null) setAutoHideDuration(options.autoHideDuration);
+      setOpen(true);
+    },
+    []
+  );
 
   return (
     <>
@@ -23,15 +32,13 @@ export default function SnackbarProvider({ children }) {
       </SnackbarContext.Provider>
 
       <Snackbar
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        open={isSnackOpen}
-        onClose={() => {
-          setOpenSnack(false);
-        }}
-        autoHideDuration={3000}
+        anchorOrigin={anchorOrigin}
+        open={open}
+        autoHideDuration={autoHideDuration}
+        onClose={() => setOpen(false)}
       >
-        <Alert severity={snackColor} variant={snackVariant}>
-          {snackMessage}
+        <Alert severity={color} variant={variant}>
+          {message}
         </Alert>
       </Snackbar>
     </>
@@ -39,7 +46,7 @@ export default function SnackbarProvider({ children }) {
 }
 
 export const useSnack = () => {
-  const context = useContext(SnackbarContext);
-  if (!context) throw Error("useSnackbar must be used within a NameProvider");
-  return context;
+  const ctx = useContext(SnackbarContext);
+  if (!ctx) throw new Error("useSnack must be used inside SnackbarProvider");
+  return ctx;
 };

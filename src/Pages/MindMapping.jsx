@@ -427,7 +427,7 @@ function MindMappingInner() {
           defaultViewport={{ x: 0, y: 0, zoom: 0.75 }}
           multiSelectionKeyCode="Control"
           fitView={{ padding: 0.2, includeHiddenNodes: true }}
-          fitViewOptions={{ duration: 800 }}
+          fitViewOptions={{ duration: 0 }}
           nodesDraggable
           nodesConnectable
           elementsSelectable

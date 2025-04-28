@@ -3,9 +3,9 @@
 // ==========================================================================
 
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { useSnack }      from '../../Providers/Utils/SnackbarProvider';
-import { useMyUser }     from '../../Providers/Users/UserProvider';
-import useAxios          from '../useAxios';
+import { useSnack } from '../../Providers/Utils/SnackbarProvider';
+import { useMyUser } from '../../Providers/Users/UserProvider';
+import useAxios from '../useAxios';
 
 import {
   createTask,
@@ -16,85 +16,25 @@ import {
 } from '../../Services/Tasks/tasksApiService';
 
 import {
-  fetchMyGroups,
-  createGroup,
-  addTaskToGroup           
+
+  addTaskToGroup
 } from '../../Services/Groups/groupsApiService';
 
-import normalizeTask   from '../../Helpers/Tasks/normalizeTask';
-import initialTestData from '../../Data/MindMapping/initialTestModel.json';
+import normalizeTask from '../../Helpers/Tasks/normalizeTask';
+import seedDatabase from '../../Helpers/General/seedDatabase';
 
-/* ────────────────────────────────────────────────────────────────── */
-/*  utilities                                                         */
-/* ────────────────────────────────────────────────────────────────── */
-const SEED_FLAG = 'mindviz:tasksSeeded';
-const STALE_MS  = 30_000;
 
-const readFlag = () => {
-  const raw = localStorage.getItem(SEED_FLAG);
-  if (!raw) return null;
-  try { return JSON.parse(raw); } catch { return { state: raw }; }
-};
-
-const safeCreateTask = async (task) => {
-  try {
-    return await createTask(task);
-  } catch (e) {
-    if (e.response?.status === 500 &&
-        /duplicate|primary key|pk_tasks/i.test(JSON.stringify(e.response.data))) {
-      console.warn(`↪ ${task._id} already exists — skipping`);
-      return null;
-    }
-    throw e;
-  }
-};
-
-const safeLinkTask = async (groupId, taskId) => {
-  const res = await addTaskToGroup(groupId, taskId);
-  if (res.ok || res.status === 204) return;
-
-  if (res.status === 409) return;                        // already linked
-  if (res.status === 500) {
-    const txt = await res.text();
-    if (/duplicate|primary key|pk_groups_tasks/i.test(txt)) return;
-  }
-  throw new Error(`Link task failed ${res.status}: ${await res.text()}`);
-};
-
-const getOrCreatePersonalGroup = async (displayName) => {
-  /* 1. look through the groups you already own */
-  const groups = await fetchMyGroups();
-
-  const existing = groups.find(g => g.name === displayName);
-  if (existing) {
-    // different back-end responses use different field names – be tolerant
-    return existing.id ?? existing._id ?? existing.groupId;
-  }
-
-  /* 2. nothing found ⇒ create a fresh one */
-  const g = await createGroup({
-    name:        displayName,
-    description: 'Your personal tasks',
-  });
-
-  // again: hand back *whichever* id field the API returned
-  return g.id ?? g._id ?? g.groupId;
-};
-
-/* ────────────────────────────────────────────────────────────────── */
-/*  main hook                                                         */
-/* ────────────────────────────────────────────────────────────────── */
 export default function useTasks() {
-  const snack       = useSnack();       // <— THIS is the toast function
-  const { user }    = useMyUser();
+  const snack = useSnack();       // <— THIS is the toast function
+  const { user } = useMyUser();
   useAxios();                            // attach Axios interceptors
 
   /* ---------- state ---------- */
-  const [tasks, setTasks]         = useState([]);
-  const [task,  setTask]          = useState(null);
-  const [loading,      setLoading]      = useState(true);
+  const [tasks, setTasks] = useState([]);
+  const [task, setTask] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isInitializing, setInitializing] = useState(false);
-  const [error,        setError]        = useState(null);
+  const [error, setError] = useState(null);
 
   const loaderIdRef = useRef(null);
 
@@ -106,73 +46,31 @@ export default function useTasks() {
       setTasks(data ?? []);
       return data ?? [];
     } catch (e) { setError(e); return []; }
-    finally     { setLoading(false); }
+    finally { setLoading(false); }
   }, []);
 
   /* ---------- demo seeder ---------- */
   const initialiseTasks = useCallback(async () => {
-    const flag = readFlag();
-    const now  = Date.now();
-
-    if (flag?.state === 'done' && (await MyTasks()).length) return;
-
-    if (flag?.state === 'in-progress') {
-      if (now - (flag.started ?? 0) < STALE_MS) {
-        while (readFlag()?.state === 'in-progress') {
-          await new Promise(r => setTimeout(r, 400));
-        }
-        return;
-      }
-      localStorage.removeItem(SEED_FLAG);
-    }
-
-    localStorage.setItem(SEED_FLAG, JSON.stringify({ state: 'in-progress', started: now }));
-
-    try {
-      setInitializing(true);
-      loaderIdRef.current = snack('info', 'Setting up your workspace…', { persist: true });
-
-      const display = user?.displayName || user?.name || 'My Tasks';
-      const groupId = await getOrCreatePersonalGroup(display);
-
-      const existingIds = new Set((await MyTasks()).map(t => t._id));
-      const toInsert    = initialTestData.filter(t => !existingIds.has(t._id));
-
-      const newIds = [];
-      for (const raw of toInsert) {
-        const made = await safeCreateTask(normalizeTask(raw));
-        if (made) newIds.push(made._id);
-      }
-
-      for (const id of [...existingIds, ...newIds]) {
-        await safeLinkTask(groupId, id);
-      }
-
-      snack(
-        'success',
-        newIds.length ? `${newIds.length} demo task(s) added` : 'Workspace ready',
-        { dismiss: loaderIdRef.current }
-      );
-      localStorage.setItem(SEED_FLAG, JSON.stringify({ state: 'done' }));
-    } catch (e) {
-      setError(e);
-      snack('error', 'Failed to initialise demo data', { dismiss: loaderIdRef.current });
-      localStorage.removeItem(SEED_FLAG);
-    } finally {
-      setInitializing(false);
-      setLoading(false);
-    }
+    return seedDatabase({
+      snack,
+      user,
+      setInitializing,
+      setError,
+      setLoading,
+      loaderIdRef
+    });
   }, [user, snack]);
-
   /* ---------- first load ---------- */
   useEffect(() => {
-    (async () => {
-      if ((await getAllMyTasks()).length === 0) {
-        await initialiseTasks();
-        await getAllMyTasks();
-      }
-    })();
-  }, [getAllMyTasks, initialiseTasks]);
+    if (user && user._id) {
+      (async () => {
+        if ((await getAllMyTasks()).length === 0) {
+          await initialiseTasks();
+          await getAllMyTasks();
+        }
+      })();
+    }
+  }, [getAllMyTasks, initialiseTasks,user]);
 
   /* ---------- CRUD wrappers ---------- */
   const getTaskById = useCallback(async (id) => {
@@ -182,7 +80,7 @@ export default function useTasks() {
       setTask(data);
       return data;
     } catch (e) { setError(e); return null; }
-    finally     { setLoading(false); }
+    finally { setLoading(false); }
   }, []);
 
   const handleCreateCard = useCallback(
@@ -192,7 +90,7 @@ export default function useTasks() {
       try {
         const made = await createTask(normalizeTask(input));
         setTasks(prev => [...prev, made]);
-  
+
         if (groupId) {
           try {
             await addTaskToGroup(groupId, made._id);
@@ -201,7 +99,7 @@ export default function useTasks() {
             snack('error', 'Task created but failed to add to selected group');
           }
         }
-  
+
         snack('success', 'Task created');
         return made;
       } catch (e) {
@@ -232,7 +130,7 @@ export default function useTasks() {
     },
     [task, snack]
   );
-  
+
 
   const handleDeleteCard = useCallback(async (id, skipConfirmation = false) => {
     const taskToDelete = tasks.find(t => t._id === id);
@@ -249,7 +147,7 @@ export default function useTasks() {
       snack('success', 'Task deleted');
       return true;
     } catch (e) { setError(e); return false; }
-    finally     { setLoading(false); }
+    finally { setLoading(false); }
   }, [snack, tasks]);
 
   /* ---------- public API ---------- */

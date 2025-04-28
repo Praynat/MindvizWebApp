@@ -80,6 +80,15 @@ export function useGroups() {
           Array.isArray(raw.$values) ? raw.$values :
             Array.isArray(raw.data?.$values) ? raw.data.$values :
               Array.isArray(raw.data) ? raw.data : [];
+
+      list.sort((a, b) => {
+        if (a.name === 'My Tasks') return -1;
+        if (b.name === 'My Tasks') return 1;
+        if (a.name === 'Development Team') return -1;
+        if (b.name === 'Development Team') return 1;
+        return a.name.localeCompare(b.name);
+      });
+
       setGroups(list.map(normalise));
     } catch (err) {
       setListError(err);
@@ -260,7 +269,7 @@ export function useGroups() {
   const getGroupIdByTaskId = useCallback(async (taskId) => {
     for (const grp of groups) {
       try {
-        const raw       = await fetchGroupById(grp.id);
+        const raw = await fetchGroupById(grp.id);
         const taskLinks = Array.isArray(raw.tasks) ? raw.tasks : [];
         if (taskLinks.some(link => link.taskId === taskId)) {
           return grp.id;
