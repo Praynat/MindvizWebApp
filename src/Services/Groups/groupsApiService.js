@@ -126,12 +126,18 @@ export async function removeTaskFromGroup(groupId, taskId) {
 
 // POST /Groups/{groupId}/tasks/{taskId}/assign/{memberId}
 export async function assignTaskToMember(groupId, taskId, memberId) {
+  console.log('POST /Groups/{groupId}/tasks/{taskId}/assign/{memberId} →', {
+    groupId,
+    taskId,
+    memberId,
+  })
   return fetch(
     `${API_BASE}/${groupId}/tasks/${taskId}/assign/${memberId}`,
     {
       method: 'POST',
       headers: authHeader(),
     }
+    
   );
 }
 
@@ -145,3 +151,16 @@ export async function unassignTaskFromMember(groupId, taskId, memberId) {
     }
   );
 }
+
+// GET all tasks in a group
+export async function fetchGroupTasks(groupId) {
+  const res = await fetch(`${API_BASE}/${groupId}/tasks`, {
+    headers: authHeader(),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`GET /Groups/${groupId}/tasks failed ${res.status}: ${text}`);
+  }
+  return res.json();
+}
+

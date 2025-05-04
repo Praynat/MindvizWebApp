@@ -125,3 +125,7 @@
     border-left: 3px solid #1976d2;
     font-weight: 500;
 }
+.disabledRow {
+    opacity: 0.5;
+    pointer-events: none;    /* completely disables any mouse interaction */
+  }

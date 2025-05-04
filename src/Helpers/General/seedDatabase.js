@@ -12,6 +12,7 @@ import {
 
 import normalizeTask from '../Tasks/normalizeTask';
 import initialTestData from '../../Data/MindMapping/initialTestModel.json';
+import { getAllUsersData } from '../../Services/Users/usersApiService';
 
 // Define constants that were previously in useTasks.js
 const SEED_FLAG = 'mindviz:tasksSeeded';
@@ -92,6 +93,7 @@ const seedDatabase = async ({
   setLoading,
   loaderIdRef
 }) => {
+    console.log('seedDatabase got user:', user);
   const flag = readFlag();
   const now = Date.now();
 
@@ -196,33 +198,56 @@ const seedDatabase = async ({
       }
     }
 
-    // 3. Create additional groups for Development and Marketing teams
-    const additionalGroups = [
-      {
-        name: "Development Team",
-        description: "Tasks for software development projects"
-      },
-      {
-        name: "Marketing Projects",
-        description: "Tasks related to marketing campaigns"
-      }
-    ];
+    // 3a. fetch all users and pick out the demo ones by email
+    const allUsers = await getAllUsersData();
+    const demoIds = allUsers
+      .filter(u => seedUsers
+        .map(s => s.email.toLowerCase())
+        .includes(u.email.toLowerCase())
+      )
+      .map(u => u.id ?? u._id ?? u.userId);
 
-    // Create the groups and store their IDs
-    const groupIds = [personalGroupId];
-    for (const groupData of additionalGroups) {
-      try {
-        const group = await createGroup(groupData);
-        groupIds.push(group.id ?? group._id ?? group.groupId);
-      } catch (err) {
-        console.warn(`Failed to create group ${groupData.name}:`, err);
+    // 3b. only create additional groups if current user isn’t in that demo‐ID set
+    let groupIds = [personalGroupId];
+    if (!demoIds.includes(user._id)) {
+      const additionalGroups = [
+        { name: "Development Team",    description: "Tasks for software development projects" },
+        { name: "Marketing Projects",   description: "Tasks related to marketing campaigns" }
+      ];
+      for (const groupData of additionalGroups) {
+        try {
+          const g = await createGroup(groupData);
+          groupIds.push(g.id ?? g._id ?? g.groupId);
+        } catch (err) {
+          console.warn(`Failed to create group ${groupData.name}:`, err);
+        }
       }
     }
 
     // 4. Add tasks and link them to the appropriate groups
+    // ────────────────────────────────────────────────────────────
+    // build a per‐user prefix
+    const prefix = `${user._id}-`;
+
+    // remap every raw task id & parentIds
+    const remapped = initialTestData.map(t => {
+      const clone = { ...t };
+      clone._id = prefix + clone._id;
+      if (clone.parentIds) {
+        clone.parentIds = clone.parentIds.map(pid => prefix + pid);
+      }
+      return clone;
+    });
+    const taskMap = Object.fromEntries(remapped.map(t => [t._id, t]));
+
+    const rootIds = [
+      prefix + 'ROOT-01',
+      prefix + 'ROOT-DEV',
+      prefix + 'ROOT-MKT'
+    ];
+
+    // now seed only if missing
     const existingIds = new Set((await MyTasks()).map(t => t._id));
-    const taskMap = Object.fromEntries(initialTestData.map(t => [t._id, t]));
-    const rootIds = ['ROOT-01', 'ROOT-DEV', 'ROOT-MKT'];
     for (const rootId of rootIds) {
       if (!existingIds.has(rootId)) {
         const rawRoot = taskMap[rootId];
@@ -235,7 +260,6 @@ const seedDatabase = async ({
       }
     }
 
-
     function isDescendantOf(id, rootId) {
       const t = taskMap[id];
       if (!t || !t.parentIds) return false;
@@ -243,24 +267,23 @@ const seedDatabase = async ({
       return t.parentIds.some(pid => isDescendantOf(pid, rootId));
     }
 
-    const personalTasks = initialTestData
-      .filter(t => t._id !== "ROOT-01"
-        && isDescendantOf(t._id, "ROOT-01")
+    const personalTasks = remapped
+      .filter(t => t._id !== prefix + "ROOT-01"
+        && isDescendantOf(t._id, prefix + "ROOT-01")
         && !existingIds.has(t._id)
       );
 
-    const devTasks = initialTestData
-      .filter(t => t._id !== "ROOT-DEV"
-        && isDescendantOf(t._id, "ROOT-DEV")
+    const devTasks = remapped
+      .filter(t => t._id !== prefix + "ROOT-DEV"
+        && isDescendantOf(t._id, prefix + "ROOT-DEV")
         && !existingIds.has(t._id)
       );
 
-    const marketingTasks = initialTestData
-      .filter(t => t._id !== "ROOT-MKT"
-        && isDescendantOf(t._id, "ROOT-MKT")
+    const marketingTasks = remapped
+      .filter(t => t._id !== prefix + "ROOT-MKT"
+        && isDescendantOf(t._id, prefix + "ROOT-MKT")
         && !existingIds.has(t._id)
       );
-
 
     // Create all tasks
     const newPersonalIds = [];
@@ -288,9 +311,9 @@ const seedDatabase = async ({
     }
 
     const personalLinkIds = new Set([
-      'ROOT-01',
+      prefix + 'ROOT-01',
       ...newPersonalIds,
-      ...[...existingIds].filter(id => isDescendantOf(id, 'ROOT-01'))
+      ...[...existingIds].filter(id => isDescendantOf(id, prefix + 'ROOT-01'))
     ]);
     
     for (const id of personalLinkIds) {
@@ -300,7 +323,7 @@ const seedDatabase = async ({
     // ─── Ensure ROOT-DEV is in the Development group ───
     if (groupIds.length > 1) {
       const devGroupId = groupIds[1];
-      await safeLinkTask(devGroupId, 'ROOT-DEV');
+      await safeLinkTask(devGroupId, prefix + 'ROOT-DEV');
       for (const id of newDevIds) {
         await safeLinkTask(devGroupId, id);
       }
@@ -309,7 +332,7 @@ const seedDatabase = async ({
     // ─── Ensure ROOT-MKT is in the Marketing group ───
     if (groupIds.length > 2) {
       const mktGroupId = groupIds[2];
-      await safeLinkTask(mktGroupId, 'ROOT-MKT');
+      await safeLinkTask(mktGroupId, prefix + 'ROOT-MKT');
       for (const id of newMarketingIds) {
         await safeLinkTask(mktGroupId, id);
       }
@@ -340,6 +363,7 @@ const seedDatabase = async ({
 
     return true;
   } catch (e) {
+    console.error('Seed error:', e);
     setError(e);
     snack('error', 'Failed to initialize demo data', { dismiss: loaderIdRef.current });
     localStorage.removeItem(SEED_FLAG);

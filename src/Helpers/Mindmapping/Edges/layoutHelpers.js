@@ -2,9 +2,10 @@ const BASE_SIZE = 400000;
 const BASE_RADIUS = 75;
 const CHILD_SIZE_FACTOR = 0.4;
 
-function buildTaskMap(allTasks) {
+// filepath: src/Helpers/Mindmapping/Edges/layoutHelpers.js
+function buildTaskMap(allTasks = []) {
   const map = {};
-  allTasks.forEach((task) => {
+  allTasks.forEach(task => {
     map[task._id] = task;
   });
   return map;
@@ -115,7 +116,8 @@ function layoutTaskRadially(task, taskMap, level = 0, xCenter, yCenter, visited 
   return { nodes, edges };
 }
 
-export function buildNodesAndEdges(allTasks, containerCenterX, containerCenterY) {
+export function buildNodesAndEdges(allTasks = [], containerCenterX, containerCenterY) {
+  // now allTasks is guaranteed an array
   const taskMap = buildTaskMap(allTasks);  
   const visited = {};
   let allNodes = [];

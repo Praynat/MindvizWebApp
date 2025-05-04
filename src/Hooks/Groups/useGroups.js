@@ -9,7 +9,8 @@ import { useMyUser } from '../../Providers/Users/UserProvider';
 
 import {
   fetchMyGroups,
-  fetchGroupById, // <--- Import fetchGroupById
+  fetchGroupById,
+  fetchGroupTasks,
   createGroup as apiCreateGroup,
   updateGroup as apiUpdateGroup,
   deleteGroup as apiDeleteGroup,
@@ -22,7 +23,8 @@ import {
   unassignTaskFromMember as apiUnassignTask
 } from '../../Services/Groups/groupsApiService';
 
-import useTasks from '../Tasks/useTasks';          // ← default export ✔
+import { getUserData } from '../../Services/Users/usersApiService';
+import useTasks from '../Tasks/useTasks';
 import normalizeTask from '../../Helpers/Tasks/normalizeTask';
 
 /* ───────── helper ───────── */
@@ -49,19 +51,33 @@ export function useGroups() {
   const [groupLinks, setGroupLinks] = useState([]);   // rows from GroupTask
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState(null);
-  const [selectedGroupContainsRootTask, setSelectedGroupContainsRootTask] = useState(false); // <-- New state
+  const [selectedGroupContainsRootTask, setSelectedGroupContainsRootTask] = useState(false); 
+  const [tasksInGroup, setTasksInGroup] = useState([]); // ← full TaskModel[]
 
-  /* ---------------------------- derive TaskModel[] for currently selected */
-  const tasks = useMemo(() => {
-    if (!groupLinks?.length) return [];
-    const ids = new Set(groupLinks.map(g => g.taskId));
-    return allTasks.filter(t => ids.has(t._id));
-  }, [groupLinks, allTasks]);
-  /* ── does this group contain the root task? ── */
+  /* ── whenever selectedId changes, load the full TaskModel[] ── */
   useEffect(() => {
-    setSelectedGroupContainsRootTask(tasks.some(t => t.isRoot));
-  }, [tasks]);
-  // --- Find the root task ID ---
+    if (!selectedId) {
+      setTasksInGroup([]);
+      return;
+    }
+    setDetailLoading(true);
+    fetchGroupTasks(selectedId)
+      .then(data => {
+        setTasksInGroup(Array.isArray(data) ? data : []);
+        setDetailError(null);
+      })
+      .catch(err => setDetailError(err))
+      .finally(() => setDetailLoading(false));
+  }, [selectedId]);
+
+  /* ── track if the root task is in this group ── */
+  useEffect(() => {
+    setSelectedGroupContainsRootTask(
+      tasksInGroup.some(t => t.isRoot)
+    );
+  }, [tasksInGroup]);
+
+  // --- Find the root task ID --- 
   const rootTaskId = useMemo(() => {
     const rootTask = allTasks.find(t => t.isRoot);
     return rootTask?._id;
@@ -100,47 +116,50 @@ export function useGroups() {
   /* ====================================================================== */
   /*  DETAILS – whenever selectedId changes                                 */
   /* ====================================================================== */
+   const getAllGroupTasksByGroupId = useCallback(async (groupId) => {
+
+    try {
+      const data = await fetchGroupTasks(groupId);
+      return data;
+    } catch (e) { }
+  }, []);
   const fetchDetails = useCallback(async () => {
     if (!selectedId) {
       setMembers([]);
       setGroupLinks([]);
-      setSelectedGroupContainsRootTask(false); // Reset when no group is selected
+      setTasksInGroup([]);
       return;
     }
     setDetailLoading(true);
-    setDetailError(null);
-    setSelectedGroupContainsRootTask(false); // Reset before fetching
     try {
       const raw = await fetchGroupById(selectedId);
       const group = normalise(raw);
 
-      const currentMembers = Array.isArray(group.members) ? group.members : [];
-      const currentLinks = Array.isArray(group.tasks) ? group.tasks : [];
+      const links = Array.isArray(group.tasks) ? group.tasks : [];
+      const members = Array.isArray(group.members) ? group.members : [];
 
-      setMembers(currentMembers);
-      setGroupLinks(currentLinks);
+      // fetch each user’s full data
+      const membersWithUser = await Promise.all(
+        members.map(async m => {
+          const user = await getUserData(m.userId);
+          return { ...m, user };
+        })
+      );
 
-      // --- Check if fetched links contain the root task ---
-      if (rootTaskId) {
-        const containsRoot = currentLinks.some(link => link.taskId === rootTaskId);
-        setSelectedGroupContainsRootTask(containsRoot);
-        if (containsRoot) {
-          console.log(`[useGroups] Selected group ${selectedId} contains the root task.`);
-        }
-      }
-      // --- End check ---
+      setGroupLinks(links);
+      setMembers(membersWithUser);
+      const tasks = await getAllGroupTasksByGroupId(selectedId);
+      setTasksInGroup(tasks);
 
     } catch (err) {
       setDetailError(err);
-      setMembers([]); // Clear on error
+      setMembers([]);
       setGroupLinks([]);
-      setSelectedGroupContainsRootTask(false); // Reset on error
     } finally {
       setDetailLoading(false);
     }
-  }, [selectedId, rootTaskId]); // Add rootTaskId dependency
-
-  /* ---------------------------------------------------- mount / selection */
+  }, [selectedId, getAllGroupTasksByGroupId]);
+  // ---------------------------------------------------- mount / selection */
   useEffect(() => { fetchGroups(); }, [fetchGroups]);
   useEffect(() => { fetchDetails(); }, [fetchDetails]);
 
@@ -215,21 +234,35 @@ export function useGroups() {
   /* ====================================================================== */
   /*  TASK OPS (auto-refresh)                                               */
   /* ====================================================================== */
-  const addTask = useCallback(taskId =>
-    apiAddTask(selectedId, taskId).then(fetchDetails),
-    [selectedId, fetchDetails]);
+ 
 
-  const removeTask = useCallback(taskId =>
-    apiRemoveTask(selectedId, taskId).then(fetchDetails),
-    [selectedId, fetchDetails]);
+  const addTask = useCallback(
+    taskId => apiAddTask(selectedId, taskId)
+      .then(() => fetchGroupTasks(selectedId))
+      .then(setTasksInGroup),
+    [selectedId]
+  );
 
-  const assignTask = useCallback((taskId, memberId) =>
-    apiAssignTask(selectedId, taskId, memberId).then(fetchDetails),
-    [selectedId, fetchDetails]);
+  const removeTask = useCallback(
+    taskId => apiRemoveTask(selectedId, taskId)
+      .then(() => fetchGroupTasks(selectedId))
+      .then(setTasksInGroup),
+    [selectedId]
+  );
 
-  const unassignTask = useCallback((taskId, memberId) =>
-    apiUnassignTask(selectedId, taskId, memberId).then(fetchDetails),
-    [selectedId, fetchDetails]);
+  const assignTask = useCallback(
+    (taskId, memberId) => apiAssignTask(selectedId, taskId, memberId)
+      .then(() => fetchGroupTasks(selectedId))
+      .then(setTasksInGroup),
+    [selectedId]
+  );
+
+  const unassignTask = useCallback(
+    (taskId, memberId) => apiUnassignTask(selectedId, taskId, memberId)
+      .then(() => fetchGroupTasks(selectedId))
+      .then(setTasksInGroup),
+    [selectedId]
+  );
 
   /* ====================================================================== */
   /*  COMPOSITE – create group **with** root task                           */
@@ -286,7 +319,7 @@ export function useGroups() {
   /* ====================================================================== */
   return {
     /* helpers */
-    getGroupIdByTaskId,    // ← newly added
+    getGroupIdByTaskId, 
 
     /* list info */
     groups, listLoading, listError, fetchGroups,
@@ -294,13 +327,14 @@ export function useGroups() {
 
     /* selection / details */
     selectedId, setSelectedId,
-    members, tasks, detailLoading, detailError,
+    members, groupLinks, tasks: tasksInGroup, detailLoading, detailError,
     selectedGroupContainsRootTask,
 
     /* member ops */
     addMember, removeMember, updateRole,
 
     /* task ops */
+    getAllGroupTasksByGroupId,
     addTask, removeTask, assignTask, unassignTask,
 
     /* composite */
