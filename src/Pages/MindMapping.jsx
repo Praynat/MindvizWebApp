@@ -67,7 +67,8 @@ function MindMappingInner() {
     setSelectedId,
     tasks: groupTasks, // <-- Get the tasks specific to the selected group
     detailLoading: groupTasksLoading, // <-- Use loading state for group tasks
-    fetchGroups, // Add this
+    fetchGroups,
+    refreshGroupTasks,
   } = useGroups();
 
   // --- Effect to refresh the group list when the component mounts ---
@@ -92,6 +93,21 @@ function MindMappingInner() {
       setSelectedId(null);
     }
   }, [groups, selectedGroupId, groupTasksLoading, setSelectedId]);
+
+  // --- Load selected group from localStorage on mount ---
+  useEffect(() => {
+    const storedGroupId = localStorage.getItem('selectedGroupId');
+    if (storedGroupId && groups.some(g => g.id === storedGroupId)) {
+      setSelectedId(storedGroupId);
+    }
+  }, [groups, setSelectedId]);
+
+  // --- Save selected group to localStorage whenever it changes ---
+  useEffect(() => {
+    if (selectedGroupId) {
+      localStorage.setItem('selectedGroupId', selectedGroupId);
+    }
+  }, [selectedGroupId]);
 
   // ----------------------- Layout Initialization Effect -----------------------
   useEffect(() => {
@@ -136,10 +152,10 @@ function MindMappingInner() {
       }
 
       await getAllMyTasks();
-      window.location.reload();
+      await refreshGroupTasks();
 
     },
-    [handleDeleteCard, getAllMyTasks]
+    [handleDeleteCard, getAllMyTasks, refreshGroupTasks]
   );
 
   // ----------------------- Handling Node Connection -----------------------
@@ -218,10 +234,10 @@ function MindMappingInner() {
         };
 
         await handleUpdateCard(parentNode.id, updatedParentData, { silent: true });
-        window.location.reload();
+        await refreshGroupTasks();
       }
     },
-    [screenToFlowPosition, setEdges, setNodes, nodes, handleCreateCard, handleUpdateCard, selectedGroupId]
+    [screenToFlowPosition, setEdges, setNodes, nodes, handleCreateCard, handleUpdateCard, selectedGroupId, refreshGroupTasks]
   );
 
   // ----------------------- Define Node and Edge Types -----------------------
@@ -249,15 +265,14 @@ function MindMappingInner() {
       handleUpdateCard(id, updatedTask);
     }
   }, [setNodes, groupTasks, handleUpdateCard]);
-  // Add this function near your onLabelChange function
- // Add this function near your onLabelChange function
- const onCheckboxChange = useCallback(
-  async (id, isChecked) => {
-    // 1) Optimistically flip the checkbox in the UI
-    setNodes((nds) =>
-      nds.map((node) =>
-        node.id === id
-          ? {
+
+  const onCheckboxChange = useCallback(
+    async (id, isChecked) => {
+      // 1) Optimistically flip the checkbox in the UI
+      setNodes((nds) =>
+        nds.map((node) =>
+          node.id === id
+            ? {
               ...node,
               data: {
                 ...node.data,
@@ -267,30 +282,30 @@ function MindMappingInner() {
                 },
               },
             }
-          : node
-      )
-    );
+            : node
+        )
+      );
 
-    // 2) Find the _entire_ task object you already have in state
-    const taskToUpdate = groupTasks.find((t) => t._id === id);
-    if (!taskToUpdate) return;
+      // 2) Find the _entire_ task object you already have in state
+      const taskToUpdate = groupTasks.find((t) => t._id === id);
+      if (!taskToUpdate) return;
 
-    // 3) Merge in the new progress so normalizeTask() sees everything
-    const fullUpdate = {
-      ...taskToUpdate,
-      isChecked: isChecked, 
-      progress: isChecked ? 100 : 0,
-    };
+      // 3) Merge in the new progress so normalizeTask() sees everything
+      const fullUpdate = {
+        ...taskToUpdate,
+        isChecked: isChecked,
+        progress: isChecked ? 100 : 0,
+      };
 
-    try {
-      // 4) Await the API call so it actually goes out
-      await handleUpdateCard(id, fullUpdate, { silent: true });
-    } catch (err) {
+      try {
+        // 4) Await the API call so it actually goes out
+        await handleUpdateCard(id, fullUpdate, { silent: true });
+      } catch (err) {
 
-      setNodes((nds) =>
-        nds.map((node) =>
-          node.id === id
-            ? {
+        setNodes((nds) =>
+          nds.map((node) =>
+            node.id === id
+              ? {
                 ...node,
                 data: {
                   ...node.data,
@@ -300,13 +315,13 @@ function MindMappingInner() {
                   },
                 },
               }
-            : node
-        )
-      );
-    }
-  },
-  [setNodes, groupTasks, handleUpdateCard]
-);
+              : node
+          )
+        );
+      }
+    },
+    [setNodes, groupTasks, handleUpdateCard]
+  );
 
 
   // ----------------------- Handling Node Click -----------------------
@@ -457,16 +472,17 @@ function MindMappingInner() {
       <QuickAddBar
         tasks={groupTasks} // Pass groupTasks for context
         selectedTask={selectedTask}
-        onTaskCreated={async (newTask) => {
-          await handleCreateCard(newTask, selectedGroupId);
-          await getAllMyTasks();
-          window.location.reload();
+        onTaskCreated={async (newTaskData) => {
+          const createdTask = await handleCreateCard(newTaskData, selectedGroupId);
+          if (createdTask) {
+            await refreshGroupTasks();
+          }
         }}
         onOpenFullModal={(prefill) => {
           // Handle opening the full modal with prefilled data
           console.log('Open full modal with prefill:', prefill);
         }}
-        
+
       />
       <Backdrop
         sx={{ color: '#fff', zIndex: 9999 }}

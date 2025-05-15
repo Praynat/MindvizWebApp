@@ -1,11 +1,20 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import ROUTES from '../../../Routes/routesModel';
 
 const TaskCardMedium = ({ task, isCompleted, onSelectTask, onToggleCompletion, isRootTask, isSelected }) => {
   const dueDate = task.endDate ? new Date(task.endDate).toLocaleDateString() : 'No due date';
   
   // Calculate if task is overdue
   const isOverdue = task.endDate ? new Date(task.endDate) < new Date() && !isCompleted : false;
+   const navigate = useNavigate();
 
+const handleEdit = () => {
+    // replace with your actual route constant
+    navigate(`${ROUTES.EDIT_TASK}/${task._id}`, {
+      state: { prefill: task }
+    });
+  };
   return (
     <div 
       className={`task-card task-card-medium ${isCompleted ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${isRootTask ? 'root-task' : ''} ${isSelected ? 'selected' : ''}`}
@@ -26,7 +35,7 @@ const TaskCardMedium = ({ task, isCompleted, onSelectTask, onToggleCompletion, i
           {isRootTask && <span className="root-indicator">root</span>}
         </span>
         <div className="task-actions">
-          <button className="edit-button" onClick={(e) => {e.stopPropagation(); /* Add edit handler */}}>
+          <button className="edit-button" onClick={(e) => {e.stopPropagation(); handleEdit();}}>
             ✏️
           </button>
         </div>

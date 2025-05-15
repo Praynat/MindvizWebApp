@@ -38,19 +38,24 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated })
 
   const rootTask = useMemo(() => tasks.find(t => !t.parentIds?.length), [tasks]);
 
-  useEffect(() => {
-    if (selectedTask?._id) {
-      setQuickBarParentId(selectedTask._id);
-    } else if (!quickBarParentId && rootTask?._id) {
-      setQuickBarParentId(rootTask._id);
-    }
-  }, [selectedTask, rootTask, quickBarParentId]);
+  
+useEffect(() => {
+  const currentParentIsValid = tasks.some(t => t._id === quickBarParentId);
 
-  useEffect(() => {
-    if (!quickBarParentId && rootTask?._id) {
-      setQuickBarParentId(rootTask._id);
+  if (selectedTask?._id) {
+
+    if (selectedTask._id !== quickBarParentId) {
+      setQuickBarParentId(selectedTask._id);
     }
-  }, [rootTask, quickBarParentId]);
+  } else if (quickBarParentId && !currentParentIsValid && rootTask?._id) {
+ 
+    setQuickBarParentId(rootTask._id);
+  } else if (!quickBarParentId && rootTask?._id) {
+
+    setQuickBarParentId(rootTask._id);
+  }
+
+}, [selectedTask, tasks, rootTask, quickBarParentId, setQuickBarParentId]);
 
   const effectiveParentId = quickBarParentId;
 
@@ -69,6 +74,13 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated })
       parentIds: effectiveParentId ? [effectiveParentId] : (rootTask?._id ? [rootTask._id] : [])
     };
     navigate(ROUTES.CREATE_TASK, { state: { prefill, from: location } });
+  };
+
+  const handleInputKeyDown = async (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      await handleQuickCreate();
+    }
   };
 
   return (
@@ -124,6 +136,7 @@ export default function QuickAddBar({ tasks = [], selectedTask, onTaskCreated })
           placeholder="Add a quick task..."
           value={title}
           onChange={e => setTitle(e.target.value)}
+          onKeyDown={handleInputKeyDown}
           className="quick-add-bar-input"
           maxLength={80}
         />

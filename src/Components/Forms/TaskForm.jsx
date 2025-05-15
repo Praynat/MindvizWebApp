@@ -94,7 +94,7 @@ export default function TaskForm({
 
     const selectedParentId = data.parentIds?.[0] || "";
     const selectedParent = tasks.find(t => t._id === selectedParentId);
-    const taskTree = buildTree(tasks.filter(t => t.type === 'Category'));
+    const taskTree = buildTree(tasks);
 
     return (
         <Form onSubmit={onSubmit} onReset={onReset} validateForm={validateForm} className="task-form" submitText={submitButtonText}>

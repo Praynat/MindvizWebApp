@@ -320,6 +320,7 @@ export function useGroups() {
   return {
     /* helpers */
     getGroupIdByTaskId, 
+    refreshGroupTasks: fetchDetails,
 
     /* list info */
     groups, listLoading, listError, fetchGroups,

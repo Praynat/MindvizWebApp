@@ -1,4 +1,3 @@
-
 ---
 
 # Mindviz
@@ -52,13 +51,30 @@ npm install
 
 ### 3. Start the development server
 ```bash
-npm run dev
+npm start
 ```
 
-Make sure your backend server is running if needed!
+Make sure your backend server is running!
 
 ---
 
+## 🧪 Demo Users
+
+To help you test the application, especially the team and group features, the following demo users are created when the database is seeded:
+
+*   **Alice Johnson**
+    *   Email: `alice@example.com`
+    *   Password: `Password1!`
+*   **Bob Smith**
+    *   Email: `bob@example.com`
+    *   Password: `Password1!`
+*   **Carol Williams**
+    *   Email: `carol@example.com`
+    *   Password: `Password1!`
+
+These users are part of the initial data setup. You can log in with their credentials to explore collaborative functionalities.
+
+---
 
 ## 📸 Screenshots
 

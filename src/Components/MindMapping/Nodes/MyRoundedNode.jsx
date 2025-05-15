@@ -1,9 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Handle, Position } from '@xyflow/react';
 
 const RoundedNode = ({ id, data, selected }) => {
   const { size, label, onLabelChange, task, hasCompletedParent, zoom } = data;
+  const containerRef = useRef(null);
+  const [fontSize, setFontSize] = useState(16);
+  useEffect(() => {
+    if (!containerRef.current) return;
 
+    const observer = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        const { width, height } = entry.contentRect;
+        const base = Math.min(width, height);
+        // store `base` itself, then multiply in the style
+        setFontSize(base);
+      }
+    });
+
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
   // ========== CONFIGURABLE STYLING PARAMETERS ==========
   // Reference values
   const referenceSize = 40;  // Base size for calculations
@@ -188,6 +204,8 @@ const RoundedNode = ({ id, data, selected }) => {
     border: 'none',
     borderRadius: '50%',
     background: isCompleted ? '#ffffff' : '#fff',
+    backgroundColor: "transparent",
+
     color: isCompleted ? '#9fa3a7' : '#333',
     display: 'flex',
     alignItems: 'center',
@@ -229,29 +247,51 @@ const RoundedNode = ({ id, data, selected }) => {
           }}
         />
       ) : (
-        // Just the label, without the checkbox
         <div
-        style={{
-          ...(isCompleted ? {
-            textDecoration: 'line-through',
-            textDecorationThickness: `${size / 5000}px`,
-          } : {}),
-          // Add these properties
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transform: `scale(${size / (100 + label.length * 0.8)})`,          transformOrigin: 'center center',
-          
-          hyphens: 'auto',
-          textAlign: 'center',
-          maxWidth: `${size / 700}px`, // Constrains text width for wrapping
-         maxHeight: `${size / 700}px`, // Constrains text height for wrapping
-          overflow: 'hidden', // Prevents overflow beyond constraints
-        }}
-      >
-          {label}
+          ref={containerRef}
+          style={{
+            ...(isCompleted ? {
+              textDecoration: 'line-through',
+              textDecorationThickness: `${size / 5000}px`,
+            } : {}),
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            padding: `${size * 0.1}px`,    // 10% padding all around
+            boxSizing: 'border-box',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'black',
+            textAlign: 'center',
+            fontSize: `100px`,
+          }}
+        >
+          <div
+            style={{
+              width: '8ch',                 // set your pre-scale wrap width
+              whiteSpace: 'normal',
+              overflowWrap: 'break-word',
+              wordBreak: 'break-word',
+              padding: '0.2em',
+              boxSizing: 'border-box',
+            }}
+          >
+            {/* 2) this inner span only scales the text itself */}
+            <span
+              style={{
+                display: 'block',
+                width: '100%',
+                transform: `scale(${size / 600})`,
+                transformOrigin: 'center center',
+              }}
+            >
+              {label}
+            </span>
+          </div>
         </div>
       )}
 

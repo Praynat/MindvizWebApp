@@ -29,7 +29,7 @@ const GroupsPage = () => {
         groups, listLoading, listError,
         updateGroup, deleteGroup,
         selectedId, setSelectedId,
-        members, tasks, detailLoading, detailError,
+        members, detailLoading, detailError,
         addMember, removeMember, updateRole,
         addTask, removeTask, assignTask, unassignTask,
         selectedGroupContainsRootTask, createGroupWithRootTask, getAllGroupTasksByGroupId
@@ -67,7 +67,23 @@ const GroupsPage = () => {
     const selectedGroup = groups?.find(g => g.id === selectedId) || null;
     const filteredTasks = groupTasks.filter(t =>
         taskFilter ? t.assignee === taskFilter : true);
+    useEffect(() => {
+        const stored = localStorage.getItem('selectedGroupId');
+        if (!selectedId && groups.length > 0) {
+            if (stored && groups.some(g => g.id === stored)) {
+                setSelectedId(stored);
+            } else {
+                setSelectedId(groups[0].id);
+            }
+        }
+    }, [groups, selectedId, setSelectedId]);
 
+    // whenever the user picks a group, remember it
+    useEffect(() => {
+        if (selectedId) {
+            localStorage.setItem('selectedGroupId', selectedId);
+        }
+    }, [selectedId]);
     /* handlers – groups --------------------------------------------- */
     const handleGroupSelect = id => {
         setSelectedId(id);
@@ -128,19 +144,19 @@ const GroupsPage = () => {
 
     const handleAssignTaskChange = async (taskId, uid) => {
         if (uid) {
-          await assignTask(taskId, uid);
+            await assignTask(taskId, uid);
         } else {
-          await unassignTask(taskId, uid);
+            await unassignTask(taskId, uid);
         }
-      
+
         setGroupTasks(prev =>
-          prev.map(t =>
-            t._id === taskId
-              ? { ...t, assignee: uid }
-              : t
-          )
+            prev.map(t =>
+                t._id === taskId
+                    ? { ...t, assignee: uid }
+                    : t
+            )
         );
-      };
+    };
 
     /* ──────────────────────────────────────────────────────────────── */
     /* render helpers – Users table*/
@@ -334,10 +350,10 @@ const GroupsPage = () => {
     function displayNameOfAssignedUser(m) {
         const u = m.user || {};
         if (u.name && typeof u.name === 'object') {
-          return [u.name.first, u.name.last].filter(Boolean).join(' ');
+            return [u.name.first, u.name.last].filter(Boolean).join(' ');
         }
         return u.name || u.displayName || u.email || 'Unknown User';
-      }
+    }
     /* render helpers – Tasks table ---------------------------------- */
     const renderTasksList = () => (
 
@@ -394,8 +410,8 @@ const GroupsPage = () => {
                                 m.userId === t.assignee || m.user?._id === t.assignee
                             );
                             const assigneeNm = assigned ? displayNameOfAssignedUser(assigned)
-                                : members.length === 1 ? 
-                                displayNameOfAssignedUser(members[0])
+                                : members.length === 1 ?
+                                    displayNameOfAssignedUser(members[0])
                                     : 'Unassigned';
 
                             return (
