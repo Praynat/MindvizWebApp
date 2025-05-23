@@ -7,10 +7,13 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   padding: 20px;
-  overflow-y: auto;
-  /* Remove any fixed positioning, right:0, top:0 properties */
+  overflow-y: auto;              /* Enable vertical scroll only if needed */
+  -ms-overflow-style: none;      /* Hide scrollbar IE/Edge */
+  scrollbar-width: none; 
 }
-
+.task-details.sidebar::-webkit-scrollbar {
+  display: none;          
+}
 .task-details.sidebar .header {
   display: flex;
   justify-content: space-between;
@@ -29,14 +32,17 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+   align-items: left;    
+  max-width: 80%;      
+  margin: 0 auto
 }
 
 .sidebar-actions {
   display: flex;
-  justify-content: space-around; /* Or space-between */
+  justify-content: space-around;
   padding: 10px 0;
   margin-bottom: 10px;
-  border-bottom: 1px solid #eee; /* Optional separator */
+  border-bottom: 1px solid #eee;
 }
 
 .sidebar-button {
@@ -70,4 +76,11 @@
 .sidebar-button.delete:hover {
   background-color: #ef9a9a;
 }
-
+@media (max-width: 600px) {
+  .task-details.sidebar {
+    max-height: 100dvh;  
+    height: 100dvh;
+    border-radius: 0;
+    padding: 12px 4px;
+  }
+}

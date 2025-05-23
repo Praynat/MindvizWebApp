@@ -197,3 +197,61 @@
   font-size: 16px;
   margin-right: 5px;
 }
+
+/* Responsive: Make QuickAddBar smaller for screens ≤ 768px */
+@media (max-width: 768px) {
+  .quick-add-bar {
+    padding: 8px 6px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    min-width: 0;
+    width: 98vw;
+    left: 50%;
+    transform: translate(-50%, 0);
+    bottom: 2vh;
+    gap: 6px;
+  }
+  .quick-add-bar-input-group {
+    min-width: 0;
+    height: 38px;
+    padding: 2px 4px;
+    gap: 4px;
+  }
+  .quick-add-bar-parent-label,
+  .quick-add-bar-label {
+    font-size: 11px;
+    margin-bottom: 1px;
+    margin-left: 2px;
+  }
+  .quick-add-bar-input {
+    font-size: 13px;
+    padding: 4px 0;
+    max-width: 100%;
+  }
+  .quick-add-bar-parent-select {
+    font-size: 11px;
+  }
+  .quick-add-bar-calendar-btn,
+  .quick-add-bar-send-btn,
+  .quick-add-bar-edit-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+    border-radius: 7px;
+    padding: 0 2px;
+  }
+  .quick-add-bar-send-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-left: 2px;
+  }
+  .quick-add-bar-edit-btn {
+    margin-left: 2px;
+  }
+  .quick-add-bar-divider {
+    height: 18px;
+    margin: 0 4px;
+  }
+}

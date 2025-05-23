@@ -1,5 +1,5 @@
 // Imports
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import Sidebar from '../ListView/Sidebar';
 import TaskCard from '../Cards/TaskCard';
 import TaskDetails from '../TaskDetails/TaskDetails';
@@ -61,6 +61,19 @@ const PageLayout = ({
 
   const [modalTask, setModalTask] = useState(null);
   const [selectedListTask, setSelectedListTask] = useState(null); // Keep for list view's right panel
+  const [sidebarDropdownOpen, setSidebarDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!sidebarDropdownOpen) return;
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setSidebarDropdownOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [sidebarDropdownOpen]);
 
   // Filter Functions
   const getCurrentFilter = () => {
@@ -296,13 +309,37 @@ const PageLayout = ({
   // Render Component
   return (
     <div className="page-layout">
-      <Sidebar
-        categories={taskHierarchy} // Pass the built hierarchy
-        // Use the modified handler for sidebar clicks
-        onFilterSelect={handleSidebarItemSelect}
-        // Pass the selectedTaskId from ListPage for highlighting
-        selectedItemId={selectedTaskId} // <<< Use the prop from ListPage
-      />
+      {/* MOBILE: Dropdown Sidebar */}
+      <div className="mobile-sidebar-dropdown" ref={dropdownRef}>
+        <button
+          className="sidebar-dropdown-toggle"
+          type="button"
+          onClick={() => setSidebarDropdownOpen(o => !o)}
+        >
+          Select Task
+          <span style={{ float: 'right' }}>{sidebarDropdownOpen ? '▲' : '▼'}</span>
+        </button>
+        {sidebarDropdownOpen && (
+          <div className="sidebar-dropdown-panel">
+            <Sidebar
+              categories={taskHierarchy}
+              onFilterSelect={item => {
+                handleSidebarItemSelect(item);
+                setSidebarDropdownOpen(false);
+              }}
+              selectedItemId={selectedTaskId}
+            />
+          </div>
+        )}
+      </div>
+      {/* DESKTOP: Sidebar */}
+      <div className="desktop-sidebar">
+        <Sidebar
+          categories={taskHierarchy}
+          onFilterSelect={handleSidebarItemSelect}
+          selectedItemId={selectedTaskId}
+        />
+      </div>
       <main className="main-content">
         <div className="toolbar">
           <div className="view-toggle">

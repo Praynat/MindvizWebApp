@@ -470,11 +470,27 @@ const GroupsPage = () => {
 
     /* ---------------------------------------------------------------- */
     return (
-        <Grid container spacing={2} className={styles.pageContainer}
-            sx={{ height: 'calc(100vh - 64px)', width: '100vw' }}>
-
-            {/* ─────────── Sidebar – group list ─────────── */}
-            <Grid container={false} xs={12} md={3} sx={{ width: '20vw', height: '100%' }}>
+        <Grid
+            container
+            spacing={2}
+            className={styles.pageContainer}
+            sx={{
+                height: 'calc(100vh - 64px)',
+                width: '100vw',
+                flexDirection: { xs: 'column', md: 'row' }
+            }}
+        >
+            {/* Sidebar: on top for mobile, left for desktop */}
+            <Grid
+                item
+                xs={12}
+                md={3}
+                sx={{
+                    width: { xs: '100vw', md: '20vw' },
+                    height: { xs: 'auto', md: '100%' },
+                    order: { xs: 0, md: 0 }
+                }}
+            >
                 <Paper className={styles.sidebarPaper}>
                     <Button
                         variant="contained"
@@ -502,8 +518,17 @@ const GroupsPage = () => {
                 </Paper>
             </Grid>
 
-            {/* ─────────── Main panel ─────────── */}
-            <Grid container={false} xs={12} md={9} sx={{ width: '70vw', height: '100%' }}>
+            {/* Main panel */}
+            <Grid
+                item
+                xs={12}
+                md={9}
+                sx={{
+                    width: { xs: '100vw', md: '70vw' },
+                    height: '100%',
+                    order: { xs: 1, md: 1 }
+                }}
+            >
                 <Paper className={styles.mainPanelPaper} sx={{ p: 2, height: '100%' }}>
                     {!selectedGroup ? (
                         <Box className={styles.noGroupSelectedBox}>
@@ -542,19 +567,21 @@ const GroupsPage = () => {
                             <Divider />
 
                             {/* Tabs */}
-                            <Tabs
-                                value={selectedTab}
-                                onChange={(_, v) => setSelectedTab(v)}
-                                sx={{ mb: 2 }}
-                            >
-                                <Tab label="Tasks" />
-                                <Tab label="Users" />
-                            </Tabs>
-
-                            {/* Content */}
-                            <Box sx={{ overflowY: 'auto', height: 'calc(100% - 160px)' }}>
-                                {selectedTab === 0 ? renderTasksList() : renderUsersList()}
-                            </Box>
+                           <div style={{ overflow: 'auto' }}>
+                             <Tabs
+                                 value={selectedTab}
+                                 onChange={(_, v) => setSelectedTab(v)}
+                                 sx={{ mb: 2 }}
+                             >
+                                 <Tab label="Tasks" />
+                                 <Tab label="Users" />
+                             </Tabs>
+                            
+                             {/* Content */}
+                             <Box className={styles.contentArea}>
+                                 {selectedTab === 0 ? renderTasksList() : renderUsersList()}
+                             </Box>
+                           </div>
                         </>
                     )}
                 </Paper>

@@ -12,8 +12,8 @@ import {
   MarkerType,
   useReactFlow,
 } from '@xyflow/react';
-import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate and useLocation
-import ROUTES from '../Routes/routesModel'; // Import ROUTES
+import { useNavigate, useLocation } from 'react-router-dom'; 
+import ROUTES from '../Routes/routesModel';
 
 import '@xyflow/react/dist/style.css';
 import FloatingEdge from '../Components/MindMapping/Edges/FloatingEdge';
@@ -21,8 +21,8 @@ import FloatingConnectionLine from '../Components/MindMapping/Edges/FloatingConn
 import RoundedNode from '../Components/MindMapping/Nodes/MyRoundedNode';
 import { buildNodesAndEdges } from '../Helpers/Mindmapping/Edges/layoutHelpers';
 import useTasks from '../Hooks/Tasks/useTasks';
-import { useGroups } from '../Hooks/Groups/useGroups'; // Correct import
-import './Css/MindMapping.css'; // Import CSS Modules
+import { useGroups } from '../Hooks/Groups/useGroups'; 
+import './Css/MindMapping.css'; 
 import { v4 as uuidv4 } from 'uuid';
 import OutsideClickHandler from '../Helpers/General/OutsideClickHandler';
 import TaskDetails from '../Components/Tasks/TaskDetails/TaskDetails';
@@ -30,6 +30,7 @@ import QuickAddBar from '../Components/Tasks/QuickAddBar/QuickAddBar';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Paper, List, ListItemButton, ListItemText, Typography } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 // ===================================================================
 // UTILITY FUNCTION
 // ===================================================================
@@ -45,7 +46,8 @@ function MindMappingInner() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [currentZoom, setCurrentZoom] = useState(0.75);
-
+  const [groupMenuOpen, setGroupMenuOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
   const navigate = useNavigate(); // Initialize navigate
   const location = useLocation(); // Get current location
   const { screenToFlowPosition, getViewport, instance: reactFlowInstance } = useReactFlow();
@@ -373,33 +375,53 @@ function MindMappingInner() {
 
   }, [navigate, location]); // Add navigate and location as dependencies
 
+  // ----------------------- Effect for handling window resize -----------------------
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // ----------------------- Component Render -----------------------
   return (
-    <>
-      <Paper
-        elevation={0} // Keep elevation 0 if using custom shadow/border
-        className="groupSelectorPaper" /* Use string class name */
-      >
-        {/* Use string class name */}
-        <Typography variant="subtitle2" className="groupSelectorTitle">
-          Groups
-        </Typography>
-
-        <List dense disablePadding>
-          {groups.map(g => (
-            <ListItemButton
-              key={g.id}
-              selected={selectedGroupId === g.id}
-              onClick={() => setSelectedId(g.id)}
-            >
-              <ListItemText primary={g.name} />
-            </ListItemButton>
-          ))}
-        </List>
+    <div className="mindmap-main-container">
+      <Paper elevation={0} className={`groupSelectorPaper${groupMenuOpen ? ' open' : ''}`}>
+        {/* Always visible title/menu bar */}
+        <div
+          className="groupSelectorMobileBar"
+          onClick={() => setGroupMenuOpen(open => !open)}
+        >
+          <MenuIcon className="groupSelectorMenuIcon" />
+          <Typography variant="subtitle2" className="groupSelectorTitle">
+            Groups
+          </Typography>
+        </div>
+       
+          <div
+            className="groupSelectorList"
+            style={{
+              display: groupMenuOpen || isDesktop ? 'block' : 'none'
+            }}
+          >
+            <List dense disablePadding>
+              {groups.map(g => (
+                <ListItemButton
+                  key={g.id}
+                  selected={selectedGroupId === g.id}
+                  onClick={() => {
+                    setSelectedId(g.id);
+                    setGroupMenuOpen(false);
+                  }}
+                >
+                  <ListItemText primary={g.name} />
+                </ListItemButton>
+              ))}
+            </List>
+          </div>
       </Paper>
       <div
         ref={containerRef}
-        style={{ width: '100vw', height: '80vh', marginTop: '-2.5vh' }}
+        className="mindmap-canvas-container"
       >
         <ReactFlow
           nodes={nodes.map((node) => {
@@ -449,7 +471,7 @@ function MindMappingInner() {
           nodeDragThreshold={1}
           onPaneClick={() => setSelectedTask(null)}
         />
-        <Controls />
+        <Controls position='top-right' />
         <div className={`sidebar-container ${selectedTask ? 'open' : ''}`}>
           <OutsideClickHandler onOutsideClick={() => setSelectedTask(null)}>
             {selectedTask && (
@@ -490,7 +512,7 @@ function MindMappingInner() {
       >
         <CircularProgress />
       </Backdrop>
-    </>
+    </div>
   );
 }
 
