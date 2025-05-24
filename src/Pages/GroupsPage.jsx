@@ -6,7 +6,8 @@ import {
     IconButton, Dialog, DialogTitle, DialogContent, DialogActions,
     TextField, FormControlLabel, Checkbox, FormControl,
     InputLabel, Select, MenuItem, LinearProgress,
-    Avatar, Divider, Chip
+    Avatar, Divider, Chip,
+    useMediaQuery
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,7 +24,7 @@ import ROUTES from '../Routes/routesModel';
 // ────────────────────────────────────────────────────────────────────
 const GroupsPage = () => {
     const { user } = useMyUser();
-
+    const isMobile = useMediaQuery('(max-width:900px)', { noSsr: true });
     /* data hook ------------------------------------------------------ */
     const {
         groups, listLoading, listError,
@@ -61,6 +62,7 @@ const GroupsPage = () => {
     const [itemToDelete, setItemToDelete] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
     /* derived helpers ------------------------------------------------ */
     const [groupTasks, setGroupTasks] = useState([]);
@@ -467,69 +469,102 @@ const GroupsPage = () => {
                 : memberToChange.user.name || memberToChange.user.displayName || memberToChange.user.email
         )
         : '';
-
-    /* ---------------------------------------------------------------- */
-    return (
-        <Grid
-            container
-            spacing={2}
-            className={styles.pageContainer}
-            sx={{
-                height: 'calc(100vh - 64px)',
-                width: '100vw',
-                flexDirection: { xs: 'column', md: 'row' }
-            }}
-        >
-            {/* Sidebar: on top for mobile, left for desktop */}
-            <Grid
-                item
-                xs={12}
-                md={3}
-                sx={{
-                    width: { xs: '100vw', md: '20vw' },
-                    height: { xs: 'auto', md: '100%' },
-                    order: { xs: 0, md: 0 }
-                }}
+    const renderMobileSidebar = () => (
+        <Box>
+            <Button
+                variant="outlined"
+                fullWidth
+                onClick={() => setMobileSidebarOpen(v => !v)}
+                sx={{ mb: 1 }}
             >
-                <Paper className={styles.sidebarPaper}>
+                {selectedGroup
+                    ? `Selected group: ${selectedGroup.name}`
+                    : "Select group"}
+            </Button>
+            {mobileSidebarOpen && (
+                <Paper className={styles.mobileSidebarDropdown}>
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
                         fullWidth
-                        onClick={() => setAddGroupOpen(true)}
-                    >Add Group</Button>
-
-                    {listLoading && <LinearProgress />}
-                    {listError && (
-                        <Typography color="error">{listError.message}</Typography>
-                    )}
-
-                    <Box className={styles.sidebarListContainer}>
-                        {groups.map(g => (
-                            <Box
-                                key={g.id}
-                                className={`${styles.groupItem} ${selectedId === g.id ? styles.selectedGroup : ''}`}
-                                onClick={() => handleGroupSelect(g.id)}
-                            >
-                                {g.name}
-                            </Box>
-                        ))}
-                    </Box>
+                        onClick={() => {
+                            setAddGroupOpen(true);
+                            setMobileSidebarOpen(false);
+                        }}
+                        sx={{ mb: 1 }}
+                    >
+                        Add Group
+                    </Button>
+                    {groups.map(g => (
+                        <Box
+                            key={g.id}
+                            className={`${styles.groupItem} ${selectedId === g.id ? styles.selectedGroup : ''}`}
+                            onClick={() => {
+                                handleGroupSelect(g.id);
+                                setMobileSidebarOpen(false);
+                            }}
+                        >
+                            {g.name}
+                        </Box>
+                    ))}
                 </Paper>
-            </Grid>
+            )}
+        </Box>
+    );
 
-            {/* Main panel */}
-            <Grid
-                item
-                xs={12}
-                md={9}
-                sx={{
-                    width: { xs: '100vw', md: '70vw' },
-                    height: '100%',
-                    order: { xs: 1, md: 1 }
-                }}
-            >
-                <Paper className={styles.mainPanelPaper} sx={{ p: 2, height: '100%' }}>
+    /* ---------------------------------------------------------------- */
+    return (
+        <Grid container spacing={2} className={styles.pageContainer}
+            sx={{ height: '85vh', width: '100vw', flexDirection: { xs: 'column', md: 'row' }, overflow: 'hidden' }}>
+
+            {/* ─────────── Sidebar – group list ─────────── */}
+            {!isMobile && (
+                <Grid item style={{ width: '20vw', height: '80vh' }}>
+                    <Paper className={styles.sidebarPaper}>
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            fullWidth
+                            onClick={() => setAddGroupOpen(true)}
+                        >Add Group</Button>
+
+                        {listLoading && <LinearProgress />}
+                        {listError && (
+                            <Typography color="error">{listError.message}</Typography>
+                        )}
+
+                        <Box className={styles.sidebarListContainer}>
+                            {groups.map(g => (
+                                <Box
+                                    key={g.id}
+                                    className={`${styles.groupItem} ${selectedId === g.id ? styles.selectedGroup : ''}`}
+                                    onClick={() => handleGroupSelect(g.id)}
+                                >
+                                    {g.name}
+                                </Box>
+                            ))}
+                        </Box>
+                    </Paper>
+                </Grid>
+            )}
+            {/* Mobile sidebar*/}
+            {isMobile && (
+                <Grid item style={{ width: '100vw', marginTop: 40 }}>
+                    {renderMobileSidebar()}
+                </Grid>
+            )}
+            {/* ─────────── Main panel ─────────── */}
+            <Grid item style={{
+                width: isMobile ? '100vw' : '70vw',
+                height: isMobile ? 'auto' : '80vh',
+            }}>
+                <Paper className={styles.mainPanelPaper} style={{
+                    
+                    width: '100%',
+                    padding: isMobile ? 8 : 16,
+                    height: isMobile ? 'auto' : '100%',
+                    overflow: 'auto',
+                }}>
                     {!selectedGroup ? (
                         <Box className={styles.noGroupSelectedBox}>
                             <Typography>Select a group to begin.</Typography>
@@ -567,21 +602,19 @@ const GroupsPage = () => {
                             <Divider />
 
                             {/* Tabs */}
-                           <div style={{ overflow: 'auto' }}>
-                             <Tabs
-                                 value={selectedTab}
-                                 onChange={(_, v) => setSelectedTab(v)}
-                                 sx={{ mb: 2 }}
-                             >
-                                 <Tab label="Tasks" />
-                                 <Tab label="Users" />
-                             </Tabs>
-                            
-                             {/* Content */}
-                             <Box className={styles.contentArea}>
-                                 {selectedTab === 0 ? renderTasksList() : renderUsersList()}
-                             </Box>
-                           </div>
+                            <Tabs
+                                value={selectedTab}
+                                onChange={(_, v) => setSelectedTab(v)}
+                                sx={{ mb: 2 }}
+                            >
+                                <Tab label="Tasks" />
+                                <Tab label="Users" />
+                            </Tabs>
+
+                            {/* Content */}
+                            <Box sx={{ overflowY: 'auto', height: { xs: '100vh', md: 'calc(100% - 160px)' } }}>
+                                {selectedTab === 0 ? renderTasksList() : renderUsersList()}
+                            </Box>
                         </>
                     )}
                 </Paper>
